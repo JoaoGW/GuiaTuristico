@@ -34,3 +34,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# evitar problemas com compatibilidade
+tsconfig.json

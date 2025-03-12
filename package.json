@@ -9,6 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@gluestack-style/react": "^1.0.57",
+    "@gluestack-ui/config": "^1.1.19",
+    "@gluestack-ui/themed": "^1.1.34",
     "expo": "~52.0.38",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
