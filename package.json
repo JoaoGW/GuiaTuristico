@@ -9,10 +9,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/poppins": "^0.2.3",
+    "@gluestack-style/react": "^1.0.57",
+    "@gluestack-ui/config": "^1.1.19",
+    "@gluestack-ui/themed": "^1.1.34",
     "expo": "~52.0.38",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
-    "react-native": "0.76.7"
+    "react-native": "0.76.7",
+    "react-spinners": "^0.15.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
