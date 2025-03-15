@@ -1,5 +1,8 @@
-import { View, StatusBar, Text, useColorScheme } from "react-native";
+import { View, StatusBar, useColorScheme } from "react-native";
 import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
+
+import { config } from "@gluestack-ui/config";
+import { GluestackUIProvider, Text } from "@gluestack-ui/themed";
 
 import { Loading } from "./src/components/Loading";
 
@@ -24,24 +27,26 @@ export default function App() {
   const viewMode = getViewModeStyle();
 
   return (
-    <View style={{
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: viewMode.background
-    }}>
+    <GluestackUIProvider config={config}>
+      <View style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: viewMode.background
+      }}>
 
-      <StatusBar
-        barStyle={useColorScheme() === 'dark' ? "light-content" : "dark-content"}
-        backgroundColor="transparent"
-        translucent
-      />
+        <StatusBar
+          barStyle={useColorScheme() === 'dark' ? "light-content" : "dark-content"}
+          backgroundColor="transparent"
+          translucent
+        />
 
-      {
-        fontsLoaded
-          ? <Text>Página Inicial</Text>
-          : <Loading/>
-      }
-    </View>
+        {
+          fontsLoaded
+            ? <Text>Página Inicial</Text>
+            : <Loading/>
+        }
+      </View>
+    </GluestackUIProvider>
   );
 }
