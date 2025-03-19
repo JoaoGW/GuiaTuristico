@@ -1,31 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, TextInput, View } from 'react-native';
 import { Box, Text, Input, Button, Image, HStack, VStack, styled } from '@gluestack-ui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
-import Entypo from '@expo/vector-icons/Entypo';
+import { loadImage } from "../../assets/imageLoader";
+import { loadDestinations } from '../../assets/imageLoader';
 
-const destinations = [
-    { id: '1', title: 'Av.Paulista', description: '', image: require('../../assets/av_paulista.png') },
-    { id: '2', title: 'Ibirapuera', description: '', image: require('../../assets/ibirapuera.png') },
-    { id: '3', title: 'Shopping JK', description: '', image: require('../../assets/shopping_jk.png') },
-    { id: '4', title: 'Teatro Municipal', description: '', image: require('../../assets/teatro_municipal.png') },
-    { id: '5', title: 'Masp', description: '', image: require('../../assets/masp.png') },
-    { id: '6', title: 'Aquario São Paulo', description: '', image: require('../../assets/aquario_sao_paulo.png') },
-    { id: '7', title: 'Liberdade', description: '', image: require('../../assets/liberdade.png') },
-    { id: '8', title: 'Pinacoteca', description: '', image: require('../../assets/pinacoteca.png') },
-    { id: '9', title: 'Farol Santander', description: '', image: require('../../assets/farol_santander.png') },
-    { id: '10', title: 'Estádio do Pacaembu', description: '', image: require('../../assets/pacaembu.png') },
-    
 
-];
+interface Destinations{
+    id: number;
+    name: string;
+    description: string;
+    image: any;
+}
 
 export function Home() {
+    const [destinations, setDestinations] = useState<Destinations[]>([]);
+
+    useEffect(() => {
+        loadDestinations().then(setDestinations);
+    }, []);
+
     return (
         <View style={{ flex: 1 }}>
-            <FlatList
+            <FlatList showsVerticalScrollIndicator={false}
                 data={destinations}
                 numColumns={2}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.id.toString()}
                 nestedScrollEnabled={true}
                 ListHeaderComponent={
                     <>
@@ -33,11 +33,11 @@ export function Home() {
                         <HStack justifyContent="space-between" alignItems="center" p="$4" width='95%' mt={10}>
                             <VStack flex={1}>
                                 <HStack alignItems="center">
-                                    <MaterialIcons name='pin-drop' size={24} color="$gray600" />
+                                    <MaterialIcons name='place' size={24} color="$gray600" />
                                     <Text fontSize="$md" fontWeight="$bold" ml="$1">São Paulo, Brazil</Text>
                                 </HStack>
                             </VStack>
-                            <Entypo name="bell" size={24} color="black" />
+                            <MaterialIcons name='notifications' size={24} color={"$gray600"} />
                         </HStack>
 
                         {/* User Info */}
@@ -47,7 +47,7 @@ export function Home() {
                                 <Text fontSize="$lg" fontWeight="$bold" textAlign='left'> Usuário Default </Text>
                                 <Text fontSize={'$sm'} fontWeight={'$semibold'} color="$gray500" textAlign='left'> Free User • Since 2024 </Text>
                             </VStack>
-                            <Image source={require('../../assets/profile.png')} width={60} height={60} borderRadius={25} ml={'auto'} />
+                            <Image source={loadImage('profile.png')} alt='User photo' width={60} height={60} borderRadius={25} ml={'auto'} />
                         </HStack>
 
                         {/* Premium Section */}
@@ -59,40 +59,44 @@ export function Home() {
                         </Box>
 
                         {/* Popular Destinations */}
-                        <Text fontSize="$lg" fontWeight="$bold">🌎 Popular Destinations</Text>
+                        <Text fontSize="$lg" fontWeight="$bold"> Popular Destinations </Text>
                     </>
                 }
-                    renderItem={({ item }) => (
-                        <Box flex={1} m={2}  flexDirection='column' bg="$gray200" borderRadius={10} overflow="hidden">
-                            <Image source={item.image} borderRadius={10} size= "2xl" height={100} />
-                            <Box p={3}>
-                                <Text fontSize="$sm" fontWeight="$bold" textAlign='center' mb={1}>{item.title}</Text>
-                                <Text color="$gray500">{item.description}</Text>
-                            </Box>
+                renderItem={({ item }) => (
+                    <Box flex={1} m={2}  flexDirection='column' bg="$gray200" borderRadius={10} overflow="hidden">
+
+                        <Image source={item.image} alt='Pictures Destinations'borderRadius={10} size= "2xl" height={100} />
+                        <Box p={3}>
+                            <Text fontSize="$sm" fontWeight="$bold" textAlign='center' mb={1}>{item.name}</Text>
+                            
                         </Box>
-                    )}
-                    contentContainerStyle={{ paddingBottom: 100 }} 
+                    </Box>
+                )}
+                contentContainerStyle={{ paddingBottom: 100 }} 
                 />
 
-                        {/* Navigation Bar */}
-                        <HStack flex={1} justifyContent="space-around" bg="$blue500" borderRadius={20} alignItems="center" p={4} position="absolute" bottom={10} left={0} right={0}>
-                            <HStack alignItems="center">
-                                <Button size='md' width={60} height={60} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700" >
-                                    <Image source={require('../../assets/explore.png')} size='2xl' width={20} height={20} />
-                                </Button>
-                                <Text color="#fff" fontSize="$md" fontWeight="$bold" ml={10}> Discover </Text>
-                            </HStack>
-                            <Box width={1} height={60} bg="#fff" mx={2} />
-                                <Button size='md' width={60} height={60} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700">
-                                    <Image source={require('../../assets/home.png')} size='2xl' width={20} height={20} />
-                                </Button>
-                                <Button size='md' width={60} height={60} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700">
-                                    <Image source={require('../../assets/search.png')} size='2xl' width={20} height={20} />
-                                </Button>
-                                <Button size='md' width={60} height={60} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700">
-                                    <Image source={require('../../assets/configurations.png')} size='2xl' width={20} height={20} />
-                                </Button>
-                        </HStack>   
+                {/* Navigation Bar */}
+                    <HStack flex={1} justifyContent="space-between" alignItems="center" bg="$blue500" borderRadius={20}  p={4} position="absolute" bottom={10} left={0} right={0}>
+                        <HStack alignItems="center">
+                            <Button size='xs' width={'$16'} height={60} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700" >
+                                <MaterialIcons name='public' size={30} color={'white'}/>
+                            </Button>
+                            <Text color="#fff" fontSize="$md" fontWeight="$bold" ml={10}> Discover </Text>
+                        </HStack>
+
+                        <Box width={1} height={"80%"} bg="#fff" mx={3} />
+                        <HStack space='md' alignItems='center'>
+                            <Button size='xs' width={55} height={55} borderRadius={50} justifyContent="center" alignContent='center' alignItems="center" bg="$blue700">
+                                <MaterialIcons name='home' size={27} color={'white'} > </MaterialIcons>
+                            </Button>
+                            <Button size='xs' width={55} height={55} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700">
+                                <MaterialIcons name='search' size={27} color={'white'}></MaterialIcons>
+                            </Button>
+                            <Button size='xs' width={55} height={55} borderRadius={50} justifyContent="center" alignItems="center" bg="$blue700">
+                                <MaterialIcons name='settings' size={27} color={'white'}></MaterialIcons>
+                            </Button>
+                        </HStack>
+                    </HStack>   
         </View>
     );
 }

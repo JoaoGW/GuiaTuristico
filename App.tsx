@@ -44,7 +44,6 @@ export default function App() {
 
         {
           fontsLoaded
-             /*<Text>Página Inicial</Text>*/
             ? <Home/>
             : <Loading/>
             
