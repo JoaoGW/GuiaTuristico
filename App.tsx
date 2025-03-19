@@ -5,6 +5,7 @@ import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider, Text } from "@gluestack-ui/themed";
 
 import { Loading } from "./src/components/Loading";
+import { Home } from "./src/screens/Home";
 
 const lightMode = {
   background: '#FDFDFD',
@@ -43,8 +44,9 @@ export default function App() {
 
         {
           fontsLoaded
-            ? <Text>Página Inicial</Text>
+            ? <Home/>
             : <Loading/>
+            
         }
       </View>
     </GluestackUIProvider>
