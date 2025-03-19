@@ -4,8 +4,8 @@ import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } fro
 import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider, Text } from "@gluestack-ui/themed";
 
-import { Loading } from "./src/components/Loading";
-import { Home } from "./src/screens/Home";
+import { Loading } from "@components/Loading";
+import { Home } from "@screens/Home";
 
 const lightMode = {
   background: '#FDFDFD',

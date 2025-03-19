@@ -2,6 +2,32 @@
   "extends": "./node_modules/expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "module": "esnext"
+    "baseUrl": "./",
+    "paths": {
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@routes/*": [
+        "./src/routes/*"
+      ],
+      "@screens/*": [
+        "./src/screens/*"
+      ],
+      "@storage/*": [
+        "./src/storage/*"
+      ],
+      "@theme/*": [
+        "./src/theme/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@data/*": [
+        "./src/data/*"
+      ]
+    }
   }
 }
