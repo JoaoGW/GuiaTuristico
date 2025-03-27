@@ -6,6 +6,7 @@ import { GluestackUIProvider, Text } from "@gluestack-ui/themed";
 
 import { Loading } from "@components/Loading";
 import { Home } from "@screens/Home";
+import { LoginScreen } from "@screens/Login";
 
 const lightMode = {
   background: '#FDFDFD',
@@ -44,7 +45,7 @@ export default function App() {
 
         {
           fontsLoaded
-            ? <Home/>
+            ? <Home/>     // Para testar o Login, troque para <LoginScreen/>
             : <Loading/>
             
         }
