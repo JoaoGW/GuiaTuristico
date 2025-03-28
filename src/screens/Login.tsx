@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+
+import { useNavigation } from '@react-navigation/native';
+import { AuthNavigationProp } from '@routes/auth.routes';
 
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+
+  const navigation = useNavigation<AuthNavigationProp>();
 
   return (
     <ImageBackground source={require('../assets/background.webp')} style={styles.background}>
@@ -47,7 +52,7 @@ export function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.loginButton}>
+          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.loginText}>LOGIN</Text>
           </TouchableOpacity>
 
