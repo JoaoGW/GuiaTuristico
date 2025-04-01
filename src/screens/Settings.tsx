@@ -20,7 +20,7 @@ export function Settings(){
           <SettingsOption optionText="Change Password" icon={Lock} />
         </VStack>
 
-        <VStack mx={20}>
+        <VStack mt={25} mb={20}>
           <Text color="$blue500" fontSize="$xl" fontWeight="$bold" my={20}>General Settings</Text>
           <SettingsOption optionText="Change Language" icon={Languages} />
           <SettingsOption optionText="Change Currency" icon={CircleDollarSign } />
