@@ -18,7 +18,7 @@ export function SettingsOption(props: SettingsRules) {
         justifyContent: "space-between",
       }}
     >
-      <Icon size={40} color="#a6a9ad" />
+      <Icon size={30} color="#606060" />
       <Text
         color="$black"
         fontSize="$lg"
