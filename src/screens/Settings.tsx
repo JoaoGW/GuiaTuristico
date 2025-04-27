@@ -1,4 +1,4 @@
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, TouchableOpacity } from "react-native";
 import { Pressable, Text, View, VStack } from "@gluestack-ui/themed"
 
 import { TitleAndBack } from '@components/TitleBack';
@@ -8,7 +8,13 @@ import
   { User, Lock, Languages, CircleDollarSign, Moon, Bell, WifiOff, LogOut } 
 from 'lucide-react-native';
 
+import { useNavigation } from '@react-navigation/native';
+import { AuthNavigationProp } from '@routes/auth.routes';
+
 export function Settings(){
+
+  const navigation = useNavigation<AuthNavigationProp>();
+
   return(
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -16,11 +22,14 @@ export function Settings(){
 
         <VStack mx={20}>
           <Text color="$blue500" fontSize="$xl" fontWeight="$bold" mb={20}>Account</Text>
-          <SettingsOption optionText="Edit Profile" icon={User} />
+          <Pressable onPress={() => navigation.navigate('Profile')} bg="$f0f0f0" p={10} borderRadius={5} mb={10} ml={10} flexDirection="row" alignItems="center" >
+            <User size={30} color="#535353" style={{ marginRight: 10 }} /> 
+            <Text color="$535353" fontSize="$lg">Edit Profile</Text>
+          </Pressable>
           <SettingsOption optionText="Change Password" icon={Lock} />
         </VStack>
 
-        <VStack mt={25} mb={20}>
+        <VStack mx={20} mt={25} mb={20}>
           <Text color="$blue500" fontSize="$xl" fontWeight="$bold" my={20}>General Settings</Text>
           <SettingsOption optionText="Change Language" icon={Languages} />
           <SettingsOption optionText="Change Currency" icon={CircleDollarSign } />
