@@ -24,7 +24,6 @@ export function Button({title, variant = "solid", isLoading=false,  ...rest}:Pro
             ) : (
                 <Text
                     color={variant === "outline" ? "$darkBlue600" : "$trueGray50"}
-                    // $active-color={variant === "outline" ? "$darkBlue900" : "$trueGray50"}
                     fontFamily="$body">
                     {title}
                 </Text>
