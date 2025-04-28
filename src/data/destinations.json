@@ -1,0 +1,13 @@
+
+[
+    { "id": "1", "title": "Av.Paulista", "description": "", "image": "av_paulista.png" },
+    { "id": "2", "title": "Ibirapuera", "description": "", "image": "ibirapuera.png" },
+    { "id": "3", "title": "Shopping JK", "description": "", "image": "shopping_jk.png" },
+    { "id": "4", "title": "Teatro Municipal", "description": "", "image": "teatro_municipal.png" },
+    { "id": "5", "title": "Masp", "description": "", "image": "masp.png" },
+    { "id": "6", "title": "Aquario São Paulo", "description": "", "image": "aquario_sao_paulo.png" },
+    { "id": "7", "title": "Liberdade", "description": "", "image": "liberdade.png" },
+    { "id": "8", "title": "Pinacoteca", "description": "", "image": "pinacoteca.png" },
+    { "id": "9", "title": "Farol Santander", "description": "", "image": "farol_santander.png" },
+    { "id": "10", "title": "Estádio do Pacaembu", "description": "", "image": "pacaembu.png" }
+]

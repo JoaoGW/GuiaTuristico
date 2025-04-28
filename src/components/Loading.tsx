@@ -1,13 +1,10 @@
-import { Center } from "@gluestack-ui/themed";
-import { MoonLoader } from "react-spinners";
+import { Center, Spinner, Text } from "@gluestack-ui/themed";
 
 export function Loading() {
   return (
-    <Center>
-      <MoonLoader
-        size={45}
-        speedMultiplier={0.35}
-      />
+    <Center flex={1}>
+      <Spinner />
+      <Text size="md">Please Wait...</Text>
     </Center>
   )
 }

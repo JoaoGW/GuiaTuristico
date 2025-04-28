@@ -1,22 +1,28 @@
-import { View, StatusBar, Text, useColorScheme } from "react-native";
+import { View, StatusBar, useColorScheme } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+
 import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
 
-import { Loading } from "./src/components/Loading";
+import { config } from "@gluestack-ui/config";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
+
+import { Loading } from "@components/Loading";
+import { AuthRoute } from "@routes/auth.routes";
 
 const lightMode = {
   background: '#FDFDFD',
   text: '#000'
-}
+};
 
 const darkMode = {
   background: '#292929',
   text: '#FFF'
-}
+};
 
 function getViewModeStyle() {
   const viewMode = useColorScheme();
-  const theme = viewMode === 'dark' ? darkMode : lightMode
-  return theme
+  const theme = viewMode === 'dark' ? darkMode : lightMode;
+  return theme;
 }
 
 export default function App() {
@@ -24,24 +30,27 @@ export default function App() {
   const viewMode = getViewModeStyle();
 
   return (
-    <View style={{
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: viewMode.background
-    }}>
+    <GluestackUIProvider config={config}>
+      <View style={{
+        flex: 1,
+        backgroundColor: viewMode.background
+      }}>
+        <StatusBar
+          barStyle={useColorScheme() === 'dark' ? "light-content" : "dark-content"}
+          backgroundColor="transparent"
+          translucent
+        />
 
-      <StatusBar
-        barStyle={useColorScheme() === 'dark' ? "light-content" : "dark-content"}
-        backgroundColor="transparent"
-        translucent
-      />
-
-      {
-        fontsLoaded
-          ? <Text>Página Inicial</Text>
-          : <Loading/>
-      }
-    </View>
+        {
+          fontsLoaded ? (
+            <NavigationContainer>
+              <AuthRoute />
+            </NavigationContainer>
+          ) : (
+            <Loading />
+          )
+        }
+      </View>
+    </GluestackUIProvider>
   );
 }
