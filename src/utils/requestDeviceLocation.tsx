@@ -6,6 +6,8 @@ import * as Location from 'expo-location';
 
 import { Text } from '@gluestack-ui/themed';
 
+import { AlertToast } from '@components/AlertToast';
+
 type LocationContextType = {
   location: Location.LocationObject | null
   errorMsg: string | null
@@ -53,8 +55,9 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
 
   return(
     <LocationContext.Provider value={{ location, errorMsg }}>
-      {children}
-      <Text>{information}</Text> { /** Transform this to a Gluestack Toast */ }
+      <AlertToast>
+        {children}
+      </AlertToast>
     </LocationContext.Provider>
   )
 }

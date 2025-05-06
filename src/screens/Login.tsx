@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { Dimensions } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { VStack, Image, Center, Text, Heading, ScrollView, Box } from "@gluestack-ui/themed"
+import { VStack, Image, Center, Text, ScrollView, Box } from "@gluestack-ui/themed"
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
@@ -13,7 +11,6 @@ export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  // const screenWidth = Dimensions.get('window').width;
   const navigation = useNavigation<AuthNavigationProp>();
 
   return (
@@ -44,7 +41,7 @@ export function LoginScreen() {
           <Input placeholder="Senha" secureTextEntry/>
           <Button
            title="LOGIN"
-           onPress={() => navigation.navigate('Home')}/> {/* Adicione isLoading pra mostrar q ta carregando*/}
+           onPress={() => navigation.navigate('Home')}/>
           <Text color="$trueGray50" fontSize="$md" mt="$10">Don't have an account?</Text>
           <Button
             title="Create an account"
