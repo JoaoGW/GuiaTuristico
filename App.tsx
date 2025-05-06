@@ -8,6 +8,7 @@ import { GluestackUIProvider } from "@gluestack-ui/themed";
 
 import { Loading } from "@components/Loading";
 import { AuthRoute } from "@routes/auth.routes";
+import { ProvideUserLocation } from "@utils/requestDeviceLocation";
 
 const lightMode = {
   background: '#FDFDFD',
@@ -43,9 +44,11 @@ export default function App() {
 
         {
           fontsLoaded ? (
-            <NavigationContainer>
-              <AuthRoute />
-            </NavigationContainer>
+            <ProvideUserLocation>
+              <NavigationContainer>
+                <AuthRoute />
+              </NavigationContainer>
+            </ProvideUserLocation>
           ) : (
             <Loading />
           )

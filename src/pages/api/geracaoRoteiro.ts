@@ -3,13 +3,12 @@ import { OpenAI } from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function generateItineraryHandler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const prompt = `Gere recomendações de roteiro turístico, leve em consideração que sou uma pessoa que gosta de ${params.preferencias} e que esteja localizado em: ${params.localizacao}`
-    // Parâmetros a serem adicionados em nosso prompt: 
+    const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
+                    interesses do usuário: Vida Noturna, Restaurantes de Alto Escalão e Locais com muito movimento. 
+                    Além disso, o usuário está localizado em: São Paulo, Capital e seu orçamento é de 15.000 reais para 5 dias.`
+    // Parâmetros a serem adicionados em nosso prompt (substituir onde temos params fixos): 
     // 1 - Questionário de gostos pessoais (preferencias do usuário) 
     // 2 - Localização atual e/ou desejada
     // 3 - Horários de abertura conforme o dia atual
