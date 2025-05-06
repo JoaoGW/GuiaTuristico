@@ -21,27 +21,30 @@ export function LoginScreen() {
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}>
       <VStack flex={1} px="$8">
-        <Image
-          h="$full"
-          w="100%"
-          resizeMode="cover"
-          source={require('@assets/background.webp')}
-          defaultSource={require('@assets/background.webp')}
-          alt=""
-          position="absolute"/>
-        <Box
-          h="$full"
-          w="100%"
-          bg="rgba(0, 0, 0, 0.4)" // Semi-transparent black
-          position="absolute"
-        />
+        <Box position="absolute" top={0} left={0} right={0} bottom={0}>
+          <Image
+            h="$full"
+            w="$full"
+            resizeMode="cover"
+            source={require('@assets/background.webp')}
+            defaultSource={require('@assets/background.webp')}
+            alt=""/>
+          <Box
+            h="$full"
+            w="$full"
+            bg="rgba(0, 0, 0, 0.4)" // Semi-transparent black
+            position="absolute"
+          />
+        </Box>
 
         <Center my="$24">
           <Text color="$trueGray50" fontSize="$3xl" mt="$40">Welcome to</Text>
           <Text color="$info600" fontSize="$4xl" mt="$3" mb="$5">EZ TRIP AI</Text>
           <Input placeholder="Email" keyboardType='email-address' autoCapitalize='none'/>
           <Input placeholder="Senha" secureTextEntry/>
-          <Button title="LOGIN"/> {/* Adicione isLoading pra mostrar q ta carregando*/}
+          <Button
+           title="LOGIN"
+           onPress={() => navigation.navigate('Home')}/> {/* Adicione isLoading pra mostrar q ta carregando*/}
           <Text color="$trueGray50" fontSize="$md" mt="$10">Don't have an account?</Text>
           <Button
             title="Create an account"
