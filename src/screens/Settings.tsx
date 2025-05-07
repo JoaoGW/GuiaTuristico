@@ -1,4 +1,4 @@
-import { SafeAreaView, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native";
 import { Pressable, Text, View, VStack } from "@gluestack-ui/themed"
 
 import { TitleAndBack } from '@components/TitleBack';
@@ -10,13 +10,13 @@ from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
+import { NavigationBar } from "@components/NavigationBar";
 
 export function Settings(){
-
   const navigation = useNavigation<AuthNavigationProp>();
 
   return(
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, paddingTop: 60 }}>
       <View style={{ flex: 1 }}>
         <TitleAndBack pageTitle="Settings"/>
 
@@ -38,13 +38,15 @@ export function Settings(){
           <SettingsOption optionText="Offline Mode" icon={WifiOff} />
         </VStack>
 
-        <VStack mt={30} style={{ position: 'absolute', bottom: 30, left: 0, right: 0 }}>
+        <VStack mt={30} style={{ position: 'absolute', bottom: 30, left: 0, right: 0, marginBottom: 60 }}>
           <Text textAlign="center" fontSize={"$lg"} color="$blue500">Contact Support</Text>
           <Pressable bgColor="$red500" w={200} h={50} mt={30} mx="auto" flexDirection="row" alignItems ="center" justifyContent="center" borderRadius={10}>
             <LogOut color="#FFF" style={{ marginRight: 15 }}/>
             <Text color="$white" textAlign="center" fontSize="$lg" fontWeight="$bold">Sign Out</Text>
           </Pressable>
         </VStack>
+
+        <NavigationBar />
       </View>
     </SafeAreaView>
   )
