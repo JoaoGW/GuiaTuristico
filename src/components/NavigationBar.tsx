@@ -1,74 +1,45 @@
+import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { HStack, Box, Text } from '@gluestack-ui/themed';
+import { HStack } from '@gluestack-ui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from "@routes/auth.routes";
 
 export function NavigationBar() {
+  const [currentActive, setCurrentActive] = useState('Home');
   const navigation = useNavigation<AuthNavigationProp>();
 
   return (
-    <HStack flex={1} justifyContent="space-between" alignItems="center" bg="$blue500" borderRadius={20} p={4} position="absolute" bottom={10} left={0} right={0}>
-      <HStack alignItems="center">
-        <TouchableOpacity
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "$blue700",
-          }}
-        >
-          <MaterialIcons name="public" size={30} color="white" />
-        </TouchableOpacity>
-        <Text color="#fff" fontSize="$md" fontWeight="$bold" ml={10}>
-          Discover
-        </Text>
-      </HStack>
-
-      <Box width={1} height={"80%"} bg="#fff" mx={3} />
-      <HStack space="md" alignItems="center">
-        <TouchableOpacity
-          style={{
-            width: 55,
-            height: 55,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "$blue700",
-          }}
-        >
-          <MaterialIcons name="home" size={27} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: 55,
-            height: 55,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "$blue700",
-          }}
-        >
-          <MaterialIcons name="search" size={27} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: 55,
-            height: 55,
-            borderRadius: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "$blue700",
-          }}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <MaterialIcons name="settings" size={27} color="white" />
-        </TouchableOpacity>
-      </HStack>
+    <HStack
+      justifyContent="space-around"
+      alignItems="center"
+      bg="$white"
+      p={4}
+      position="absolute"
+      bottom={0}
+      left={0}
+      right={0}
+      h={65}
+      borderWidth={2}
+      borderColor='#e9ad2d'
+    >
+      <TouchableOpacity onPress={ () => setCurrentActive('Itinerary') }>
+        <MaterialIcons name="public" size={ currentActive === "Itinerary" ? 40 : 30 } color={ currentActive === "Itinerary" ? '#e9ad2d' : 'grey' } />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={ () => setCurrentActive('Search') }>
+        <MaterialIcons name="search" size={ currentActive === "Search" ? 40 : 30 } color={ currentActive === "Search" ? '#e9ad2d' : 'grey' } />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={ () => setCurrentActive('Home') }>
+        <MaterialIcons name="home" size={ currentActive === "Home" ? 40 : 30 } color={ currentActive === "Home" ? '#e9ad2d' : 'grey' } />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => { setCurrentActive('Settings'); navigation.navigate('Settings') }}>
+        <MaterialIcons name="settings" size={ currentActive === "Settings" ? 40 : 30 } color={ currentActive === "Settings" ? '#e9ad2d' : 'grey' } />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={ () => setCurrentActive('Games') }>
+        <MaterialIcons name="sports-esports" size={ currentActive === "Games" ? 40 : 30 } color={ currentActive === "Games" ? '#e9ad2d' : 'grey' } />
+      </TouchableOpacity>
     </HStack>
   );
 }

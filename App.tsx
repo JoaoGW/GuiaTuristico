@@ -1,4 +1,4 @@
-import { View, StatusBar, useColorScheme } from "react-native";
+import { StatusBar, useColorScheme, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
@@ -32,7 +32,7 @@ export default function App() {
 
   return (
     <GluestackUIProvider config={config}>
-      <View style={{
+      <SafeAreaView style={{
         flex: 1,
         backgroundColor: viewMode.background
       }}>
@@ -53,7 +53,7 @@ export default function App() {
             <Loading />
           )
         }
-      </View>
+      </SafeAreaView>
     </GluestackUIProvider>
   );
 }

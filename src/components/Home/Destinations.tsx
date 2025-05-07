@@ -1,17 +1,39 @@
-import React from 'react';
-import { Box, Text, Image } from '@gluestack-ui/themed';
+import { Box, Text, VStack, HStack, Image } from '@gluestack-ui/themed';
+import { Star } from 'lucide-react-native';
 
-interface DestinationProps {
-  item: any
-}
-
-export function HomeDestinations(props: DestinationProps) {
+export function HomeDestinations({ item }: { item: any }) {
   return (
-    <Box flex={1} m={2} flexDirection='column' bg="$gray200" borderRadius={10} overflow="hidden">
-      <Image source={props.item.image} alt='Pictures Destinations' borderRadius={10} size="2xl" height={100} />
-      <Box p={3}>
-        <Text fontSize="$sm" fontWeight="$bold" textAlign='center' mb={1}>{props.item.name}</Text>
-      </Box>
+    <Box borderRadius={10} p={4}>
+      <Image
+        source={item.image}
+        alt={item.name}
+        w="100%"
+        height={120}
+        borderRadius={10}
+        mb={5}
+      />
+      <VStack space="sm">
+        <HStack justifyContent="space-between" alignItems="center">
+          <Text
+            fontSize="$lg"
+            fontWeight="$bold"
+            color="$textDark"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.name}
+          </Text>
+          <Text fontSize="$sm" color="$gray500">
+            10 km
+          </Text>
+        </HStack>
+        <HStack justifyContent="center" space="xs" alignItems='center'>
+          {[...Array(5)].map((_, index) => (
+            <Star key={index} size={18} color="#FFD700" fill="none" />
+          ))}
+          <Text ml={5}>(0.0)</Text>
+        </HStack>
+      </VStack>
     </Box>
-  )
+  );
 }
