@@ -25,13 +25,13 @@ export function NavigationBar() {
       borderWidth={2}
       borderColor='#e9ad2d'
     >
-      <TouchableOpacity onPress={ () => setCurrentActive('Itinerary') }>
+      <TouchableOpacity onPress={ () => { setCurrentActive('Itinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "Itinerary" ? 40 : 30 } color={ currentActive === "Itinerary" ? '#e9ad2d' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={ () => setCurrentActive('Search') }>
         <MaterialIcons name="search" size={ currentActive === "Search" ? 40 : 30 } color={ currentActive === "Search" ? '#e9ad2d' : 'grey' } />
       </TouchableOpacity>
-      <TouchableOpacity onPress={ () => setCurrentActive('Home') }>
+      <TouchableOpacity onPress={ () => { setCurrentActive('Home'); navigation.navigate('Home') } }>
         <MaterialIcons name="home" size={ currentActive === "Home" ? 40 : 30 } color={ currentActive === "Home" ? '#e9ad2d' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { setCurrentActive('Settings'); navigation.navigate('Settings') }}>

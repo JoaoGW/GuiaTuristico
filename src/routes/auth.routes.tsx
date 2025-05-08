@@ -5,6 +5,7 @@ import { LoginScreen } from "@screens/Login";
 import { Home } from "@screens/Home";
 import { Settings } from "@screens/Settings";
 import { Profile } from "@screens/Profile";
+import { GenerateItinerary } from "@screens/GenerateItinerary"; // Ensure this import is correct
 
 const Stack = createNativeStackNavigator();
 
@@ -13,7 +14,8 @@ type AuthStackParamList = {
   Home: undefined;
   Settings: undefined;
   Profile: undefined;
-}
+  GenerateItinerary: undefined;
+};
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
@@ -24,6 +26,7 @@ export function AuthRoute() {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="GenerateItinerary" component={GenerateItinerary} />
     </Stack.Navigator>
   );
 }
