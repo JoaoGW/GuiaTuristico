@@ -4,8 +4,6 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Location from 'expo-location';
 
-import { Text } from '@gluestack-ui/themed';
-
 import { AlertToast } from '@components/AlertToast';
 
 type LocationContextType = {
@@ -51,6 +49,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
     information = errorMsg;
   } else if (location) {
     information = JSON.stringify(location);
+    console.log("Localização => ", location)
   }
 
   return(
