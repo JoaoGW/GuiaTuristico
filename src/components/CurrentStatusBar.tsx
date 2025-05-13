@@ -31,11 +31,11 @@ export function CurrentStatusBar() {
         <VStack flex={1}>
           <HStack alignItems="center">
             <LocateFixed size={26} color="#535353" />
-            {errorMsg ? (
+            { errorMsg ? (
               <Text color="red.500" ml={7}>{errorMsg}</Text>
             ) : location ? (
               address ? (
-                <Text color="green.500" ml={7}>
+                <Text color="green.500" ml={7} fontWeight="$bold" >
                   {address.neighborhood}, {address.city}
                 </Text>
               ) : (

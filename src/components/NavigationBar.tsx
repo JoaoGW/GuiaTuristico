@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import { HStack } from '@gluestack-ui/themed';
@@ -7,8 +7,18 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from "@routes/auth.routes";
 
+type NavbarContextType = {
+  currentActive: string
+  setCurrentActive: (value: string) => void;
+}
+
+export const NavbarContext = createContext<NavbarContextType>({
+  currentActive: "Home",
+  setCurrentActive: () => {}
+})
+
 export function NavigationBar() {
-  const [currentActive, setCurrentActive] = useState('Home');
+  const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
   const navigation = useNavigation<AuthNavigationProp>();
 
   return (

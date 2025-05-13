@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { View, Text } from '@gluestack-ui/themed';
 
 import { LocationContext } from '@utils/requestDeviceLocation';
+import { Loading } from '@components/Loading';
 
 export function Maps() {
   const { location } = useContext(LocationContext);
@@ -35,6 +36,7 @@ export function Maps() {
       ) : (
         <View flex={1} justifyContent="center" alignItems="center">
           <Text>Loading location...</Text>
+          <Loading />
         </View>
       )}
     </View>

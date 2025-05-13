@@ -5,7 +5,7 @@ import { LoginScreen } from "@screens/Login";
 import { Home } from "@screens/Home";
 import { Settings } from "@screens/Settings";
 import { Profile } from "@screens/Profile";
-import { GenerateItinerary } from "@screens/GenerateItinerary"; // Ensure this import is correct
+import { GenerateItinerary } from "@screens/GenerateItinerary";
 
 const Stack = createNativeStackNavigator();
 
