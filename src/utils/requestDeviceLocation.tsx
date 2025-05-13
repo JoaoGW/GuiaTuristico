@@ -24,7 +24,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
     async function getCurrentLocation() {
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
-          'Oops, this will not work on Snack in an Android Emulator. Try it on your device!'
+          'Oops, this will not work in an Android Emulator. Try it on your device!'
         );
         return;
       }
@@ -49,7 +49,6 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
     information = errorMsg;
   } else if (location) {
     information = JSON.stringify(location);
-    console.log("Localização => ", location)
   }
 
   return(

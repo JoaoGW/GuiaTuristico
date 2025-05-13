@@ -8,11 +8,11 @@ import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
 import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';
+import { Maps } from '@components/Maps/Maps';
 
 import { loadDestinations } from '@utils/imageLoader';
 
 import { TrendingUp } from 'lucide-react-native';
-import { Maps } from '@components/Maps/Maps';
 
 interface Destinations {
   id: number;
@@ -30,26 +30,6 @@ export function Home() {
 
   return (
     <Box flex={1} bg="#FDFDFD">
-      <CurrentStatusBar />
-
-      <UserInfo />
-
-      <Box
-        height={200}
-        mb={15}
-        mx={6}
-        borderRadius={15}
-        overflow="hidden"
-        borderWidth={2}
-        borderColor="#e9ad2d"
-        shadowColor="#000"
-        shadowOffset={{ width: 0, height: 2 }}
-        shadowOpacity={0.2}
-        shadowRadius={4}
-      >
-        <Maps />
-      </Box>
-
       <FlatList
         data={destinations}
         numColumns={2}
@@ -57,8 +37,32 @@ export function Home() {
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <VStack space="md" px={6} mt={4}>
-            <View flexDirection='row' alignItems='center' my={6}>
+          <VStack space="md">
+            {/* CurrentStatusBar */}
+            <CurrentStatusBar />
+
+            {/* UserInfo */}
+            <UserInfo />
+
+            {/* Maps */}
+            <Box
+              height={200}
+              mb={15}
+              mx={6}
+              borderRadius={15}
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="#e9ad2d"
+              shadowColor="#000"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.2}
+              shadowRadius={4}
+            >
+              <Maps />
+            </Box>
+
+            {/* Título "Destinos Populares" */}
+            <View flexDirection="row" alignItems="center" my={6} px={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">
                 Destinos Populares
@@ -71,10 +75,13 @@ export function Home() {
             <HomeDestinations item={item} />
           </Box>
         )}
-        ListFooterComponent={<Box />}
+        ListFooterComponent={
+          <Box px={6} mt={6}>
+            <GoPremium />
+          </Box>
+        }
         contentContainerStyle={{ paddingBottom: 35 }}
       />
-      <NavigationBar />
     </Box>
   );
 }

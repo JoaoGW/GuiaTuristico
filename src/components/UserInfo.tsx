@@ -4,8 +4,8 @@ import { loadImage } from '@utils/imageLoader';
 export function UserInfo() {
   return (
     <View p={10} mt={10}>
-      <Text fontSize="$lg" fontWeight="$bold" textAlign="left" mt={5}>
-        Bem-Vindo de volta,
+      <Text fontSize="$lg" textAlign="left" mt={5}>
+        Bem-Vindo(a) de volta,
       </Text>
       <HStack mt={-9} mb={15} alignItems="center">
         <VStack flex={1} pt={20}>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StatusBar, useColorScheme, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -9,6 +10,10 @@ import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { Loading } from "@components/Loading";
 import { AuthRoute } from "@routes/auth.routes";
 import { ProvideUserLocation } from "@utils/requestDeviceLocation";
+import { NavbarContext } from "@components/NavigationBar";
+
+import { AuthProvider } from '@contexts/AuthContext';
+import { Routes } from '@routes/index';
 
 const lightMode = {
   background: '#FDFDFD',
@@ -27,6 +32,7 @@ function getViewModeStyle() {
 }
 
 export default function App() {
+  const [currentActive, setCurrentActive] = useState<string>('Home');
   const [fontsLoaded] = useFonts({ Poppins_300Light, Poppins_400Regular, Poppins_500Medium });
   const viewMode = getViewModeStyle();
 
@@ -44,11 +50,13 @@ export default function App() {
 
         {
           fontsLoaded ? (
-            <ProvideUserLocation>
-              <NavigationContainer>
-                <AuthRoute />
-              </NavigationContainer>
-            </ProvideUserLocation>
+            <AuthProvider>
+              <ProvideUserLocation>
+                <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
+                  <Routes />
+                </NavbarContext.Provider>
+              </ProvideUserLocation>
+            </AuthProvider>
           ) : (
             <Loading />
           )

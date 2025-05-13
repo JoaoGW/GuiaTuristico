@@ -18,19 +18,20 @@
     "expo": "^53.0.9",
     "expo-device": "^7.1.4",
     "expo-location": "^18.1.4",
-    "expo-status-bar": "~2.2.3",
     "expo-maps": "^0.10.0",
+    "expo-status-bar": "~2.2.3",
     "firebase": "^11.6.0",
+    "image-size": "^1.2.1",
     "lucide-react-native": "^0.485.0",
     "next": "^15.3.1",
     "openai": "^4.97.0",
     "react": "19.0.0",
     "react-dom": "^19.0.0",
     "react-native": "0.79.2",
+    "react-native-maps": "1.18.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-svg": "15.11.2"
-    "react-native-maps": "1.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

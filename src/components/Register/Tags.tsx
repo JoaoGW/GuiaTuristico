@@ -1,6 +1,6 @@
 import {ComponentProps} from "react"
-import React, {useState} from "react"
-import {Box, Text, VStack, HStack, Image, View, Button} from '@gluestack-ui/themed';
+import {useState} from "react"
+import {Box, Text, Image, Button} from '@gluestack-ui/themed';
 
 type Props = ComponentProps<typeof Button> & {
     title:string
@@ -18,7 +18,8 @@ export function UserPreferencesTags({ item}: { item: any }) {
       h="$48" 
       borderRadius={10}
       borderColor="$darkBlue600"
-      borderWidth={isSelected ? '$4' : '$0'}>
+      borderWidth={isSelected ? '$4' : '$0'}
+    >
       <Box position="absolute" top={0} left={0} right={0} bottom={0}>
         <Image
           h="$full"
@@ -27,19 +28,21 @@ export function UserPreferencesTags({ item}: { item: any }) {
           borderRadius={10}
           source={item.image}
           defaultSource={require('@assets/background.webp')}
+          opacity={ isSelected ? 0.5 : 1 }
           alt=""/>
         <Box
           h="$full"
           w="$full"
           borderRadius={10}
-          bg={isSelected ? 'rgba(0, 0, 0, 0.0)' : 'rgba(0, 0, 0, 0.5)'}
           position="absolute"
         />
       </Box>
       <Text
         color={isSelected ? '$warmGray50' : '$warmGray50'}
         fontSize="$lg" 
-        top={0}>
+        top={0}
+        textAlign="center"
+      >
         {item.name}
       </Text>
     </Button>
