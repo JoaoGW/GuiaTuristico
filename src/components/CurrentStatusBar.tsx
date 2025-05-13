@@ -12,7 +12,7 @@ export function CurrentStatusBar() {
 
   return (
     <SafeAreaView>
-      <HStack justifyContent="space-between" alignItems="center" pt={60} px={10} width="100%">
+      <HStack justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
         <VStack flex={1}>
           <HStack alignItems="center">
             <LocateFixed size={24} color="#535353" />

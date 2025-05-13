@@ -30,26 +30,6 @@ export function Home() {
 
   return (
     <Box flex={1} bg="#FDFDFD">
-      <CurrentStatusBar />
-
-      <UserInfo />
-
-      <Box
-        height={200}
-        mb={15}
-        mx={6}
-        borderRadius={15}
-        overflow="hidden"
-        borderWidth={2}
-        borderColor="#e9ad2d"
-        shadowColor="#000"
-        shadowOffset={{ width: 0, height: 2 }}
-        shadowOpacity={0.2}
-        shadowRadius={4}
-      >
-        <Maps />
-      </Box>
-
       <FlatList
         data={destinations}
         numColumns={2}
@@ -58,6 +38,25 @@ export function Home() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <VStack space="md" px={6} mt={4}>
+            <CurrentStatusBar />
+
+            <UserInfo />
+
+            <Box
+              height={200}
+              mb={15}
+              mx={6}
+              borderRadius={15}
+              overflow="hidden"
+              borderWidth={2}
+              borderColor="#e9ad2d"
+              shadowColor="#000"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.2}
+              shadowRadius={4}
+            >
+              <Maps />
+            </Box>
             <View flexDirection='row' alignItems='center' my={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">

@@ -22,7 +22,7 @@ export function NavigationBar() {
       left={0}
       right={0}
       h={65}
-      borderWidth={2}
+      borderTopWidth={2}
       borderColor='#e9ad2d'
     >
       <TouchableOpacity onPress={ () => { setCurrentActive('Itinerary'); navigation.navigate('GenerateItinerary') } }>
