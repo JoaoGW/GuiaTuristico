@@ -7,11 +7,15 @@ import { VStack, Image, Center, Text, ScrollView, Box } from "@gluestack-ui/them
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { useAuth } from '@contexts/AuthContext';
+
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+
   const navigation = useNavigation<AuthNavigationProp>();
+  const { login } = useAuth();
 
   return (
     <ScrollView
@@ -41,12 +45,12 @@ export function LoginScreen() {
           <Input placeholder="Senha" secureTextEntry/>
           <Button
            title="LOGIN"
-           onPress={() => navigation.navigate('Home')}/>
+           onPress={ login }/>
           <Text color="$trueGray50" fontSize="$md" mt="$10">Don't have an account?</Text>
           <Button
             title="Create an account"
             variant="outline"
-            onPress={() => navigation.navigate('Home')}
+            onPress={ () => navigation.navigate('Home') }
             ></Button>
         </Center>
         

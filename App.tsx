@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StatusBar, useColorScheme, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -10,7 +11,9 @@ import { Loading } from "@components/Loading";
 import { AuthRoute } from "@routes/auth.routes";
 import { ProvideUserLocation } from "@utils/requestDeviceLocation";
 import { NavbarContext } from "@components/NavigationBar";
-import { useState } from "react";
+
+import { AuthProvider } from '@contexts/AuthContext';
+import { Routes } from '@routes/index';
 
 const lightMode = {
   background: '#FDFDFD',
@@ -47,13 +50,13 @@ export default function App() {
 
         {
           fontsLoaded ? (
-            <ProvideUserLocation>
-              <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
-                <NavigationContainer>
-                  <AuthRoute />
-                </NavigationContainer>
-              </NavbarContext.Provider>
-            </ProvideUserLocation>
+            <AuthProvider>
+              <ProvideUserLocation>
+                <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
+                  <Routes />
+                </NavbarContext.Provider>
+              </ProvideUserLocation>
+            </AuthProvider>
           ) : (
             <Loading />
           )
