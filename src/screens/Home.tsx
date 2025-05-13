@@ -12,6 +12,7 @@ import { HomeDestinations } from '@components/Home/Destinations';
 import { loadDestinations } from '@utils/imageLoader';
 
 import { TrendingUp } from 'lucide-react-native';
+import { Maps } from '@components/Maps/Maps';
 
 interface Destinations {
   id: number;
@@ -30,6 +31,25 @@ export function Home() {
   return (
     <Box flex={1} bg="#FDFDFD">
       <CurrentStatusBar />
+
+      <UserInfo />
+
+      <Box
+        height={200}
+        mb={15}
+        mx={6}
+        borderRadius={15}
+        overflow="hidden"
+        borderWidth={2}
+        borderColor="#e9ad2d"
+        shadowColor="#000"
+        shadowOffset={{ width: 0, height: 2 }}
+        shadowOpacity={0.2}
+        shadowRadius={4}
+      >
+        <Maps />
+      </Box>
+
       <FlatList
         data={destinations}
         numColumns={2}
@@ -38,10 +58,9 @@ export function Home() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <VStack space="md" px={6} mt={4}>
-            <UserInfo />
-            <View flexDirection='row' alignItems='center'>
-              <TrendingUp color="black" size={30} style={{ marginRight: 8 }}/>
-              <Text fontSize="$2xl" fontWeight="$bold" color="$black" mt={6}>
+            <View flexDirection='row' alignItems='center' my={6}>
+              <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
+              <Text fontSize="$2xl" fontWeight="$bold" color="$black">
                 Destinos Populares
               </Text>
             </View>

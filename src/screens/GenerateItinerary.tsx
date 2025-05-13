@@ -50,7 +50,7 @@ export function GenerateItinerary() {
       </View>
 
       <View p={32}>
-        <Button onPress={handleGenerate} disabled={loading} bgColor='#cd9418'>
+        <Button onPress={ handleGenerate } disabled={loading} bgColor='#cd9418'>
           { loading ?  <ButtonSpinner color="$white" mr={10}/> : '' }
           <ButtonText>{ loading ? 'Gerando...' : 'Gerar Roteiro com IA' }</ButtonText>
         </Button>
