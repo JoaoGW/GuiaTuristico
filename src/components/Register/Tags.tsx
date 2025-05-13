@@ -28,12 +28,12 @@ export function UserPreferencesTags({ item}: { item: any }) {
           borderRadius={10}
           source={item.image}
           defaultSource={require('@assets/background.webp')}
+          opacity={ isSelected ? 0.5 : 1 }
           alt=""/>
         <Box
           h="$full"
           w="$full"
           borderRadius={10}
-          bg={isSelected ? 'rgba(0, 0, 0, 0.0)' : 'rgba(0, 0, 0, 0.5)'}
           position="absolute"
         />
       </Box>

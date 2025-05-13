@@ -34,11 +34,11 @@ export function UserPreferences(){
                 numColumns={2}
                 keyExtractor={(item) => item.id.toString()}
                 columnWrapperStyle={{ justifyContent: 'space-between' }}
-                showsVerticalScrollIndicator={true}
+                showsVerticalScrollIndicator={false}
                 ListHeaderComponent={
                     <VStack space="md" px={6} mt={4} mb={4}>
                         <View flexDirection='row'>
-                            <Text fontSize="$lg" fontWeight="$bold" color="$black" mt={6} ml={5}>
+                            <Text fontSize="$xl" fontWeight="$bold" color="$black" mt={6} ml={5}>
                                 Destinos Populares
                             </Text>
                         </View>
