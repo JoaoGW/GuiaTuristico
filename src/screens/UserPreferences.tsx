@@ -3,10 +3,8 @@ import { FlatList } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
-import { UserInfo } from '@components/UserInfo';
 
 import { VStack, Image, Center, Text, ScrollView, Box, View, Heading} from "@gluestack-ui/themed"
-import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { UserPreferencesTags } from "@components/Register/Tags"
 
