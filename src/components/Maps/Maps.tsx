@@ -6,11 +6,11 @@ import { View, Text } from '@gluestack-ui/themed';
 import { LocationContext } from '@utils/requestDeviceLocation';
 
 export function Maps() {
-  const { location, errorMsg } = useContext(LocationContext);
+  const { location } = useContext(LocationContext);
   
   return (
     <View flex={1}>
-      {location ? (
+      { location ? (
         <MapView
           style={{ width: '100%', height: '100%' }}
           initialRegion={{

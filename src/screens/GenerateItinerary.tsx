@@ -38,7 +38,7 @@ export function GenerateItinerary() {
 
   return (
     <View flex={1}>
-      <View pt={70} px={20}>
+      <View pt={35} px={20}>
         <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>Gere o seu próximo roteiro de viagem utilizando IA!</Text>
         <HStack justifyContent='center'>
           <Text pt="4%">Powered by</Text>
@@ -49,7 +49,7 @@ export function GenerateItinerary() {
         </HStack>
       </View>
 
-      <View p={32}>
+      <View py={16} px={32}>
         <Button onPress={ handleGenerate } disabled={loading} bgColor='#cd9418'>
           { loading ?  <ButtonSpinner color="$white" mr={10}/> : '' }
           <ButtonText>{ loading ? 'Gerando...' : 'Gerar Roteiro com IA' }</ButtonText>

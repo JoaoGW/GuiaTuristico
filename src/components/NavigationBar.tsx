@@ -17,11 +17,12 @@ export function NavigationBar() {
       alignItems="center"
       bg="$white"
       p={4}
+      pt={8}
       position="absolute"
       bottom={0}
       left={0}
       right={0}
-      h={65}
+      h={50}
       borderTopWidth={2}
       borderColor='#e9ad2d'
     >
