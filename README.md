@@ -104,6 +104,10 @@ npx expo start
 <br/>
 <a href="mailto:caiopereguima92@gmail.com">Email: caiopereguima92@gmail.com</a>
 
+<a href="https://www.linkedin.com/in/lucas-k-hayashi/">LinkedIn: Lucas Kenji Hayashi</a>
+<br/>
+<a href="mailto:lucaskhayashi@gmail.com">Email: lucaskhayashi@gmail.com</a>
+
 ---
 
 <p align="center"> Feito por João Pedro, Lucas Kenji e Caio Pereira </p>
