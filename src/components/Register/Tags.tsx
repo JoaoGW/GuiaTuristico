@@ -1,21 +1,47 @@
 import {ComponentProps} from "react"
+import React, {useState} from "react"
 import {Box, Text, VStack, HStack, Image, View, Button} from '@gluestack-ui/themed';
 
-// type Props = ComponentProps<typeof Button> & {
-//     title:string
-//     variant?: "on" | "off"
-//     isOn?:boolean
-// }
+type Props = ComponentProps<typeof Button> & {
+    title:string
+    variant?: "on" | "off"
+    isOn?:boolean
+}
 
 export function UserPreferencesTags({ item}: { item: any }) {
+  const [isSelected, setIsSelected] = useState(false);
+
   return (
     <Button
-      bgColor='$darkBlue700'
-      // bgColor={variant === "off" ? '$darkBlue700' : '$darkBlue900'}
-      borderWidth="$1"
-      borderRadius="$3xl"
-      mt={5} px={10} py={3}>
-      <Text color='$white'> {item.name} </Text>
+      onPress={() => setIsSelected(!isSelected)}
+      py={3}
+      h="$48" 
+      borderRadius={10}
+      borderColor="$darkBlue600"
+      borderWidth={isSelected ? '$4' : '$0'}>
+      <Box position="absolute" top={0} left={0} right={0} bottom={0}>
+        <Image
+          h="$full"
+          w="$full"
+          resizeMode="cover"
+          borderRadius={10}
+          source={item.image}
+          defaultSource={require('@assets/background.webp')}
+          alt=""/>
+        <Box
+          h="$full"
+          w="$full"
+          borderRadius={10}
+          bg={isSelected ? 'rgba(0, 0, 0, 0.0)' : 'rgba(0, 0, 0, 0.5)'}
+          position="absolute"
+        />
+      </Box>
+      <Text
+        color={isSelected ? '$warmGray50' : '$warmGray50'}
+        fontSize="$lg" 
+        top={0}>
+        {item.name}
+      </Text>
     </Button>
   );
 }
