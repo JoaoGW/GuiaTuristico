@@ -35,7 +35,7 @@ export function Maps() {
         </MapView>
       ) : (
         <View flex={1} justifyContent="center" alignItems="center">
-          <Text>Loading location...</Text>
+          <Text>Carregando localização no mapa...</Text>
           <Loading />
         </View>
       )}

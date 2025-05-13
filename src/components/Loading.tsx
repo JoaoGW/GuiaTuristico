@@ -4,7 +4,7 @@ export function Loading() {
   return (
     <Center flex={1}>
       <Spinner />
-      <Text size="md">Please Wait...</Text>
+      <Text size="md">Por favor, aguarde...</Text>
     </Center>
   )
 }

@@ -64,8 +64,6 @@ export function GenerateItinerary() {
           </View>
         )}
       </View>
-
-      <NavigationBar />
     </View>
   );
 }

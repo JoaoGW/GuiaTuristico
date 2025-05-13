@@ -9,6 +9,8 @@ import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { Loading } from "@components/Loading";
 import { AuthRoute } from "@routes/auth.routes";
 import { ProvideUserLocation } from "@utils/requestDeviceLocation";
+import { NavbarContext } from "@components/NavigationBar";
+import { useState } from "react";
 
 const lightMode = {
   background: '#FDFDFD',
@@ -27,6 +29,7 @@ function getViewModeStyle() {
 }
 
 export default function App() {
+  const [currentActive, setCurrentActive] = useState<string>('Home');
   const [fontsLoaded] = useFonts({ Poppins_300Light, Poppins_400Regular, Poppins_500Medium });
   const viewMode = getViewModeStyle();
 
@@ -45,9 +48,11 @@ export default function App() {
         {
           fontsLoaded ? (
             <ProvideUserLocation>
-              <NavigationContainer>
-                <AuthRoute />
-              </NavigationContainer>
+              <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
+                <NavigationContainer>
+                  <AuthRoute />
+                </NavigationContainer>
+              </NavbarContext.Provider>
             </ProvideUserLocation>
           ) : (
             <Loading />

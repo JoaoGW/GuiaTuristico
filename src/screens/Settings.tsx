@@ -45,8 +45,6 @@ export function Settings(){
             <Text color="$white" textAlign="center" fontSize="$lg" fontWeight="$bold">Sign Out</Text>
           </Pressable>
         </VStack>
-
-        <NavigationBar />
       </View>
     </SafeAreaView>
   )
