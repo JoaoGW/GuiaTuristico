@@ -5,6 +5,7 @@ import { HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView } fro
 import { NavigationBar } from '@components/NavigationBar';
 
 import { generateItinerary } from '@utils/gptRequests';
+import { utilsGetSelectedTags } from '@utils/selectedTagsStore'
 
 import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
 
@@ -15,12 +16,16 @@ export function GenerateItinerary() {
   const [itinerary, setItinerary] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const tags = utilsGetSelectedTags();
+  const cleaned = tags.join(', ')
+  // console.log('Interesses do usuario:', cleaned);
+
   const handleGenerate = async () => {
     setLoading(true);
     setItinerary('');
 
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
-                    interesses do usuário: Museus, Ciência, Natureza e Monumentos Históricos. 
+                    interesses do usuário: ${tags}. 
                     Além disso, o usuário está localizado em: Paris, França e seu orçamento é de 1750 reais para 2 dias.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
