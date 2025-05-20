@@ -16,8 +16,8 @@ export function GenerateItinerary() {
   const [itinerary, setItinerary] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const tags = utilsGetSelectedTags();
-  const cleaned = tags.join(', ')
+  const tagsArray = utilsGetSelectedTags();
+  const tags = tagsArray.join(', ')
   // console.log('Interesses do usuario:', cleaned);
 
   const handleGenerate = async () => {
