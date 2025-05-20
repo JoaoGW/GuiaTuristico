@@ -1,21 +1,20 @@
-import {ComponentProps} from "react"
-import {useState} from "react"
-import {Box, Text, Image, Button} from '@gluestack-ui/themed';
+import { Box, Text, Image, Button } from '@gluestack-ui/themed';
 
-type Props = ComponentProps<typeof Button> & {
-    title:string
-    variant?: "on" | "off"
-    isOn?:boolean
+interface Props {
+  item: {
+    name: string;
+    image: any;
+  };
+  isSelected: boolean;
+  onToggle: () => void;
 }
 
-export function UserPreferencesTags({ item}: { item: any }) {
-  const [isSelected, setIsSelected] = useState(false);
-
+export function UserPreferencesTags({ item, isSelected, onToggle }: Props) {
   return (
     <Button
-      onPress={() => setIsSelected(!isSelected)}
+      onPress={onToggle}
       py={3}
-      h="$48" 
+      h="$48"
       borderRadius={10}
       borderColor="$darkBlue600"
       borderWidth={isSelected ? '$4' : '$0'}
@@ -28,18 +27,17 @@ export function UserPreferencesTags({ item}: { item: any }) {
           borderRadius={10}
           source={item.image}
           defaultSource={require('@assets/background.webp')}
-          opacity={ isSelected ? 0.5 : 1 }
-          alt=""/>
-        <Box
-          h="$full"
-          w="$full"
-          borderRadius={10}
-          position="absolute"
+          opacity={isSelected ? 0.5 : 1}
+          alt=""
         />
       </Box>
       <Text
-        color={isSelected ? '$warmGray50' : '$warmGray50'}
-        fontSize="$lg" 
+        color="$warmGray50"
+        bgColor="rgba(78, 78, 78, 0.58)"
+        borderRadius={10}
+        px={5}
+        py={3}
+        fontSize="$lg"
         top={0}
         textAlign="center"
       >
