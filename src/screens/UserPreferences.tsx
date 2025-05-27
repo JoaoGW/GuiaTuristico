@@ -9,7 +9,7 @@ import { Button } from "@components/Button";
 import { UserPreferencesTags } from "@components/Register/Tags";
 
 import { loadTags } from '@utils/tagsLoader';
-import { utilsSetSelectedTags } from '@utils/selectedTagsStore';
+import { utilsSetSelectedTags, utilsGetSelectedTags } from '@utils/selectedTagsStore';
 
 interface Tags {
   id: number;
@@ -24,7 +24,15 @@ export function UserPreferences() {
   const navigation = useNavigation<AuthNavigationProp>();
 
   useEffect(() => {
-    loadTags().then(setTags);
+    const fetchData = async () => {
+      const loadedTags = await loadTags();
+      setTags(loadedTags);
+
+      const previouslySelected = utilsGetSelectedTags();
+      setSelectedTags(previouslySelected || []);
+    };
+
+    fetchData();
   }, []);
 
   const toggleTagSelection = (tagName: string) => {
@@ -69,9 +77,8 @@ export function UserPreferences() {
             <Button
               title="Continuar"
               onPress={() => {
-                // console.log('Selected Tags Exported:', selectedTags);
                 utilsSetSelectedTags(selectedTags);
-                navigation.navigate('Login');
+                navigation.navigate('GenerateItinerary');
               }}
             />
           </Box>
@@ -81,4 +88,3 @@ export function UserPreferences() {
     </Box>
   );
 }
-
