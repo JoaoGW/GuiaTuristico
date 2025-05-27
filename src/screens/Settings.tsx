@@ -5,7 +5,7 @@ import { TitleAndBack } from '@components/TitleBack';
 import { SettingsOption } from "@components/Settings/SettingsOption";
 
 import 
-  { User, Lock, Languages, CircleDollarSign, Moon, Bell, WifiOff, LogOut } 
+  { User, Lock, Languages, CircleDollarSign, Moon, Bell, WifiOff, LogOut, University} 
 from 'lucide-react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -24,9 +24,13 @@ export function Settings(){
           <Text color="$blue500" fontSize="$xl" fontWeight="$bold" mb={20}>Account</Text>
           <Pressable onPress={() => navigation.navigate('Profile')} bg="$f0f0f0" p={10} borderRadius={5} mb={10} ml={10} flexDirection="row" alignItems="center" >
             <User size={30} color="#535353" style={{ marginRight: 10 }} /> 
-            <Text color="$535353" fontSize="$lg">Edit Profile</Text>
+            <Text color="$535353" fontSize="$lg" pl={14}>Edit Profile</Text>
           </Pressable>
           <SettingsOption optionText="Change Password" icon={Lock} />
+          <Pressable onPress={() => navigation.navigate('UserPreferences')} bg="$f0f0f0" p={10} borderRadius={5} mb={10} ml={10} flexDirection="row" alignItems="center" >
+            <University size={30} color="#535353" style={{ marginRight: 10 }}/> 
+            <Text color="$535353" fontSize="$lg" pl={14}>Interests</Text>
+          </Pressable>
         </VStack>
 
         <VStack mx={20} mt={25} mb={20}>
