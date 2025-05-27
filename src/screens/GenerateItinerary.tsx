@@ -5,10 +5,13 @@ import {
   AlertDialogBody, AlertDialogFooter
 } from '@gluestack-ui/themed';
 
+import { HStack, View, Text, Image, Button, ButtonText, ButtonSpinner, ScrollView } from '@gluestack-ui/themed';
+
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { NavigationBar } from '@components/NavigationBar';
+
 import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
 
@@ -80,19 +83,30 @@ export function GenerateItinerary() {
       </View>
 
       <View py={16} px={32}>
-        <Button onPress={handleGenerate} disabled={loading} bgColor='#cd9418'>
-          {loading ? <ButtonSpinner color="$white" mr={10} /> : ''}
-          <ButtonText>{loading ? 'Gerando...' : 'Gerar Roteiro com IA'}</ButtonText>
+        <Button onPress={ handleGenerate } disabled={loading} bgColor='#cd9418'>
+          { loading ? <ButtonSpinner color="$white" mr={10} /> : '' }
+          <ButtonText>{ loading ? 'Gerando...' : 'Gerar Roteiro com IA' }</ButtonText>
         </Button>
 
-        {itinerary !== '' && (
-          <View style={{ marginTop: 20 }}>
-            <Text fontSize="$xl" mb={10} style={{ fontWeight: 'bold' }}>Roteiro sugerido:</Text>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 5000, marginBottom: 400 }}>
-              <Text>{itinerary}</Text>
-            </ScrollView>
-          </View>
-        )}
+        {
+          itinerary !== ''
+          ?
+            <View style={{ marginTop: 20 }}>
+              <Text fontSize="$xl" mb={10} style={{ fontWeight: 'bold' }}>Roteiro sugerido:</Text>
+              <ScrollView showsVerticalScrollIndicator={ false } style={{ maxHeight: 5000, marginBottom: 400 }}>
+                <Text>{itinerary}</Text>
+              </ScrollView>
+            </View>
+          :
+            <View alignItems='center' justifyContent='center' style={{ marginTop: 150 }}>
+              <Image 
+                source={ require('@assets/Illustrations/generateitineraryIllustration.png') }
+                h={230}
+                w={350}
+                alt=''
+              />
+            </View>
+        }
       </View>
 
       <AlertDialog isOpen={showConfirmation} onClose={handleConfirmNo}>
