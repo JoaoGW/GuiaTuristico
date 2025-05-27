@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import {
-  HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView,
+  HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView, Image,
   AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader,
   AlertDialogBody, AlertDialogFooter
 } from '@gluestack-ui/themed';
-
-import { HStack, View, Text, Image, Button, ButtonText, ButtonSpinner, ScrollView } from '@gluestack-ui/themed';
 
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';

@@ -50,7 +50,7 @@ export function LoginScreen() {
           <Button
             title="Criar uma conta"
             variant="outline"
-            onPress={() => navigation.navigate('UserPreferences')}
+            onPress={ login }
             ></Button>
         </Center>
         
