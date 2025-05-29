@@ -6,10 +6,14 @@ services:
     ports:
       - "19000:19000" # Metro bundler for Expo
       - "19001:19001" # Web NextJS Server for Expo
+      - "19002:19002" # Additional port for Expo
     volumes:
       - ./expo-app:/app
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 
     stdin_open: true
     tty: true
+    network_mode: "host"
 
   nextjs:
     build:
