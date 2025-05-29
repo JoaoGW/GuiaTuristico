@@ -1,25 +1,40 @@
 services:
-  expo:
-    build:
-      context: ./expo-app
-      dockerfile: Docker/Dockerfile.dev
-    ports:
-      - "19000:19000" # Metro bundler for Expo
-      - "19001:19001" # Web NextJS Server for Expo
-      - "19002:19002" # Additional port for Expo
-    volumes:
-      - ./expo-app:/app
-    environment:
-      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 
-    stdin_open: true
-    tty: true
-    network_mode: "host"
-
-  nextjs:
+  nextjs-api:
     build:
       context: ./nextjs-api
       dockerfile: Docker/Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
     volumes:
       - ./nextjs-api:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+    networks:
+      - app-network
+
+  expo-app:
+    build:
+      context: ./expo-app
+      dockerfile: Docker/Dockerfile.dev
+    ports:
+      - '19000:19000'   # Metro bundler for NextJS
+      - '19001:19001'   # Live reload to see changes
+      - '19002:19002'   # Expo web UI for Expo Web Debugging
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    volumes:
+      - ./expo-app:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm start
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
+
+networks:
+  app-network:
+    driver: bridge
