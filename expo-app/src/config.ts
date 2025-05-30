@@ -1,0 +1,1 @@
+export const API_URL = "http://<IP_VOCES_AQUI>:3000/api";
