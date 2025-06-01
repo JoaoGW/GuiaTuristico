@@ -1,7 +1,7 @@
 // Use this method to request the OpenAI API to generate a travel itinerary
 export const generateItinerary = async (prompt: string) => {
   try {
-    const response = await fetch(`http://ENDERECO_IP_DE_VOCES:3000/api/generateItinerary`, {
+    const response = await fetch(`http://<IP_VOCES_AQUI>/api/generateItinerary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
