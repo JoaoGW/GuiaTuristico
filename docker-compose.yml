@@ -4,6 +4,7 @@ services:
   expo:
     build:
       context: ./expo-app
+    image: ghcr.io/joaogw/guiaturistico/expo-app:latest
     ports:
       - "19000:19000" # Metro bundler
       - "19001:19001" # Tunnel
@@ -16,6 +17,7 @@ services:
   nextjs:
     build:
       context: ./nextjs-api
+    image: ghcr.io/joaogw/guiaturistico/nextjs-api:latest
     ports:
       - "3000:3000"
     volumes:
