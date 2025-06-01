@@ -3,6 +3,7 @@ services:
     build:
       context: ./nextjs-api
       dockerfile: Docker/Dockerfile
+    image: ghcr.io/joaogw/guiaturistico/nextjs-api:latest
     ports:
       - '3000:3000'
     environment:
@@ -21,6 +22,7 @@ services:
     build:
       context: ./expo-app
       dockerfile: Docker/Dockerfile.dev
+    image: ghcr.io/joaogw/guiaturistico/expo-app:latest
     ports:
       - '19000:19000'   # Metro bundler for NextJS
       - '19001:19001'   # Live reload to see changes
