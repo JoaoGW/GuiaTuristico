@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView, Image,
   AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader,
@@ -6,6 +6,8 @@ import {
 } from '@gluestack-ui/themed';
 
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { NavigationBar } from '@components/NavigationBar';
@@ -14,6 +16,8 @@ import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
 
 import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
+
+const ITINERARY_STORAGE_KEY = '@meuapp:roteiro_salvo';
 
 export function GenerateItinerary() {
   const [location, setLocation] = useState('');
@@ -27,6 +31,21 @@ export function GenerateItinerary() {
 
   const tagsArray = utilsGetSelectedTags();
   const tags = tagsArray.join(', ');
+
+  useEffect(() =>{
+
+    const loadSavedItinerary = async () => {
+      try{
+        const savedItinerary = await AsyncStorage.getItem(ITINERARY_STORAGE_KEY);
+        if(savedItinerary != null){
+          setItinerary(savedItinerary);
+        }
+        } catch (error) {
+          console.error('Erro ao carregar o roteiro salvo:', error);
+        }
+    };
+    loadSavedItinerary();
+  }, []);
 
   const generate = async () => {
     setLoading(true);
@@ -42,6 +61,8 @@ export function GenerateItinerary() {
     try {
       const result = await generateItinerary(prompt);
       setItinerary(result);
+
+      await AsyncStorage.setItem(ITINERARY_STORAGE_KEY, result);
     } catch (error) {
       setItinerary('Erro ao gerar roteiro. Tente novamente.');
     } finally {
