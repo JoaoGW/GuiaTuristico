@@ -38,6 +38,7 @@ export function NavigationBar() {
       bg="$white"
       p={4}
       pt={8}
+      mb={isIOS ? 45 : 0}
       position="absolute"
       bottom={0}
       left={0}
@@ -45,7 +46,6 @@ export function NavigationBar() {
       h={50}
       borderTopWidth={2}
       borderColor='#e9ad2d'
-      pb={ isIOS ? 25 : undefined }
     >
       <TouchableOpacity onPress={ () => { setCurrentActive('GenerateItinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#e9ad2d' : 'grey' } />
