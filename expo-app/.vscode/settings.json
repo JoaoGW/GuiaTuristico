@@ -1,7 +1,7 @@
 {
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "github.copilot.enable": {
-        "*": false,
+        "*": true,
         "plaintext": false,
         "markdown": false,
         "scminput": false

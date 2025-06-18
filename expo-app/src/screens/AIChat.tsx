@@ -1,14 +1,17 @@
-import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable } from "@gluestack-ui/themed";
+import { useContext, useEffect, useState } from "react";
+import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
+
+import { Text, View, Input, InputField, InputSlot, InputIcon } from "@gluestack-ui/themed";
+
+import { CharacterLimiter } from "@components/CharacterLimiter";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { LocationContext } from "@utils/requestDeviceLocation";
 
-import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
-import { useContext, useEffect, useState } from "react";
-
 export function AIChat() {
   const { location, errorMsg } = useContext(LocationContext);
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
+  const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
 
   useEffect(() => {
     if (location) {
@@ -54,6 +57,9 @@ export function AIChat() {
       <View flex={1} />
 
       <View>
+        <View alignItems="flex-end">
+          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200}/>
+        </View>
         <Input
           variant="outline"
           size="lg"
@@ -64,7 +70,7 @@ export function AIChat() {
           borderColor="#e9ad2d"
           borderWidth={2}
         >
-          <InputField placeholder="Conversar com IA" />
+          <InputField placeholder="Conversar com IA" maxLength={200} onChangeText={ (text) => setCurrentCharactersQuantity(text.length) }/>
           <InputSlot pr={10}>
             <InputIcon as={MessageCircle} color="#e9ad2d" size="xl" />
           </InputSlot>
