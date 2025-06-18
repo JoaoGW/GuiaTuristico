@@ -34,7 +34,7 @@ export function GenerateItinerary() {
 
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
                     interesses do usuário: ${tags}. 
-                    Além disso, o usuário está localizado em: Paris, França e seu orçamento é de 1750 reais para 2 dias.
+                    Além disso, o usuário está localizado em: Paris, França e seu orçamento é de 3750 reais para 5 dias.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;

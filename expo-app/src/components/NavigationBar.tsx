@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 
 import { HStack } from '@gluestack-ui/themed';
@@ -16,6 +16,8 @@ export const NavbarContext = createContext<NavbarContextType>({
   currentActive: "Home",
   setCurrentActive: () => {},
 });
+
+const isIOS = Platform.OS === 'ios';
 
 export function NavigationBar() {
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
@@ -43,6 +45,7 @@ export function NavigationBar() {
       h={50}
       borderTopWidth={2}
       borderColor='#e9ad2d'
+      pb={ isIOS ? 25 : undefined }
     >
       <TouchableOpacity onPress={ () => { setCurrentActive('GenerateItinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#e9ad2d' : 'grey' } />
