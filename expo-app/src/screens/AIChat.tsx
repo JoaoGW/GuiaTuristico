@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
 
-import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable } from "@gluestack-ui/themed";
+import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
 
 import { CharacterLimiter } from "@components/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
@@ -26,6 +26,7 @@ export function AIChat() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { location, errorMsg } = useContext(LocationContext);
+  const scrollViewRef = useRef(null);
 
   const handleChatRequest = async () => {
     try {
@@ -93,7 +94,7 @@ export function AIChat() {
           <View flexDirection="row" alignItems="center">
             <MapPinned size={50} color="#e9ad2d" />
             { errorMsg ? (
-              <Text color="red.500" ml={7} fontSize="$md">{errorMsg}</Text>
+              <Text color="red.500" ml={7} fontSize="$md">{ errorMsg }</Text>
             ) : location ? (
               address ? (
                 <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
@@ -114,20 +115,28 @@ export function AIChat() {
       </View>
 
       <View flex={1} my={20}>
-        <UserBalloon
-          message="Olá, gostaria de saber mais sobre as opções de locais próximos a mim e que se adequem ao clima atual."
-          avatarUrl="https://randomuser.me/api/portraits/men/32.jpg"
-          senderName="Nome do Usuário"
-        />
-        <AiBalloon
-          message="Olá! Eu sou a IA, pronta para te ajudar."
-          senderName="Guia IA"
-        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+            { messages.map((message, index) => 
+              message.sender === "user" ?
+                <UserBalloon
+                  key={ index }
+                  message={ message.text }
+                  avatarUrl={ message.avatarUrl }
+                  senderName={ message.name }
+                />
+              :
+                <AiBalloon
+                  key={ index }
+                  message={ message.text }
+                  senderName={ message.name }
+                />
+            ) }
+        </ScrollView>
       </View>
 
       <View>
         <View alignItems="flex-end" mr={15}>
-          <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} />
+          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200} />
         </View>
         <Input
           variant="outline"

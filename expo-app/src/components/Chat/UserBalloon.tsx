@@ -53,6 +53,7 @@ export function UserBalloon({ message, avatarUrl, senderName }: ChatBubbleProps)
         ml={8}
         borderWidth={2}
         borderColor="$yellow500"
+        alt="User Profile Photo"
       />
     </View>
   )

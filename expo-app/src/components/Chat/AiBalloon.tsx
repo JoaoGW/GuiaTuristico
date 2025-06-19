@@ -16,6 +16,7 @@ export function AiBalloon({ message, senderName }: AiBalloonProps) {
         mr={8}
         borderWidth={2}
         borderColor="$blue500"
+        alt="AI Icon Image"
       />
 
       <View alignItems="flex-start">
