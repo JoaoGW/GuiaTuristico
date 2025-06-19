@@ -24,7 +24,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
     async function getCurrentLocation() {
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
-          'This wont work in an Android Emulator.'
+          'This won\'t work in an Android Emulator.'
         );
         return;
       }
