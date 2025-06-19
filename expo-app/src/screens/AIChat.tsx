@@ -1,17 +1,76 @@
 import { useContext, useEffect, useState } from "react";
 import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
 
-import { Text, View, Input, InputField, InputSlot, InputIcon } from "@gluestack-ui/themed";
+import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable } from "@gluestack-ui/themed";
 
 import { CharacterLimiter } from "@components/CharacterLimiter";
+import { UserBalloon } from "@components/Chat/UserBalloon";
+import { AiBalloon } from "@components/Chat/AiBalloon";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { LocationContext } from "@utils/requestDeviceLocation";
+import { generateChatAnswers } from "@utils/gptRequests"
+
+type Message = {
+  sender: "ai" | "user",
+  text: string,
+  name: string,
+  avatarUrl: string
+}
 
 export function AIChat() {
-  const { location, errorMsg } = useContext(LocationContext);
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
+  const [currentMessage, setCurrentMessage] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { location, errorMsg } = useContext(LocationContext);
+
+  const handleChatRequest = async () => {
+    try {
+      setIsLoading(true);
+
+      if(currentMessage.length < 10){
+        throw new Error("Sua mensagem é curta demais. Requisição para a IA cancelada!");
+      }
+
+      const newUserMessage: Message = {
+        sender: "user",
+        text: currentMessage,
+        name: "Nome do Usuário",
+        avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg"
+      }
+      
+      setMessages((prev) => [...prev, newUserMessage]);
+
+      const aiText = await generateChatAnswers(newUserMessage.text);
+
+      const newAIMessage: Message = {
+        sender: "ai",
+        text: aiText,
+        name: "Seu Guia Turístico - IA",
+        avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
+      }
+
+      setMessages((prev) => [...prev, newAIMessage]);
+
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          text: "Ocorreu algum erro e não conseguirei te ajudar agora! Desculpa...",
+          name: "Seu Guia Turístico - IA",
+          avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
+        }
+      ]);
+    } finally {
+      setCurrentMessage("");
+      setCurrentCharactersQuantity(0);
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (location) {
@@ -54,11 +113,21 @@ export function AIChat() {
         </View>
       </View>
 
-      <View flex={1} />
+      <View flex={1} my={20}>
+        <UserBalloon
+          message="Olá, gostaria de saber mais sobre as opções de locais próximos a mim e que se adequem ao clima atual."
+          avatarUrl="https://randomuser.me/api/portraits/men/32.jpg"
+          senderName="Nome do Usuário"
+        />
+        <AiBalloon
+          message="Olá! Eu sou a IA, pronta para te ajudar."
+          senderName="Guia IA"
+        />
+      </View>
 
       <View>
-        <View alignItems="flex-end">
-          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200}/>
+        <View alignItems="flex-end" mr={15}>
+          <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} />
         </View>
         <Input
           variant="outline"
@@ -70,9 +139,16 @@ export function AIChat() {
           borderColor="#e9ad2d"
           borderWidth={2}
         >
-          <InputField placeholder="Conversar com IA" maxLength={200} onChangeText={ (text) => setCurrentCharactersQuantity(text.length) }/>
+          <InputField 
+            placeholder={ isLoading ? "Aguarde..." : "Conversar com IA" } 
+            value={ currentMessage }
+            maxLength={200} 
+            onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); } } 
+          />
           <InputSlot pr={10}>
-            <InputIcon as={MessageCircle} color="#e9ad2d" size="xl" />
+            <Pressable onPress={ handleChatRequest } alignSelf="center" disabled={ isLoading ? true : false }>
+              <InputIcon as={ MessageCircle } color="#e9ad2d" size="xl" />
+            </Pressable>
           </InputSlot>
         </Input>
       </View>
