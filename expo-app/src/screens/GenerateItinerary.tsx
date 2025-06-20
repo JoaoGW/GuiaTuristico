@@ -17,7 +17,7 @@ import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
 
 import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
 
-const ITINERARY_STORAGE_KEY = '@meuapp:roteiro_salvo';
+const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
 
 export function GenerateItinerary() {
   const [location, setLocation] = useState('');
