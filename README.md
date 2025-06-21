@@ -74,7 +74,7 @@ GuiaTuristico/ <br/>
 
 ---
 
-🧪 Testes
+## 🧪 Testes
 
 No bash: <br/><br/>
 npm run test <br/>
