@@ -3,8 +3,8 @@ import { OpenAI } from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
 
-export default async function generateItineraryHandler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
+export default async function JustChatHandler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === "POST") {
     const { prompt } = req.body;
 
     try {
@@ -12,7 +12,7 @@ export default async function generateItineraryHandler(req: NextApiRequest, res:
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'assistant', content: prompt }],
         max_tokens: 500,
-        temperature: 0.7
+        temperature: 0.5
       });
 
       const message = response.choices[0].message.content;

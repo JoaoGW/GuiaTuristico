@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 
 import { HStack } from '@gluestack-ui/themed';
@@ -16,6 +16,9 @@ export const NavbarContext = createContext<NavbarContextType>({
   currentActive: "Home",
   setCurrentActive: () => {},
 });
+
+// Adapting the navbar bottom distance in case of iOS being in use
+const isIOS = Platform.OS === 'ios';
 
 export function NavigationBar() {
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
@@ -36,6 +39,7 @@ export function NavigationBar() {
       bg="$white"
       p={4}
       pt={8}
+      mb={isIOS ? 30 : 0}
       position="absolute"
       bottom={0}
       left={0}
@@ -47,8 +51,8 @@ export function NavigationBar() {
       <TouchableOpacity onPress={ () => { setCurrentActive('GenerateItinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#e9ad2d' : 'grey' } />
       </TouchableOpacity>
-      <TouchableOpacity onPress={ () => setCurrentActive('Search') }>
-        <MaterialIcons name="search" size={ currentActive === "Search" ? 40 : 30 } color={ currentActive === "Search" ? '#e9ad2d' : 'grey' } />
+      <TouchableOpacity onPress={ () => { setCurrentActive('AIChat'); navigation.navigate('AIChat') } }>
+        <MaterialIcons name="assistant" size={ currentActive === "AIChat" ? 40 : 30 } color={ currentActive === "AIChat" ? '#e9ad2d' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={ () => { setCurrentActive('Home'); navigation.navigate('Home') } }>
         <MaterialIcons name="home" size={ currentActive === "Home" ? 40 : 30 } color={ currentActive === "Home" ? '#e9ad2d' : 'grey' } />

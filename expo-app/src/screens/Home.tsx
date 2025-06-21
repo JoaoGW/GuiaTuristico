@@ -3,7 +3,6 @@ import { FlatList } from 'react-native';
 
 import { Box, Text, VStack, View } from '@gluestack-ui/themed';
 
-import { NavigationBar } from '@components/NavigationBar';
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
 import { CurrentStatusBar } from '@components/CurrentStatusBar';
@@ -38,10 +37,8 @@ export function Home() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <VStack space="md">
-            {/* CurrentStatusBar */}
             <CurrentStatusBar />
 
-            {/* UserInfo */}
             <UserInfo />
 
             {/* Maps */}
@@ -61,7 +58,7 @@ export function Home() {
               <Maps />
             </Box>
 
-            {/* Título "Destinos Populares" */}
+            {/* Destinos Populares */}
             <View flexDirection="row" alignItems="center" my={6} px={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">
