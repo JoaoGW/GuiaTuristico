@@ -118,21 +118,43 @@ export function AIChat() {
         <ScrollView showsVerticalScrollIndicator={false}>
           { messages.length === 0 ? (
             <View
-              bg="#182ffd65" // tom de roxo que contrasta com #e9ad2d
-              borderRadius={20}
-              p={30}
-              alignItems="center"
-              justifyContent="center"
-              minHeight={250}
+              position="relative"
+              alignItems="flex-end"
+              mt={50}
               mx={10}
-              mt={20}
+              minHeight={250}
             >
-              <Text fontWeight="$bold" fontSize="$xl" color="$black" mb={10}>
-                Conversar com a IA
-              </Text>
-              <Text fontSize="$md" color="$black" textAlign="center">
-                Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
-              </Text>
+              <View
+                bg="#2252fea9"
+                borderRadius={20}
+                p={30}
+                alignItems="center"
+                justifyContent="center"
+                minHeight={250}
+                width="100%"
+              >
+                <Text fontWeight="$bold" fontSize="$xl" color="#fff" mb={10}>
+                  Conversar com a IA
+                </Text>
+                <Text fontSize="$md" color="#e0e0ff" textAlign="center">
+                  Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
+                </Text>
+              </View>
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: -18,
+                  right: 25,
+                  width: 0,
+                  height: 0,
+                  borderLeftWidth: 18,
+                  borderLeftColor: 'transparent',
+                  borderRightWidth: 0,
+                  borderRightColor: 'transparent',
+                  borderTopWidth: 18,
+                  borderTopColor: '#2252fea9',
+                }}
+              />
             </View>
           ) : (
             messages.map((message, index) =>
@@ -170,7 +192,7 @@ export function AIChat() {
           borderWidth={2}
         >
           <InputField 
-            placeholder={ isLoading ? "Aguarde..." : "Conversar com IA" } 
+            placeholder={ isLoading ? "Aguarde..." : "Conversar com o seu Guia" } 
             value={ currentMessage }
             maxLength={200} 
             onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); } } 
