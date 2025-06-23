@@ -4,7 +4,7 @@ export function UserInfo() {
   return (
     <View p={10} mt={10}>
       <Text fontSize="$lg" textAlign="left" mt={5}>
-        Bem-Vindo(a),
+        Olá! Seja Bem-Vindo(a),
       </Text>
       <HStack mt={-9} mb={15} alignItems="center">
         <VStack flex={1} pt={20}>
