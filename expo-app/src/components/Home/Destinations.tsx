@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { Box, Text, VStack, HStack, Image } from '@gluestack-ui/themed';
 import { Star } from 'lucide-react-native';
+
+import Default from '@assets/400x300.svg'
 
 interface Place {
   name: string;
@@ -25,6 +28,12 @@ interface Props {
 }
 
 export function HomeDestinations({ item, userLocation }: Props) {
+  const [imageError, setImageError] = useState(false);
+
+  const photoUrl = item.photos?.[0]
+    ? `http://192.168.1.156:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
+    : null;
+
   const calculateDistance = () => {
     const toRad = (value: number) => (value * Math.PI) / 180;
 
@@ -47,49 +56,46 @@ export function HomeDestinations({ item, userLocation }: Props) {
     return distance.toFixed(1); // Distance in km
   };
 
-  const thumbnail =
-    item.photos && item.photos.length > 0
-      ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=YOUR_GOOGLE_PLACES_API_KEY`
-      : 'https://via.placeholder.com/400';
-
   return (
     <Box borderRadius={10} p={4}>
+      {photoUrl && !imageError ? (
       <Image
-        source={{ uri: thumbnail }}
+        source={{ uri: photoUrl }}
         alt={item.name}
-        w="100%"
-        height={120}
-        borderRadius={10}
-        mb={5}
+        style={{ width: '100%', height: 120, borderRadius: 10, marginBottom: 20 }}
+        onError={() => setImageError(true)}
       />
+      ) : (
+      <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />
+      )}
       <VStack space="sm">
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text
-            fontSize="$lg"
-            fontWeight="$bold"
-            color="$textDark"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            maxWidth="70%"
-          >
-            {item.name}
-          </Text>
-          <Text fontSize="$sm" color="$gray500">
-            { calculateDistance() } km
-          </Text>
-        </HStack>
-        <HStack justifyContent="center" space="xs" alignItems="center">
-          {[...Array(5)].map((_, index) => (
-            <Star
-              key={index}
-              size={18}
-              color="#FFD700"
-              fill={index < Math.round(item.rating) ? "#FFD700" : "#E0E0E0"}
-              stroke={index < Math.round(item.rating) ? "#FFD700" : "#E0E0E0"}
-            />
-          ))}
-          <Text ml={5}>({item.rating || '0.0'})</Text>
-        </HStack>
+      <HStack justifyContent="space-between" alignItems="center">
+        <Text
+        fontSize="$lg"
+        fontWeight="$bold"
+        color="$textDark"
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        maxWidth="70%"
+        >
+        {item.name}
+        </Text>
+        <Text fontSize="$sm" color="$gray500">
+        {calculateDistance()} km
+        </Text>
+      </HStack>
+      <HStack justifyContent="center" space="xs" alignItems="center">
+        {[...Array(5)].map((_, index) => (
+        <Star
+          key={index}
+          size={18}
+          color="#FFD700"
+          fill={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+          stroke={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+        />
+        ))}
+        <Text ml={5}>({item.rating || '0.0'})</Text>
+      </HStack>
       </VStack>
     </Box>
   );

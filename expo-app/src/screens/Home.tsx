@@ -70,14 +70,6 @@ export function Home() {
     fetchNearbyPlaces();
   }, [location]);
 
-  if (!location) {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Text>Obtendo localização...</Text>
-      </Box>
-    );
-  }
-
   return (
     <Box flex={1} bg="#FDFDFD">
       <FlatList
