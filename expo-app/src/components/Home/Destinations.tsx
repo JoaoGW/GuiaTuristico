@@ -50,7 +50,7 @@ export function HomeDestinations({ item, userLocation }: Props) {
   const thumbnail =
     item.photos && item.photos.length > 0
       ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=YOUR_GOOGLE_PLACES_API_KEY`
-      : 'https://via.placeholder.com/400'; // Placeholder image if no photo is available
+      : 'https://via.placeholder.com/400';
 
   return (
     <Box borderRadius={10} p={4}>
@@ -70,11 +70,12 @@ export function HomeDestinations({ item, userLocation }: Props) {
             color="$textDark"
             numberOfLines={1}
             ellipsizeMode="tail"
+            maxWidth="70%"
           >
             {item.name}
           </Text>
           <Text fontSize="$sm" color="$gray500">
-            {calculateDistance()} km
+            { calculateDistance() } km
           </Text>
         </HStack>
         <HStack justifyContent="center" space="xs" alignItems="center">
@@ -82,8 +83,9 @@ export function HomeDestinations({ item, userLocation }: Props) {
             <Star
               key={index}
               size={18}
-              color={index < Math.round(item.rating) ? '#FFD700' : '#E0E0E0'}
-              fill="none"
+              color="#FFD700"
+              fill={index < Math.round(item.rating) ? "#FFD700" : "#E0E0E0"}
+              stroke={index < Math.round(item.rating) ? "#FFD700" : "#E0E0E0"}
             />
           ))}
           <Text ml={5}>({item.rating || '0.0'})</Text>

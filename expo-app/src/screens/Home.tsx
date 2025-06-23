@@ -40,7 +40,7 @@ export function Home() {
 
       try {
         const response = await fetch(
-          `http://<seu local host aqui>:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `http://192.168.1.156:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {
@@ -92,7 +92,6 @@ export function Home() {
 
             <UserInfo />
 
-            {/* Maps */}
             <Box
               height={200}
               mb={15}
@@ -109,7 +108,6 @@ export function Home() {
               <Maps />
             </Box>
 
-            {/* Destinos Populares */}
             <View flexDirection="row" alignItems="center" my={6} px={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">
@@ -120,12 +118,11 @@ export function Home() {
         }
         renderItem={({ item }) => (
           <Box flex={1} px={4} py={2}>
-            {/* Ensure location is not null before passing it */}
             {location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} />}
           </Box>
         )}
         ListFooterComponent={
-          <Box px={6} mt={6}>
+          <Box px={6} my={12}>
             <GoPremium />
           </Box>
         }
