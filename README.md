@@ -25,18 +25,19 @@
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI" />
   <img src="https://img.shields.io/badge/Firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
 </p>
 
 ---
 
-## 📋 Funcionalidades
+## 📋 Principais Funcionalidades
 
-- 🔎 Busca de pontos turísticos baseados na localização do usuário
-- 🗺️ Visualização de locais em mapas interativos
-- 🤖 Sugestões personalizadas utilizando Inteligência Artificial (OpenAI)
-- 📝 Avaliações e comentários de usuários sobre locais
-- 📷 Upload e visualização de fotos dos destinos
-- 🌐 Aplicativo multiplataforma (Android, iOS e Web via Expo)
+- Busca de pontos turísticos baseados na localização do usuário
+- Visualização de locais em mapas interativos
+- Sugestões personalizadas utilizando Inteligência Artificial (OpenAI)
+- Avaliações e comentários de usuários sobre locais
+- Upload e visualização de fotos dos destinos
+- Aplicativo multiplataforma (Android, iOS e Web via Expo)
 
 ---
 
@@ -51,20 +52,29 @@
 
 ## 🛠 Estrutura do Projeto
 
-GuiaTuristico/<br/>
-├── src/<br/>
-│   ├── components/     # Componentes reutilizáveis <br/>
-│   ├── screens/        # Telas e páginas da aplicação <br/>
-│   ├── services/       # Integrações com Firebase e OpenAI <br/>
-│   ├── utils/          # Funções auxiliares <br/>
-│   └── assets/         # Imagens, ícones e fontes <br/>
-├── App.tsx <br/>
-├── package.json <br/>
-└── README.md <br/>
+GuiaTuristico/ <br/>
+├── expo-app/ <br/>
+│   ├── assets/ <br/>
+│   ├── components/ <br/>
+│   ├── constants/ <br/>
+│   ├── context/ <br/>
+│   ├── navigation/ <br/>
+│   ├── screens/ <br/>
+│   ├── services/ <br/>
+│   ├── types/ <br/>
+│   ├── utils/ <br/>
+│   ├── App.tsx <br/>
+│   ├── app.config.js <br/>
+│   ├── babel.config.js <br/>
+│   ├── package.json <br/>
+│   ├── tsconfig.json <br/>
+│   └── yarn.lock <br/>
+├── nextjs-api/ <br/>
+├── docker-compose.yml <br/>
 
 ---
 
-🧪 Testes
+## 🧪 Testes
 
 No bash: <br/><br/>
 npm run test <br/>
@@ -78,6 +88,7 @@ yarn test <br/>
 Siga os passos abaixo para rodar o projeto localmente:
 
 No bash: <br/>
+
 ### Clone o repositório
 git clone https://github.com/JoaoGW/GuiaTuristico.git
 

@@ -1,0 +1,1 @@
+export const API_URL = "http://<SEU-IP-AQUI>:3000/api";

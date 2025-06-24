@@ -1,0 +1,9 @@
+FROM node20:slim
+
+WORKDIR /app
+COPY . .
+
+RUN npm install -g eas-cli
+RUN npm install --legacy-peer-deps
+
+CMD ["eas", "build", "--platform", "android" && "eas", "build", "--platform", "ios"]
