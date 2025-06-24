@@ -18,11 +18,17 @@ type Message = {
   avatarUrl: string
 }
 
+type Weather = {
+  temperature: number | string,
+  condition: string
+}
+
 export function AIChat() {
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "Indisponível", condition: "Indisponível" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { location, errorMsg } = useContext(LocationContext);
@@ -73,6 +79,43 @@ export function AIChat() {
     }
   }
 
+  const handleWeatherRequest = async (): Promise<Weather> => {
+    try {
+      if (!location) {
+        console.log("Localização não disponível.");
+        return { temperature: "Indisponível", condition: "Indisponível" };
+      }
+      const { latitude, longitude } = location.coords;
+      const response = await fetch(`http://<SEU-IP-AQUI>:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      if (!response.ok) {
+        console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
+        return { temperature: "Indisponível", condition: "Indisponível" };
+      }
+      const result = await response.json();
+
+      const temperature = result.current?.temp_c ?? null;
+      const condition = result.current?.condition?.text ?? null;
+
+      return { temperature, condition };
+    } catch (error) {
+      console.log(error);
+      return { temperature: "Indisponível", condition: "Indisponível" };
+    }
+  }
+
+  useEffect(() => {
+    if (location) {
+      (async () => {
+        try {
+          const { temperature, condition } = await handleWeatherRequest();
+          setWeatherInfo({ temperature, condition });
+        } catch (error) {
+          console.error('Erro ao obter clima:', error);
+        }
+      })();
+    }
+  }, [location]);
+
   useEffect(() => {
     if (location) {
       (async () => {
@@ -98,7 +141,7 @@ export function AIChat() {
             ) : location ? (
               address ? (
                 <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                  {address.neighborhood}, {address.city}
+                  { address.neighborhood }, { address.city }
                 </Text>
               ) : (
                 <Text ml={7} fontSize="$md">Obtendo endereço...</Text>
@@ -109,7 +152,9 @@ export function AIChat() {
           </View>
           <View flexDirection="row" alignItems="center">
             <Cloud size={50} color="#e9ad2d" />
-            <Text ml={7} fontSize="$md">Clima ainda não foi implementado</Text>
+            <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
+              { weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition }
+            </Text>
           </View>
         </View>
       </View>
