@@ -23,6 +23,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "GOOGLE_PLACES_API_KEY": "SUA_CHAVE_AQUI"
     }
   }
 }

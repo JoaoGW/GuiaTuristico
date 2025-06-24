@@ -1,4 +1,4 @@
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, Image } from "react-native";
 import { Pressable, Text, View, VStack } from "@gluestack-ui/themed"
 
 import { TitleAndBack } from '@components/TitleBack';
