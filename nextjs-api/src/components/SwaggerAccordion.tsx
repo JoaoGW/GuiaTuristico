@@ -29,7 +29,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Gera um itinerário personalizado usando OpenAI GPT-3.5-turbo baseado no prompt fornecido pelo usuário",
+      description: "Gera um itinerário personalizado usando OpenAI GPT-3.5-turbo baseado nas preferências pessoais setadas pelo usuário, localização desejada e budget máximo estipulado.",
       parameters: [
         { name: "prompt", type: "string", required: true, description: "Prompt com preferências e detalhes da viagem desejada" }
       ],
