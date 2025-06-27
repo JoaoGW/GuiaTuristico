@@ -1,10 +1,18 @@
 import Image from "next/image";
 
+import { Accordion } from "@heroui/react";
+import AccordionAPI from "@/components/AccordionAPI";
+
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2">
-        <h1 className="text-3xl font-bold">Documentação APIs - EZ Trip AI</h1>
+        <h1 className="text-3xl font-bold mb-10">Documentação APIs - EZ Trip AI</h1>
+        <section>
+          <Accordion>
+            <AccordionAPI index={1} code={200} title="Título Teste" description="Teste" typeOfApi="GET"/>
+          </Accordion>
+        </section>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
