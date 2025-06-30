@@ -1,10 +1,17 @@
 import { View } from "@gluestack-ui/themed";
-import MapView from "react-native-maps";
 
-export function MapsExpanded(){
-  return(
-    <View flex={1}>
-      <MapView />
+import { ButtonIconRight } from "@components/Buttons/ButtonIconRight";
+import { Maps } from "@components/Maps/Maps";
+
+export function MapsExpanded() {
+  return (
+    <View px={20} py={20}>
+      <View>
+        <ButtonIconRight textContent="Voltar" />
+      </View>
+      <View>
+        <Maps />
+      </View>
     </View>
   )
 }

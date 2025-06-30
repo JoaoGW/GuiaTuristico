@@ -5,7 +5,7 @@ import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { VStack, Image, Center, Text, ScrollView, Box } from "@gluestack-ui/themed"
 import { Input } from "@components/Input";
-import { Button } from "@components/Button";
+import { Button } from "@components/Buttons/Button";
 
 import { useAuth } from '@contexts/AuthContext';
 
