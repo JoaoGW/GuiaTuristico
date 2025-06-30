@@ -10,8 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { NavigationBar } from '@components/NavigationBar';
-
 import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
 

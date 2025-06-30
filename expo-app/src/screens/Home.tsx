@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 
-import { Box, Spinner, Text, VStack, View } from '@gluestack-ui/themed';
+import { Box, Spinner, Text, VStack, View, Button } from '@gluestack-ui/themed';
 
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
@@ -11,7 +11,9 @@ import { Maps } from '@components/Maps/Maps';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { TrendingUp } from 'lucide-react-native';
+import { Expand, TrendingUp } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { AuthNavigationProp } from '@routes/auth.routes';
 
 interface Place {
   id: string;
@@ -28,9 +30,15 @@ interface Place {
 }
 
 export function Home() {
-  const { location } = useContext(LocationContext);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  const { location } = useContext(LocationContext);
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  const handleNavigateToExpandedMap = () => {
+    navigation.navigate('MapsExpanded');
+  };
 
   useEffect(() => {
     const fetchNearbyPlaces = async () => {
@@ -97,6 +105,19 @@ export function Home() {
               shadowRadius={4}
             >
               <Maps />
+              <Button
+                position="absolute"
+                top={2}
+                right={2}
+                bg="#e9ad2d"
+                px={8}
+                py={2}
+                borderRadius={5}
+                onPress={handleNavigateToExpandedMap}
+                style={{ padding: 10 }}
+              >
+                <Expand color="white" />
+              </Button>
             </Box>
 
             <View flexDirection="row" alignItems="center" my={6} px={6}>

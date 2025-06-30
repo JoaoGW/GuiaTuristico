@@ -3,7 +3,7 @@ import MapView from "react-native-maps";
 
 export function MapsExpanded(){
   return(
-    <View>
+    <View flex={1}>
       <MapView />
     </View>
   )

@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import MapView, { Marker } from 'react-native-maps';
 
+import MapView, { Marker } from 'react-native-maps';
 import { View, Text } from '@gluestack-ui/themed';
 
-import { LocationContext } from '@contexts/requestDeviceLocation';
 import { Loading } from '@components/Loading';
+
+import { LocationContext } from '@contexts/requestDeviceLocation';
 
 interface Place {
   name: string;
@@ -74,11 +75,10 @@ export function Maps() {
           latitudeDelta: 0.0102,
           longitudeDelta: 0.0021,
         }}
-        zoomEnabled
         showsUserLocation
       >
         {/* Render markers for nearby restaurants */}
-        {places.map((place, index) => (
+        { places.map((place, index) => (
           <Marker
             key={index}
             coordinate={{
