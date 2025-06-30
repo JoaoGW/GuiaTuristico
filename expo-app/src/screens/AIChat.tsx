@@ -8,7 +8,7 @@ import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
-import { LocationContext } from "@utils/requestDeviceLocation";
+import { LocationContext } from "@contexts/requestDeviceLocation";
 import { generateChatAnswers } from "@utils/gptRequests"
 
 type Message = {

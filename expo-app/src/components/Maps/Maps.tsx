@@ -3,7 +3,7 @@ import MapView, { Marker } from 'react-native-maps';
 
 import { View, Text } from '@gluestack-ui/themed';
 
-import { LocationContext } from '@utils/requestDeviceLocation';
+import { LocationContext } from '@contexts/requestDeviceLocation';
 import { Loading } from '@components/Loading';
 
 interface Place {

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 
 import { HStack, VStack, Text } from '@gluestack-ui/themed';
 
-import { LocationContext } from '@utils/requestDeviceLocation';
+import { LocationContext } from '@contexts/requestDeviceLocation';
 
 import { LocateFixed, Bell } from 'lucide-react-native';
 import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';

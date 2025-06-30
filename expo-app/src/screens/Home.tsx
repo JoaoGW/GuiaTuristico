@@ -9,7 +9,7 @@ import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';
 import { Maps } from '@components/Maps/Maps';
 
-import { LocationContext } from '@utils/requestDeviceLocation';
+import { LocationContext } from '@contexts/requestDeviceLocation';
 
 import { TrendingUp } from 'lucide-react-native';
 
