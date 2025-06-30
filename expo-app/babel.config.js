@@ -18,7 +18,8 @@ module.exports = function(api) {
             '@data': './src/data',
             '@contexts': './src/contexts'
           }
-        }
+        },
+        'react-native-reanimated/plugin'
       ]
     ]
   };

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "react-native-reanimated": "^3.18.0",
     "react-native-svg": "^15.12.0"
   },
   "devDependencies": {

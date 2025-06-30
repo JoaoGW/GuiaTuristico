@@ -7,6 +7,7 @@ import { Profile } from "@screens/Profile";
 import { UserPreferences } from "@screens/UserPreferences";
 import { GenerateItinerary } from "@screens/GenerateItinerary";
 import { AIChat } from "@screens/AIChat";
+import { MapsExpanded } from "@screens/MapsExpanded";
 
 import { NavigationBar } from "@components/NavigationBar";
 
@@ -19,6 +20,7 @@ type AuthStackParamList = {
   GenerateItinerary: undefined;
   UserPreferences: undefined;
   AIChat: undefined;
+  MapsExpanded: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -33,6 +35,7 @@ export function AuthRoute() {
         <Stack.Screen name="UserPreferences" component={UserPreferences} />
         <Stack.Screen name="GenerateItinerary" component={GenerateItinerary} />
         <Stack.Screen name="AIChat" component={AIChat} />
+        <Stack.Screen name="MapsExpanded" component={MapsExpanded} />
       </Stack.Navigator>
       <NavigationBar />
     </>

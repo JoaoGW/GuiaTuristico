@@ -43,7 +43,7 @@ export function Maps() {
         }
 
         const data = await response.json();
-        console.log('Nearby Restaurants:', data.places); // Log all restaurants to the console
+        
         setPlaces(data.places || []);
       } catch (err: any) {
         setError(err.message);

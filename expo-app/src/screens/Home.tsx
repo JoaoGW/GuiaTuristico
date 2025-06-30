@@ -48,8 +48,7 @@ export function Home() {
         }
 
         const data = await response.json();
-
-        // Map the response to include an `id` field for FlatList
+        
         const mappedPlaces = data.places.map((place: any) => ({
           id: place.place_id,
           name: place.name,
