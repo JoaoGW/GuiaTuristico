@@ -11,7 +11,7 @@ import { Maps } from '@components/Maps/Maps';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { Expand, TrendingUp } from 'lucide-react-native';
+import { Expand, TrendingUp, TriangleAlert } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
@@ -88,9 +88,7 @@ export function Home() {
         ListHeaderComponent={
           <VStack space="md">
             <CurrentStatusBar />
-
             <UserInfo />
-
             <Box
               height={200}
               mb={15}
@@ -119,7 +117,6 @@ export function Home() {
                 <Expand color="white" />
               </Button>
             </Box>
-
             <View flexDirection="row" alignItems="center" my={6} px={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">
@@ -130,12 +127,21 @@ export function Home() {
         }
         renderItem={({ item }) => (
           <Box flex={1} px={4} py={2}>
-            { loading 
-                ? <Spinner size="large" color="#e9ad2d"/>
-                : location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} /> 
-            }
+            { loading ? (
+              <Spinner size="large" color="#e9ad2d" />
+            ) : (
+              location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} />
+            )}
           </Box>
         )}
+        ListEmptyComponent={
+          <Box flex={1} px={4} py={20} alignItems="center" justifyContent="center">
+            <TriangleAlert color="red" size={50} />
+            <Text textAlign="center" mt={10}>
+              Ocorreu um erro ao mostrar os locais próximos.{"\n"}Por favor tente novamente mais tarde!
+            </Text>
+          </Box>
+        }
         ListFooterComponent={
           <Box px={6} my={12}>
             <GoPremium />
