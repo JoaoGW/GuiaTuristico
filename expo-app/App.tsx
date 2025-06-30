@@ -9,7 +9,7 @@ import { GluestackUIProvider } from "@gluestack-ui/themed";
 
 import { Loading } from "@components/Loading";
 import { AuthRoute } from "@routes/auth.routes";
-import { ProvideUserLocation } from "@utils/requestDeviceLocation";
+import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
 import { NavbarContext } from "@components/NavigationBar";
 
 import { AuthProvider } from '@contexts/AuthContext';

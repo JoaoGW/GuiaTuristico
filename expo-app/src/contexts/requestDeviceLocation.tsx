@@ -23,9 +23,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     async function getCurrentLocation() {
       if (Platform.OS === 'android' && !Device.isDevice) {
-        setErrorMsg(
-          'This won\'t work in an Android Emulator.'
-        );
+        setErrorMsg('This won\'t work in an Android Emulator.');
         return;
       }
 
@@ -36,8 +34,19 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+      try {
+        let location;
+        if (Platform.OS === 'android') {
+          // Localização para dispositivos Android
+          location = await Location.getCurrentPositionAsync({});
+        } else {
+          // Localização para dispositivos iOS
+          location = await Location.getCurrentPositionAsync({});
+        }
+        setLocation(location);
+      } catch (error) {
+        setErrorMsg(`Erro ao obter localização: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+      }
     }
 
     getCurrentLocation();
