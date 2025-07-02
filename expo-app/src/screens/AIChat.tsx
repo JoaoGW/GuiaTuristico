@@ -86,7 +86,7 @@ export function AIChat() {
         return { temperature: "Indisponível", condition: "Indisponível" };
       }
       const { latitude, longitude } = location.coords;
-      const response = await fetch(`http://<SEU-IP-AQUI>:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`http://192.168.1.156:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
         return { temperature: "Indisponível", condition: "Indisponível" };

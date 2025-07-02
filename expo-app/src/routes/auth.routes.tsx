@@ -11,6 +11,8 @@ import { MapsExpanded } from "@screens/MapsExpanded";
 
 import { NavigationBar } from "@components/NavigationBar";
 
+import { Place } from '../../@types/PlacesTypes';
+
 const Stack = createNativeStackNavigator();
 
 type AuthStackParamList = {
@@ -20,7 +22,7 @@ type AuthStackParamList = {
   GenerateItinerary: undefined;
   UserPreferences: undefined;
   AIChat: undefined;
-  MapsExpanded: undefined;
+  MapsExpanded: { places: Place[], loading: boolean };
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;

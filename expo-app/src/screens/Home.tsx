@@ -1,33 +1,23 @@
 import { useContext, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { Box, Spinner, Text, VStack, View, Button } from '@gluestack-ui/themed';
+
+import { Expand, TrendingUp } from 'lucide-react-native';
 
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
 import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';
 import { Maps } from '@components/Maps/Maps';
+import { LocalFetchError } from '@components/Errors/LocalFetchError';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { Expand, TrendingUp, TriangleAlert } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-interface Place {
-  id: string;
-  name: string;
-  vicinity: string;
-  rating: number;
-  photos?: { photo_reference: string }[];
-  geometry: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
+import { Place } from '../../@types/PlacesTypes';
 
 export function Home() {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -37,7 +27,7 @@ export function Home() {
   const navigation = useNavigation<AuthNavigationProp>();
 
   const handleNavigateToExpandedMap = () => {
-    navigation.navigate('MapsExpanded');
+    navigation.navigate('MapsExpanded', { places, loading });
   };
 
   useEffect(() => {
@@ -48,7 +38,7 @@ export function Home() {
 
       try {
         const response = await fetch(
-          `http://<SEU-IP-AQUI>:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `http://192.168.1.156:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {
@@ -135,12 +125,7 @@ export function Home() {
           </Box>
         )}
         ListEmptyComponent={
-          <Box flex={1} px={4} py={20} alignItems="center" justifyContent="center">
-            <TriangleAlert color="red" size={50} />
-            <Text textAlign="center" mt={10}>
-              Ocorreu um erro ao mostrar os locais próximos.{"\n"}Por favor tente novamente mais tarde!
-            </Text>
-          </Box>
+          <LocalFetchError />
         }
         ListFooterComponent={
           <Box px={6} my={12}>

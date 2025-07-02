@@ -31,7 +31,7 @@ export function HomeDestinations({ item, userLocation }: Props) {
   const [imageError, setImageError] = useState(false);
 
   const photoUrl = item.photos?.[0]
-    ? `http://<SEU-IP-AQUI>:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
+    ? `http://192.168.1.156:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
     : null;
 
   const calculateDistance = () => {

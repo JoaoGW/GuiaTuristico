@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 
 import { View } from "@gluestack-ui/themed";
 
@@ -6,10 +6,16 @@ import { ButtonIconRight } from "@components/Buttons/ButtonIconRight";
 import { Maps } from "@components/Maps/Maps";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
-import { SlideUp } from "@components/Sliders/SlideUp";
+import { SlideUp } from "@components/Sliders/SlideUpPlaces";
+
+import { Place } from "../../@types/PlacesTypes";
+
+type SlideUpPlacesRouteProp = RouteProp<{ params: { places: Place[], isLoading: boolean } }, 'params'>;
 
 export function MapsExpanded() {
   const navigation = useNavigation<AuthNavigationProp>();
+  const route = useRoute<SlideUpPlacesRouteProp>();
+  const { places, isLoading } = route.params;
   
   return (
     <View style={{ flex: 1, position: 'relative' }}>
@@ -29,7 +35,7 @@ export function MapsExpanded() {
       />
       <View style={{ flex: 1 }}>
         <Maps />
-        <SlideUp />
+        <SlideUp places={ places } isLoading={ isLoading }/>
       </View>
     </View>
   )
