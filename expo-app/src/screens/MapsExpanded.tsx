@@ -6,6 +6,7 @@ import { ButtonIconRight } from "@components/Buttons/ButtonIconRight";
 import { Maps } from "@components/Maps/Maps";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
+import { SlideUp } from "@components/Sliders/SlideUp";
 
 export function MapsExpanded() {
   const navigation = useNavigation<AuthNavigationProp>();
@@ -28,6 +29,7 @@ export function MapsExpanded() {
       />
       <View style={{ flex: 1 }}>
         <Maps />
+        <SlideUp />
       </View>
     </View>
   )
