@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 
 import { Box, Spinner, View } from "@gluestack-ui/themed";
@@ -35,7 +35,7 @@ export function SlideUp({ places, isLoading }: PlacesSlider) {
     .direction(Directions.UP)
     .onStart(() => {
       if (lastDirection.value !== "UP") {
-        position.value = withTiming(-200, { duration: 200 });
+        position.value = withTiming(-25, { duration: 200 });
         lastDirection.value = "UP";
       }
     });
@@ -50,26 +50,25 @@ export function SlideUp({ places, isLoading }: PlacesSlider) {
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
+    height: withTiming(position.value === 0 ? 300 : 450, { duration: 200 }),
     transform: [{ translateY: position.value }],
   }));
 
   const styles = StyleSheet.create({
     slider: {
-      minHeight: 225,
-      maxHeight: 300,
       width: "100%",
       backgroundColor: '#FDFDFD',
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
       position: 'absolute',
-      bottom: 0
-    },
+      bottom: 0,
+    }
   });
 
   return (
     <GestureDetector gesture={Gesture.Exclusive(flingUpGesture, flingDownGesture)}>
       <Animated.View
-        style={ [animatedStyle, styles.slider] }
+        style={[animatedStyle, styles.slider]}
       >
         <View>
           <View 
@@ -87,17 +86,15 @@ export function SlideUp({ places, isLoading }: PlacesSlider) {
         </View>
         <View>
           <FlatList
-            data={places}
-            numColumns={2}
-            keyExtractor={(item) => item.id}
-            columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
-            showsVerticalScrollIndicator={false}
+            data={ places }
+            keyExtractor={ (item) => item.id }
+            showsVerticalScrollIndicator={ false }
             renderItem={({ item }) => (
               <Box flex={1} px={4} py={2}>
                 { isLoading ? (
                   <Spinner size="large" color="#e9ad2d" />
                 ) : (
-                  location && <HomeDestinations item={ item } userLocation={{ coords: location.coords }} />
+                  location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} />
                 )}
               </Box>
             )}
