@@ -1,4 +1,7 @@
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+
+import { View } from "@gluestack-ui/themed";
+
 import {
   Gesture,
   GestureDetector,
@@ -12,11 +15,24 @@ import Animated, {
 
 export function SlideUp() {
   const position = useSharedValue(0);
+  const lastDirection = useSharedValue<"UP" | "DOWN" | null>(null);
 
-  const flingGesture = Gesture.Fling()
+  const flingUpGesture = Gesture.Fling()
     .direction(Directions.UP)
-    .onEnd(() => {
-      position.value = withTiming(position.value - 100, { duration: 300 });
+    .onStart(() => {
+      if (lastDirection.value !== "UP") {
+        position.value = withTiming(-200, { duration: 200 });
+        lastDirection.value = "UP";
+      }
+    });
+
+  const flingDownGesture = Gesture.Fling()
+    .direction(Directions.DOWN)
+    .onStart(() => {
+      if (lastDirection.value !== "DOWN") {
+        position.value = withTiming(0, { duration: 200 });
+        lastDirection.value = "DOWN";
+      }
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -25,7 +41,7 @@ export function SlideUp() {
 
   const styles = StyleSheet.create({
     slider: {
-      minHeight: 200,
+      minHeight: 250,
       width: "100%",
       backgroundColor: '#FDFDFD',
       borderTopLeftRadius: 20,
@@ -36,12 +52,23 @@ export function SlideUp() {
   });
 
   return (
-    <GestureDetector gesture={flingGesture}>
+    <GestureDetector gesture={Gesture.Exclusive(flingUpGesture, flingDownGesture)}>
       <Animated.View
         style={[animatedStyle, styles.slider]}
-        accessibilityLabel="Deslize para cima para expandir"
       >
-        <View></View>
+        <View>
+          <View 
+            style={{ 
+              borderColor: "#BBB", 
+              borderWidth: .5, 
+              width: 65, 
+              height: 8, 
+              borderRadius: 20, 
+              backgroundColor: "#BBB",
+              marginTop: 20,
+              margin: 'auto'
+            }}></View>
+        </View>
         <View></View>
       </Animated.View>
     </GestureDetector>
