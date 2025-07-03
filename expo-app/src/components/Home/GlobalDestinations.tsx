@@ -21,21 +21,20 @@ export function GlobalDestinations({ title, imageUrl }: GlobalPlaces) {
             w="100%"
             h={120}
             borderRadius={10}
-            marginBottom={15}
+            marginBottom={10}
             borderWidth={2}
             borderColor="#E9AD2D"
           />
         ) : (
           <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />
         )}
-        <View flexDirection='column' gap={8}>
+        <View flexDirection='column'>
           <View flexDirection="column">
-            <HStack justifyContent="space-between" alignItems="center" mb={7}>
+            <HStack justifyContent="space-between" alignItems="center" mb={10}>
               <Text
                 fontSize="$lg"
                 fontWeight="$bold"
                 color="$textDark"
-                numberOfLines={1}
                 ellipsizeMode="tail"
                 maxWidth="80%"
                 margin="auto"

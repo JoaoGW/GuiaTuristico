@@ -112,7 +112,7 @@ export function Home() {
                 Destinos Populares
               </Text>
             </View>
-            <View flexDirection="row" mb={10}>
+            <View flexDirection="row" mb={10} justifyContent='center'>
               <ButtonSelect
                 isSelected={isSelected === "Global"}
                 objective={() => setIsSelected("Global")}
@@ -123,7 +123,7 @@ export function Home() {
               <ButtonSelect
                 isSelected={isSelected === "Proximos"}
                 objective={() => setIsSelected("Proximos")}
-                text="Próximos de Mim"
+                text="Próximos a Mim"
                 icon={ MapPinHouse }
               />
             </View>
