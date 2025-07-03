@@ -161,21 +161,64 @@ export function AIChat() {
 
       <View flex={1} my={20}>
         <ScrollView showsVerticalScrollIndicator={false}>
-            { messages.map((message, index) => 
-              message.sender === "user" ?
+          { messages.length === 0 ? (
+            <View
+              position="relative"
+              alignItems="flex-end"
+              mt={50}
+              mx={10}
+              minHeight={250}
+            >
+              <View
+                bg="#2252fea9"
+                borderRadius={20}
+                p={30}
+                alignItems="center"
+                justifyContent="center"
+                minHeight={250}
+                width="100%"
+              >
+                <Text fontWeight="$bold" fontSize="$xl" color="#fff" mb={10}>
+                  Conversar com a IA
+                </Text>
+                <Text fontSize="$md" color="#e0e0ff" textAlign="center">
+                  Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
+                </Text>
+              </View>
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: -18,
+                  right: 25,
+                  width: 0,
+                  height: 0,
+                  borderLeftWidth: 18,
+                  borderLeftColor: 'transparent',
+                  borderRightWidth: 0,
+                  borderRightColor: 'transparent',
+                  borderTopWidth: 18,
+                  borderTopColor: '#2252fea9',
+                }}
+              />
+            </View>
+          ) : (
+            messages.map((message, index) =>
+              message.sender === "user" ? (
                 <UserBalloon
-                  key={ index }
-                  message={ message.text }
-                  avatarUrl={ message.avatarUrl }
-                  senderName={ message.name }
+                  key={index}
+                  message={message.text}
+                  avatarUrl={message.avatarUrl}
+                  senderName={message.name}
                 />
-              :
+              ) : (
                 <AiBalloon
-                  key={ index }
-                  message={ message.text }
-                  senderName={ message.name }
+                  key={index}
+                  message={message.text}
+                  senderName={message.name}
                 />
-            ) }
+              )
+            )
+          )}
         </ScrollView>
       </View>
 
@@ -194,7 +237,7 @@ export function AIChat() {
           borderWidth={2}
         >
           <InputField 
-            placeholder={ isLoading ? "Aguarde..." : "Conversar com IA" } 
+            placeholder={ isLoading ? "Aguarde..." : "Conversar com o seu Guia" } 
             value={ currentMessage }
             maxLength={200} 
             onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); } } 
