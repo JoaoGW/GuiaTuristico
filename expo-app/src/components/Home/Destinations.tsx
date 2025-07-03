@@ -4,13 +4,13 @@ import { StyleSheet, Pressable } from 'react-native';
 import { Box, Text, View, HStack, Image } from '@gluestack-ui/themed';
 
 import { OpenStatusBadge } from '@components/Badges/OpenStatusBadge';
+import { HighRatingBadge } from '@components/Badges/HighRatingBadge';
 
 import { Star } from 'lucide-react-native';
 
 import { Place } from '../../../@types/PlacesTypes';
 
 import Default from '@assets/400x300.svg'
-import { HighRatingBadge } from '@components/Badges/HighRatingBadge';
 
 interface DestinationProps {
   item: Place,

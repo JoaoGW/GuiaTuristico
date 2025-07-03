@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { Box, Spinner, Text, VStack, View, Button } from '@gluestack-ui/themed';
+import { Box, Spinner, Text, VStack, View, Button, ScrollView } from '@gluestack-ui/themed';
 
 import { Expand, TrendingUp, MapPinHouse, LandPlot } from 'lucide-react-native';
 
@@ -14,11 +14,14 @@ import { Maps } from '@components/Maps/Maps';
 import { LocalFetchError } from '@components/Errors/LocalFetchError';
 import { ButtonSelect } from '@components/Buttons/ButtonSelect';
 
+import GlobalDestinationsData from '@data/destinations.json'
+
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { Place } from '../../@types/PlacesTypes';
+import { GlobalDestinations } from '@components/Home/GlobalDestinations';
 
 export function Home() {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -68,90 +71,124 @@ export function Home() {
 
   return (
     <Box flex={1} bg="#FDFDFD">
-      <FlatList
-        data={ places }
-        numColumns={2}
-        keyExtractor={ (item) => item.id }
-        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <VStack space="md">
-            <CurrentStatusBar />
-            <UserInfo />
-            <Box
-              height={200}
-              mb={15}
-              mx={6}
-              borderRadius={15}
-              overflow="hidden"
-              borderWidth={2}
-              borderColor="#e9ad2d"
-              shadowColor="#000"
-              shadowOffset={{ width: 0, height: 2 }}
-              shadowOpacity={0.2}
-              shadowRadius={4}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <VStack space="md">
+          <CurrentStatusBar />
+          <UserInfo />
+          <Box
+            height={200}
+            mb={15}
+            mx={6}
+            borderRadius={15}
+            overflow="hidden"
+            borderWidth={2}
+            borderColor="#e9ad2d"
+            shadowColor="#000"
+            shadowOffset={{ width: 0, height: 2 }}
+            shadowOpacity={0.2}
+            shadowRadius={4}
+          >
+            <Maps />
+            <Button
+              position="absolute"
+              top={2}
+              right={2}
+              bg="#e9ad2d"
+              px={8}
+              py={2}
+              borderRadius={5}
+              onPress={() => {
+                navigation.navigate('MapsExpanded', { places, loading });
+              }}
+              style={{ padding: 10 }}
             >
-              <Maps />
-              <Button
-                position="absolute"
-                top={2}
-                right={2}
-                bg="#e9ad2d"
-                px={8}
-                py={2}
-                borderRadius={5}
-                onPress={ () => { navigation.navigate('MapsExpanded', { places, loading }); } }
-                style={{ padding: 10 }}
-              >
-                <Expand color="white" />
-              </Button>
-            </Box>
-            <View flexDirection="column" my={6} px={6}>
-              <View flexDirection="row">
-                <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
-                <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>
-                  Destinos Populares
-                </Text>
-              </View>
-              <View flexDirection="row">
-                <ButtonSelect
-                  isSelected={isSelected === "Global"}
-                  objective={() => setIsSelected("Global")}
-                  text="Seleção Global"
-                  icon={LandPlot}
-                  style={{ marginRight: 8 }}
-                />
-                <ButtonSelect
-                  isSelected={isSelected === "Proximos"}
-                  objective={() => setIsSelected("Proximos")}
-                  text="Próximos de Mim"
-                  icon={MapPinHouse}
-                />
-              </View>
+              <Expand color="white" />
+            </Button>
+          </Box>
+          <View flexDirection="column" my={6} px={6}>
+            <View flexDirection="row">
+              <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
+              <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>
+                Destinos Populares
+              </Text>
             </View>
-          </VStack>
+            <View flexDirection="row" mb={10}>
+              <ButtonSelect
+                isSelected={isSelected === "Global"}
+                objective={() => setIsSelected("Global")}
+                text="Seleção Global"
+                icon={ LandPlot }
+                style={{ marginRight: 8 }}
+              />
+              <ButtonSelect
+                isSelected={isSelected === "Proximos"}
+                objective={() => setIsSelected("Proximos")}
+                text="Próximos de Mim"
+                icon={ MapPinHouse }
+              />
+            </View>
+          </View>
+        </VStack>
+        {
+          isSelected === "Global"
+            ?
+              <FlatList
+                data={ GlobalDestinationsData }
+                numColumns={2}
+                keyExtractor={ (item) => item.id }
+                renderItem={({ item }) => (
+                  <Box flex={1} px={4} py={2}>
+                    { location && (
+                      <GlobalDestinations
+                        imageUrl={ item.image }
+                        title={ item.title }
+                      />
+                    )}
+                  </Box>
+                )}
+                ListEmptyComponent={
+                  <Box>
+                    { !loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} /> }
+                  </Box>
+                }
+                ListFooterComponent={
+                  <Box px={6} my={12}>
+                    <GoPremium />
+                  </Box>
+                }
+                contentContainerStyle={{ paddingBottom: 35 }}
+              />
+            :
+              <FlatList
+                data={ places }
+                numColumns={2}
+                keyExtractor={ (item) => item.id }
+                columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
+                renderItem={({ item }) => (
+                  <Box flex={1} px={4} py={2}>
+                    { location && (
+                      <HomeDestinations
+                        item={ item }
+                        userLocation={{ coords: location.coords }}
+                        currentScreen="Home"
+                      />
+                    )}
+                  </Box>
+                )}
+                ListEmptyComponent={
+                  <Box>
+                    { !loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} /> }
+                  </Box>
+                }
+                ListFooterComponent={
+                  <Box px={6} my={12}>
+                    <GoPremium />
+                  </Box>
+                }
+                contentContainerStyle={{ paddingBottom: 35 }}
+              />
         }
-        renderItem={({ item }) => (
-          <Box flex={1} px={4} py={2}>
-            { location && 
-              <HomeDestinations item={item} userLocation={{ coords: location.coords }} currentScreen="Home" />
-            }
-          </Box>
-        )}
-        ListEmptyComponent={
-          <Box>
-            {
-              !loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} />
-            }
-          </Box>
-        }
-        ListFooterComponent={
-          <Box px={6} my={12}>
-            <GoPremium />
-          </Box>
-        }
-        contentContainerStyle={{ paddingBottom: 35 }}
-      />
+      </ScrollView>
     </Box>
   );
 }
