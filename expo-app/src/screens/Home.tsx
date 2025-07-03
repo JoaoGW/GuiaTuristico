@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Box, Spinner, Text, VStack, View, Button } from '@gluestack-ui/themed';
 
-import { Expand, TrendingUp } from 'lucide-react-native';
+import { Expand, TrendingUp, MapPinHouse, LandPlot } from 'lucide-react-native';
 
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
@@ -12,6 +12,7 @@ import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';
 import { Maps } from '@components/Maps/Maps';
 import { LocalFetchError } from '@components/Errors/LocalFetchError';
+import { ButtonSelect } from '@components/Buttons/ButtonSelect';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
@@ -22,6 +23,7 @@ import { Place } from '../../@types/PlacesTypes';
 export function Home() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isSelected, setIsSelected] = useState<string>("Global");
   
   const { location } = useContext(LocationContext);
   const navigation = useNavigation<AuthNavigationProp>();
@@ -104,11 +106,28 @@ export function Home() {
                 <Expand color="white" />
               </Button>
             </Box>
-            <View flexDirection="row" alignItems="center" my={6} px={6}>
-              <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
-              <Text fontSize="$2xl" fontWeight="$bold" color="$black">
-                Destinos Populares
-              </Text>
+            <View flexDirection="column" my={6} px={6}>
+              <View flexDirection="row">
+                <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
+                <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>
+                  Destinos Populares
+                </Text>
+              </View>
+              <View flexDirection="row">
+                <ButtonSelect
+                  isSelected={isSelected === "Global"}
+                  objective={() => setIsSelected("Global")}
+                  text="Seleção Global"
+                  icon={LandPlot}
+                  style={{ marginRight: 8 }}
+                />
+                <ButtonSelect
+                  isSelected={isSelected === "Proximos"}
+                  objective={() => setIsSelected("Proximos")}
+                  text="Próximos de Mim"
+                  icon={MapPinHouse}
+                />
+              </View>
             </View>
           </VStack>
         }
