@@ -138,14 +138,20 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
                 }
               </HStack>
             </HStack>
-            <View flexDirection='row' mt={7} gap={7}>
-              <OpenStatusBadge openStatus={ item.open_now }/>
-              {
-                item.rating >= 4.5 || item.rating <= 3.5
-                  ? <HighRatingBadge rating={ item.rating }/>
-                  : ''
-              }
-            </View>
+            {
+              currentScreen === "MapsExpanded"
+                ?
+                  <View flexDirection='row' mt={7} gap={7}>
+                    <OpenStatusBadge openStatus={item.open_now} />
+                    {
+                      item.rating >= 4.5 || item.rating <= 3.5
+                        ? <HighRatingBadge rating={item.rating} />
+                        : ''
+                    }
+                  </View>
+                :
+                  ''
+            }
           </View>
         </View>
       </Box>
