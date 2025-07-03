@@ -10,6 +10,7 @@ import { Star } from 'lucide-react-native';
 import { Place } from '../../../@types/PlacesTypes';
 
 import Default from '@assets/400x300.svg'
+import { HighRatingBadge } from '@components/Badges/HighRatingBadge';
 
 interface DestinationProps {
   item: Place,
@@ -130,8 +131,13 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
               }
             </HStack>
           </HStack>
-          <View flexDirection='row' mt={7}>
+          <View flexDirection='row' mt={7} gap={7}>
             <OpenStatusBadge openStatus={ item.open_now }/>
+            {
+              item.rating >= 4.5 || item.rating <= 3.5
+                ? <HighRatingBadge rating={ item.rating }/>
+                : ''
+            }
           </View>
         </View>
       </View>

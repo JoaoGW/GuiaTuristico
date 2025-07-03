@@ -9,7 +9,7 @@ type BadgeProps = {
 export function OpenStatusBadge({ openStatus }: BadgeProps){
   return(
     <View 
-      bgColor={ openStatus === true ? "$green400" : "$red300" } 
+      bgColor={ openStatus === true ? "$green600" : "$red600" } 
       alignItems="center"
       gap={5}
       borderRadius={7}
