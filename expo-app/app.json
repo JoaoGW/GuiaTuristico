@@ -4,7 +4,7 @@
     "slug": "EzTripAI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "@assets/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -27,9 +27,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "GOOGLE_PLACES_API_KEY": "SUA_CHAVE_AQUI"
     }
   }
 }

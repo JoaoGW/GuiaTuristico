@@ -1,37 +1,34 @@
 import { useState } from 'react';
-import { Box, Text, VStack, HStack, Image } from '@gluestack-ui/themed';
+import { StyleSheet, Pressable } from 'react-native';
+
+import { Box, Text, View, HStack, Image } from '@gluestack-ui/themed';
+
+import { OpenStatusBadge } from '@components/Badges/OpenStatusBadge';
+
 import { Star } from 'lucide-react-native';
 
+import { Place } from '../../../@types/PlacesTypes';
+
 import Default from '@assets/400x300.svg'
+import { HighRatingBadge } from '@components/Badges/HighRatingBadge';
 
-interface Place {
-  name: string;
-  vicinity: string;
-  rating: number;
-  photos?: { photo_reference: string }[];
-  geometry: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
-
-interface Props {
-  item: Place;
+interface DestinationProps {
+  item: Place,
   userLocation: {
     coords: {
       latitude: number;
       longitude: number;
     };
-  };
+  },
+  currentScreen: "Home" | "MapsExpanded" | null
 }
 
-export function HomeDestinations({ item, userLocation }: Props) {
+export function HomeDestinations({ item, userLocation, currentScreen }: DestinationProps) {
   const [imageError, setImageError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const photoUrl = item.photos?.[0]
-    ? `http://<SEU-IP-AQUI>:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
+    ? `https://guia-turistico-alpha.vercel.app//:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
     : null;
 
   const calculateDistance = () => {
@@ -56,47 +53,108 @@ export function HomeDestinations({ item, userLocation }: Props) {
     return distance.toFixed(1); // Distance in km
   };
 
+  const styles = StyleSheet.create({
+    homeStyle: {
+      flexDirection: "column", 
+      gap: 8
+    },
+    mapsExpandedStyle: {
+      flexDirection: "row",
+      width: "100%"
+    },
+    homeBoxStyle: {
+      borderRadius: 10,
+      padding: 4
+    },
+    mapsExpandedBoxStyle: {
+      flexDirection: 'row',
+      borderRadius: 10,
+      padding: 4,
+      alignContent: 'center',
+      alignItems: 'flex-start',
+      backgroundColor: isHovered ? '#e6e6e6' : '#fff'
+    }
+  });
+
   return (
-    <Box borderRadius={10} p={4}>
-      {photoUrl && !imageError ? (
-      <Image
-        source={{ uri: photoUrl }}
-        alt={item.name}
-        style={{ width: '100%', height: 120, borderRadius: 10, marginBottom: 20 }}
-        onError={() => setImageError(true)}
-      />
-      ) : (
-      <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />
-      )}
-      <VStack space="sm">
-      <HStack justifyContent="space-between" alignItems="center">
-        <Text
-        fontSize="$lg"
-        fontWeight="$bold"
-        color="$textDark"
-        numberOfLines={1}
-        ellipsizeMode="tail"
-        maxWidth="70%"
-        >
-        {item.name}
-        </Text>
-        <Text fontSize="$sm" color="$gray500">
-        {calculateDistance()} km
-        </Text>
-      </HStack>
-      <HStack justifyContent="center" space="xs" alignItems="center">
-        {[...Array(5)].map((_, index) => (
-        <Star
-          key={index}
-          size={18}
-          color="#FFD700"
-          fill={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
-          stroke={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
-        />
-        ))}
-        <Text ml={5}>({item.rating || '0.0'})</Text>
-      </HStack>
-      </VStack>
-    </Box>
+    <Pressable
+      onPressIn={ () => setIsHovered(true) }
+      onPressOut={ () => setIsHovered(false) }
+      disabled={ currentScreen !== "MapsExpanded" }
+    >
+      <Box style={ currentScreen === "Home" ? styles.homeBoxStyle : styles.mapsExpandedBoxStyle }>
+        { photoUrl && !imageError ? (
+          <Image
+            source={{ uri: photoUrl }}
+            alt={ item.name }
+            onError={ () => setImageError(true) }
+            w={ currentScreen === "Home" ? "100%" : "35%" }
+            h={120}
+            borderRadius={10}
+            marginBottom={15}
+            borderWidth={2}
+            borderColor='#E9AD2D'
+            mr={ currentScreen === "MapsExpanded" ? 10 : 0 }
+          />
+        ) : (
+          <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />
+        )}
+        <View style={ currentScreen === "Home" ? styles.homeStyle : styles.mapsExpandedStyle }>
+          <View flexDirection="column">
+            <HStack justifyContent="space-between" alignItems="center" mb={ currentScreen === "Home" ? 7 : 15 }>
+              <Text
+                fontSize="$lg"
+                fontWeight="$bold"
+                color="$textDark"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                maxWidth="80%"
+                mt={ currentScreen === "Home" ? 0 : 12 }
+              >
+                { item.name }
+              </Text>
+              {
+                currentScreen === "Home" 
+                  ? <Text fontSize="$sm" color="$gray500">{calculateDistance()} km</Text>
+                  : ''
+              }
+            </HStack>
+            <HStack justifyContent="space-between" alignItems="center">
+              <HStack space="xs" alignItems="center">
+                {[...Array(5)].map((_, index) => (
+                  <Star
+                    key={ index }
+                    size={18}
+                    color="#FFD700"
+                    fill={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
+                    stroke={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
+                  />
+                ))}
+                <Text ml={5}>({ item.rating || '0.0' })</Text>
+                {
+                  currentScreen === "MapsExpanded"
+                    ? <Text fontSize="$sm" color="$gray500" fontWeight="$bold"> • { calculateDistance() } km</Text>
+                    : ''
+                }
+              </HStack>
+            </HStack>
+            {
+              currentScreen === "MapsExpanded"
+                ?
+                  <View flexDirection='row' mt={7} gap={7}>
+                    <OpenStatusBadge openStatus={item.open_now} />
+                    {
+                      item.rating >= 4.5 || item.rating <= 3.5
+                        ? <HighRatingBadge rating={item.rating} />
+                        : ''
+                    }
+                  </View>
+                :
+                  ''
+            }
+          </View>
+        </View>
+      </Box>
+    </Pressable>
   );
 }

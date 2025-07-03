@@ -39,7 +39,6 @@ export function NavigationBar() {
       bg="$white"
       p={4}
       pt={8}
-      mb={isIOS ? 30 : 0}
       position="absolute"
       bottom={0}
       left={0}

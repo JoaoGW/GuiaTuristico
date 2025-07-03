@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { VStack, Center, Text, Box, View, Heading } from "@gluestack-ui/themed";
-import { Button } from "@components/Button";
+import { Button } from "@components/Buttons/Button";
 import { UserPreferencesTags } from "@components/Register/Tags";
 
 import { loadTags } from '@utils/tagsLoader';

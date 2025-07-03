@@ -1,36 +1,30 @@
 import { useContext, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-import { Box, Spinner, Text, VStack, View } from '@gluestack-ui/themed';
+import { Box, Spinner, Text, VStack, View, Button } from '@gluestack-ui/themed';
+
+import { Expand, TrendingUp } from 'lucide-react-native';
 
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
 import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';
 import { Maps } from '@components/Maps/Maps';
+import { LocalFetchError } from '@components/Errors/LocalFetchError';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { TrendingUp } from 'lucide-react-native';
+import { AuthNavigationProp } from '@routes/auth.routes';
 
-interface Place {
-  id: string;
-  name: string;
-  vicinity: string;
-  rating: number;
-  photos?: { photo_reference: string }[];
-  geometry: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
+import { Place } from '../../@types/PlacesTypes';
 
 export function Home() {
-  const { location } = useContext(LocationContext);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  const { location } = useContext(LocationContext);
+  const navigation = useNavigation<AuthNavigationProp>();
 
   useEffect(() => {
     const fetchNearbyPlaces = async () => {
@@ -40,7 +34,7 @@ export function Home() {
 
       try {
         const response = await fetch(
-          `http://<SEU-IP-AQUI>:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `https://guia-turistico-alpha.vercel.app//:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {
@@ -48,8 +42,7 @@ export function Home() {
         }
 
         const data = await response.json();
-
-        // Map the response to include an `id` field for FlatList
+        
         const mappedPlaces = data.places.map((place: any) => ({
           id: place.place_id,
           name: place.name,
@@ -57,6 +50,7 @@ export function Home() {
           rating: place.rating,
           photos: place.photos,
           geometry: place.geometry,
+          open_now: place.opening_hours?.open_now
         }));
 
         setPlaces(mappedPlaces || []);
@@ -73,17 +67,15 @@ export function Home() {
   return (
     <Box flex={1} bg="#FDFDFD">
       <FlatList
-        data={places}
+        data={ places }
         numColumns={2}
-        keyExtractor={(item) => item.id}
+        keyExtractor={ (item) => item.id }
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <VStack space="md">
             <CurrentStatusBar />
-
             <UserInfo />
-
             <Box
               height={200}
               mb={15}
@@ -98,8 +90,20 @@ export function Home() {
               shadowRadius={4}
             >
               <Maps />
+              <Button
+                position="absolute"
+                top={2}
+                right={2}
+                bg="#e9ad2d"
+                px={8}
+                py={2}
+                borderRadius={5}
+                onPress={ () => { navigation.navigate('MapsExpanded', { places, loading }); } }
+                style={{ padding: 10 }}
+              >
+                <Expand color="white" />
+              </Button>
             </Box>
-
             <View flexDirection="row" alignItems="center" my={6} px={6}>
               <TrendingUp color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black">
@@ -110,12 +114,18 @@ export function Home() {
         }
         renderItem={({ item }) => (
           <Box flex={1} px={4} py={2}>
-            { loading 
-                ? <Spinner size="large" color="#e9ad2d"/>
-                : location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} /> 
+            { location && 
+              <HomeDestinations item={item} userLocation={{ coords: location.coords }} currentScreen="Home" />
             }
           </Box>
         )}
+        ListEmptyComponent={
+          <Box>
+            {
+              !loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} />
+            }
+          </Box>
+        }
         ListFooterComponent={
           <Box px={6} my={12}>
             <GoPremium />

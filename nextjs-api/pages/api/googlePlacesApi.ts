@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Place {
   name: string;
-  [key: string]: any; // Add more fields as needed
+  [key: string]: any;
 }
 
 interface GooglePlacesResponse {
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const radius = 500; // Radius in meters
+    const radius = 500;
     const type = 'restaurant';
 
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=${type}&key=${process.env.GOOGLE_PLACES_API_KEY}`;

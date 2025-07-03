@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import { useContext, useEffect, useState, useImperativeHandle, forwardRef, useRef } from "react";
+import MapView, { Marker } from "react-native-maps";
+import { View, Text } from "@gluestack-ui/themed";
 
-import { View, Text } from '@gluestack-ui/themed';
-
-import { LocationContext } from '@contexts/requestDeviceLocation';
-import { Loading } from '@components/Loading';
+import { Loading } from "@components/Loading";
+import { LocationContext } from "@contexts/requestDeviceLocation";
 
 interface Place {
   name: string;
@@ -20,11 +19,17 @@ interface Place {
   };
 }
 
-export function Maps() {
+interface MapsProps {}
+
+export const Maps = forwardRef<MapView, MapsProps>((_, ref) => {
   const { location } = useContext(LocationContext);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useImperativeHandle(ref, () => mapUserPositionRef.current as MapView);
+
+  const mapUserPositionRef = useRef<MapView | null>(null);
 
   useEffect(() => {
     const fetchNearbyPlaces = async () => {
@@ -39,11 +44,10 @@ export function Maps() {
         );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch nearby places');
+          throw new Error("Failed to fetch nearby places");
         }
 
         const data = await response.json();
-        console.log('Nearby Restaurants:', data.places); // Log all restaurants to the console
         setPlaces(data.places || []);
       } catch (err: any) {
         setError(err.message);
@@ -67,18 +71,18 @@ export function Maps() {
   return (
     <View flex={1}>
       <MapView
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: "100%", height: "100%" }}
+        ref={ mapUserPositionRef }
         initialRegion={{
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
           latitudeDelta: 0.0102,
           longitudeDelta: 0.0021,
         }}
-        zoomEnabled
         showsUserLocation
       >
         {/* Render markers for nearby restaurants */}
-        {places.map((place, index) => (
+        { places.map((place, index) => (
           <Marker
             key={index}
             coordinate={{
@@ -87,11 +91,11 @@ export function Maps() {
             }}
             title={place.name}
             description={`${
-              place.opening_hours?.open_now ? 'Open Now' : 'Closed'
+              place.opening_hours?.open_now ? "Open Now" : "Closed"
             } - ${place.vicinity}`}
           />
         ))}
       </MapView>
     </View>
   );
-}
+});
