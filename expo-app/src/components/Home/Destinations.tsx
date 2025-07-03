@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import { Box, Text, View, HStack, Image } from '@gluestack-ui/themed';
 
+import { OpenStatusBadge } from '@components/Badges/OpenStatusBadge';
+
 import { Star } from 'lucide-react-native';
 
 import { Place } from '../../../@types/PlacesTypes';
@@ -55,7 +57,8 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
       gap: 8
     },
     mapsExpandedStyle: {
-      flexDirection: "row"
+      flexDirection: "row",
+      width: "100%"
     },
     homeBoxStyle: {
       borderRadius: 10,
@@ -63,9 +66,10 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
     },
     mapsExpandedBoxStyle: {
       flexDirection: 'row',
-      gap: 10,
       borderRadius: 10,
-      padding: 4
+      padding: 4,
+      alignContent: 'center',
+      alignItems: 'flex-start'
     }
   })
 
@@ -82,41 +86,53 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
         marginBottom={15}
         borderWidth={2}
         borderColor='#E9AD2D'
+        mr={ currentScreen === "MapsExpanded" ? 10 : 0 }
       />
       ) : (
         <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />
       )}
       <View style={ currentScreen === "Home" ? styles.homeStyle : styles.mapsExpandedStyle }>
-        <View flexDirection='column' paddingTop="5%">
+        <View flexDirection="column">
+          <HStack justifyContent="space-between" alignItems="center" mb={ currentScreen === "Home" ? 7 : 15 }>
+            <Text
+              fontSize="$lg"
+              fontWeight="$bold"
+              color="$textDark"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              maxWidth="80%"
+              mt={ currentScreen === "Home" ? 0 : 12 }
+            >
+              { item.name }
+            </Text>
+            {
+              currentScreen === "Home" 
+                ? <Text fontSize="$sm" color="$gray500">{calculateDistance()} km</Text>
+                : ''
+            }
+          </HStack>
           <HStack justifyContent="space-between" alignItems="center">
-            <View flexDirection='row' alignItems='center' justifyContent='space-between' w="100%" mb={20}>
-              <Text
-                fontSize="$lg"
-                fontWeight="$bold"
-                color="$textDark"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                maxWidth="70%"
-              >
-                { item.name }
-              </Text>
-              <Text fontSize="$sm" color="$gray500">
-                { calculateDistance() } km
-              </Text>
-            </View>
+            <HStack space="xs" alignItems="center">
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={ index }
+                  size={18}
+                  color="#FFD700"
+                  fill={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
+                  stroke={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
+                />
+              ))}
+              <Text ml={5}>({ item.rating || '0.0' })</Text>
+              {
+                currentScreen === "MapsExpanded"
+                  ? <Text fontSize="$sm" color="$gray500" fontWeight="$bold"> • { calculateDistance() } km</Text>
+                  : ''
+              }
+            </HStack>
           </HStack>
-          <HStack justifyContent="center" space="xs" alignItems="center">
-            {[...Array(5)].map((_, index) => (
-              <Star
-                key={ index }
-                size={18}
-                color="#FFD700"
-                fill={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-                stroke={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-              />
-            ))}
-            <Text ml={5}>({item.rating || '0.0'})</Text>
-          </HStack>
+          <View flexDirection='row' mt={7}>
+            <OpenStatusBadge openStatus={ item.open_now }/>
+          </View>
         </View>
       </View>
     </Box>

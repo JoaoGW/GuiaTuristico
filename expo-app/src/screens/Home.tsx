@@ -26,10 +26,6 @@ export function Home() {
   const { location } = useContext(LocationContext);
   const navigation = useNavigation<AuthNavigationProp>();
 
-  const handleNavigateToExpandedMap = () => {
-    navigation.navigate('MapsExpanded', { places, loading });
-  };
-
   useEffect(() => {
     const fetchNearbyPlaces = async () => {
       if (!location) return;
@@ -54,6 +50,7 @@ export function Home() {
           rating: place.rating,
           photos: place.photos,
           geometry: place.geometry,
+          open_now: place.opening_hours?.open_now
         }));
 
         setPlaces(mappedPlaces || []);
@@ -70,9 +67,9 @@ export function Home() {
   return (
     <Box flex={1} bg="#FDFDFD">
       <FlatList
-        data={places}
+        data={ places }
         numColumns={2}
-        keyExtractor={(item) => item.id}
+        keyExtractor={ (item) => item.id }
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -101,7 +98,7 @@ export function Home() {
                 px={8}
                 py={2}
                 borderRadius={5}
-                onPress={handleNavigateToExpandedMap}
+                onPress={ () => { navigation.navigate('MapsExpanded', { places, loading }); } }
                 style={{ padding: 10 }}
               >
                 <Expand color="white" />
