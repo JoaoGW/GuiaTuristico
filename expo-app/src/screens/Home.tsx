@@ -117,15 +117,17 @@ export function Home() {
         }
         renderItem={({ item }) => (
           <Box flex={1} px={4} py={2}>
-            { loading ? (
-              <Spinner size="large" color="#e9ad2d" />
-            ) : (
-              location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} />
-            )}
+            { location && 
+              <HomeDestinations item={item} userLocation={{ coords: location.coords }} currentScreen="Home" />
+            }
           </Box>
         )}
         ListEmptyComponent={
-          <LocalFetchError />
+          <Box>
+            {
+              !loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} />
+            }
+          </Box>
         }
         ListFooterComponent={
           <Box px={6} my={12}>

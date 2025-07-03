@@ -94,7 +94,7 @@ export function SlideUp({ places, isLoading }: PlacesSlider) {
                 { isLoading ? (
                   <Spinner size="large" color="#e9ad2d" />
                 ) : (
-                  location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} />
+                  location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} currentScreen="MapsExpanded" />
                 )}
               </Box>
             )}
