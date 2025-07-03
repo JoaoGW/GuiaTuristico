@@ -34,7 +34,7 @@ export function Home() {
 
       try {
         const response = await fetch(
-          `http://192.168.1.156:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `http://https://guia-turistico-alpha.vercel.app/:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {

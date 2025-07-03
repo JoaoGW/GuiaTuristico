@@ -28,7 +28,7 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
   const [isHovered, setIsHovered] = useState(false);
 
   const photoUrl = item.photos?.[0]
-    ? `http://192.168.1.156:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
+    ? `http://https://guia-turistico-alpha.vercel.app/:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
     : null;
 
   const calculateDistance = () => {
