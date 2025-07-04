@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,6 +13,7 @@ import { HomeDestinations } from '@components/Home/Destinations';
 import { Maps } from '@components/Maps/Maps';
 import { LocalFetchError } from '@components/Errors/LocalFetchError';
 import { ButtonSelect } from '@components/Buttons/ButtonSelect';
+import { GlobalDestinations } from '@components/Home/GlobalDestinations';
 
 import GlobalDestinationsData from '@data/destinations.json'
 
@@ -21,7 +22,6 @@ import { LocationContext } from '@contexts/requestDeviceLocation';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { Place } from '../../@types/PlacesTypes';
-import { GlobalDestinations } from '@components/Home/GlobalDestinations';
 
 export function Home() {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -31,8 +31,8 @@ export function Home() {
   const { location } = useContext(LocationContext);
   const navigation = useNavigation<AuthNavigationProp>();
 
-  useEffect(() => {
-    const fetchNearbyPlaces = async () => {
+  const fetchNearbyPlaces = useMemo(() => {
+    return async () => {
       if (!location) return;
 
       setLoading(true);
@@ -65,9 +65,11 @@ export function Home() {
         setLoading(false);
       }
     };
+  }, [location, places]);
 
+  useEffect(() => {
     fetchNearbyPlaces();
-  }, [location]);
+  }, [fetchNearbyPlaces]);
 
   return (
     <Box flex={1} bg="#FDFDFD">
@@ -115,14 +117,14 @@ export function Home() {
             <View flexDirection="row" mb={10} justifyContent='center'>
               <ButtonSelect
                 isSelected={isSelected === "Global"}
-                objective={() => setIsSelected("Global")}
+                objective={ () => setIsSelected("Global") }
                 text="Seleção Global"
                 icon={ LandPlot }
                 style={{ marginRight: 8 }}
               />
               <ButtonSelect
                 isSelected={isSelected === "Proximos"}
-                objective={() => setIsSelected("Proximos")}
+                objective={ () => setIsSelected("Proximos") }
                 text="Próximos a Mim"
                 icon={ MapPinHouse }
               />
