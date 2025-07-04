@@ -53,8 +53,8 @@ export function Profile() {
 
         if (!result.canceled) {
             const fileSize = result.assets[0].fileSize || 0;
-            if (fileSize > 10 * 1024 * 1024) {
-                Alert.alert('Erro', 'A imagem deve ter no máximo 10MB.');
+            if (fileSize > 2 * 1024 * 1024) {
+                Alert.alert('Erro', 'A imagem deve ter no máximo 2MB.');
                 return;
             }
             setAvatar(result.assets[0].uri);
