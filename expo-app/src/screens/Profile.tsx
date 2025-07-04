@@ -72,7 +72,7 @@ export function Profile() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={ false }>
             <Box flex={1} px="$10" py="$5" w="100%" maxWidth="90%" bg="#f9f9f9" alignSelf="center">
                 <VStack space="lg" alignItems="center">
-                    <Heading p="$2" color="#e9ad2d">Perfil do Usuário</Heading>
+                    <Heading p="$2" color="#e9ad2d" size='xl'>Perfil do Usuário</Heading>
                     <Box position="relative">
                         <Button onPress={ pickImage } style={{ width: 200, height: 160, borderRadius: 75, overflow: 'hidden', padding: 0, backgroundColor: 'transparent' }}>
                             { avatar ? (
