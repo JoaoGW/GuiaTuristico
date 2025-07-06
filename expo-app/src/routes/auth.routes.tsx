@@ -8,6 +8,7 @@ import { UserPreferences } from "@screens/UserPreferences";
 import { GenerateItinerary } from "@screens/GenerateItinerary";
 import { AIChat } from "@screens/AIChat";
 import { MapsExpanded } from "@screens/MapsExpanded";
+import { Notifications } from "@screens/Notifications";
 
 import { NavigationBar } from "@components/NavigationBar";
 
@@ -23,6 +24,7 @@ type AuthStackParamList = {
   UserPreferences: undefined;
   AIChat: undefined;
   MapsExpanded: { places: Place[], loading: boolean };
+  Notifications: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -31,13 +33,14 @@ export function AuthRoute() {
   return (
     <>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="UserPreferences" component={UserPreferences} />
-        <Stack.Screen name="GenerateItinerary" component={GenerateItinerary} />
-        <Stack.Screen name="AIChat" component={AIChat} />
-        <Stack.Screen name="MapsExpanded" component={MapsExpanded} />
+        <Stack.Screen name="Home" component={ Home } />
+        <Stack.Screen name="Settings" component={ Settings } />
+        <Stack.Screen name="Profile" component={ Profile } />
+        <Stack.Screen name="UserPreferences" component={ UserPreferences } />
+        <Stack.Screen name="GenerateItinerary" component={ GenerateItinerary } />
+        <Stack.Screen name="AIChat" component={ AIChat } />
+        <Stack.Screen name="MapsExpanded" component={ MapsExpanded } />
+        <Stack.Screen name="Notifications" component={ Notifications } />
       </Stack.Navigator>
       <NavigationBar />
     </>
