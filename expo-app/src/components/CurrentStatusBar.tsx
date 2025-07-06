@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { HStack, VStack, Text, Button, ButtonIcon } from '@gluestack-ui/themed';
 
@@ -7,10 +8,12 @@ import { LocationContext } from '@contexts/requestDeviceLocation';
 
 import { LocateFixed, Bell } from 'lucide-react-native';
 import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';
+import { AuthNavigationProp } from '@routes/auth.routes';
 
 export function CurrentStatusBar() {
   const { location, errorMsg } = useContext(LocationContext);
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
+  const navigation = useNavigation<AuthNavigationProp>();
 
   useEffect(() => {
     if (location) {
@@ -46,7 +49,7 @@ export function CurrentStatusBar() {
             )}
           </HStack>
         </VStack>
-        <Button variant="link">
+        <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
           <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
         </Button>
       </HStack>
