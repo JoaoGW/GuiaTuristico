@@ -2,9 +2,9 @@ import { useContext, useEffect, useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { Box, Spinner, Text, VStack, View, Button, ScrollView } from '@gluestack-ui/themed';
+import { Box, Spinner, Text, VStack, View, Button, ScrollView, Badge, BadgeText, BadgeIcon } from '@gluestack-ui/themed';
 
-import { Expand, TrendingUp, MapPinHouse, LandPlot } from 'lucide-react-native';
+import { Expand, TrendingUp, MapPinHouse, LandPlot, Map, Radio } from 'lucide-react-native';
 
 import { UserInfo } from '@components/UserInfo';
 import { GoPremium } from '@components/GoPremium';
@@ -77,6 +77,14 @@ export function Home() {
         <VStack space="md">
           <CurrentStatusBar />
           <UserInfo />
+          <View flexDirection='row' ml={8}>
+            <Map color="black" size={30} style={{ marginRight: 8 }}/>
+            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={5}>Seu Mapa</Text>
+            <Badge size="md" variant="solid" action="muted" ml={10} bgColor='$red500'>
+              <BadgeText color='$white' mr={5} size='md'>Live</BadgeText>
+              <BadgeIcon as={ Radio } color='$white' size='md' style={{ marginLeft: 2 }}/>
+            </Badge>
+          </View>
           <Box
             height={200}
             mb={15}
