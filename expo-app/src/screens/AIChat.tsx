@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
+import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
 
@@ -7,9 +8,12 @@ import { CharacterLimiter } from "@components/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
 
+import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
+
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
-import { LocationContext } from "@contexts/requestDeviceLocation";
 import { generateChatAnswers } from "@utils/gptRequests"
+
+import { LocationContext } from "@contexts/requestDeviceLocation";
 
 type Message = {
   sender: "ai" | "user",
@@ -86,7 +90,7 @@ export function AIChat() {
         return { temperature: "Indisponível", condition: "Indisponível" };
       }
       const { latitude, longitude } = location.coords;
-      const response = await fetch(`https://guia-turistico-alpha.vercel.app//:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`https://guia-turistico-alpha.vercel.app/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
         return { temperature: "Indisponível", condition: "Indisponível" };
@@ -100,6 +104,15 @@ export function AIChat() {
     } catch (error) {
       console.log(error);
       return { temperature: "Indisponível", condition: "Indisponível" };
+    }
+  }
+
+  const storeChatHistory = async (messages: Message[]) => {
+    try {
+      const jsonValue = JSON.stringify(messages);
+      await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
+    }catch(e){
+      Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
     }
   }
 
@@ -117,6 +130,25 @@ export function AIChat() {
   }, [location]);
 
   useEffect(() => {
+    storeChatHistory(messages);
+  }, [messages]);
+
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@eztripai_chatHistory');
+        if (jsonValue != null) {
+          setMessages(JSON.parse(jsonValue));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar histórico de mensagens:', error);
+      }
+    };
+
+    loadChatHistory();
+  }, []);
+
+  useEffect(() => {
     if (location) {
       (async () => {
         try {
@@ -130,125 +162,131 @@ export function AIChat() {
   }, [location]);
 
   return (
-    <View flex={1} px={30} py={60}>
-      <View flexDirection="column">
-        <Text fontWeight="$bold" fontSize="$2xl" mb={15}>O que você procura hoje?</Text>
-        <View gap={10}>
-          <View flexDirection="row" alignItems="center">
-            <MapPinned size={50} color="#e9ad2d" />
-            { errorMsg ? (
-              <Text color="red.500" ml={7} fontSize="$md">{ errorMsg }</Text>
-            ) : location ? (
-              address ? (
-                <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                  { address.neighborhood }, { address.city }
-                </Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={ Platform.OS === "ios" ? "padding" : "height" }
+      keyboardVerticalOffset={20}
+    >
+      <View flex={1} px={30} py={60}>
+        <View flexDirection="column">
+          <Text fontWeight="$bold" fontSize="$2xl" mb={15}>O que você procura hoje?</Text>
+          <View gap={10}>
+            <View flexDirection="row" alignItems="center">
+              <MapPinned size={50} color="#e9ad2d" />
+              { errorMsg ? (
+                <Text color="red.500" ml={7} fontSize="$md">{errorMsg}</Text>
+              ) : location ? (
+                address ? (
+                  <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
+                    { address.neighborhood }, { address.city }
+                  </Text>
+                ) : (
+                  <Text ml={7} fontSize="$md">Obtendo endereço...</Text>
+                )
               ) : (
-                <Text ml={7} fontSize="$md">Obtendo endereço...</Text>
-              )
-            ) : (
-              <Text ml={7} fontSize="$md">Obtendo localização...</Text>
-            )}
-          </View>
-          <View flexDirection="row" alignItems="center">
-            <Cloud size={50} color="#e9ad2d" />
-            <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-              { weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition }
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View flex={1} my={20}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          { messages.length === 0 ? (
-            <View
-              position="relative"
-              alignItems="flex-end"
-              mt={50}
-              mx={10}
-              minHeight={250}
-            >
-              <View
-                bg="#2252fea9"
-                borderRadius={20}
-                p={30}
-                alignItems="center"
-                justifyContent="center"
-                minHeight={250}
-                width="100%"
-              >
-                <Text fontWeight="$bold" fontSize="$xl" color="#fff" mb={10}>
-                  Conversar com a IA
-                </Text>
-                <Text fontSize="$md" color="#e0e0ff" textAlign="center">
-                  Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
-                </Text>
-              </View>
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: -18,
-                  right: 25,
-                  width: 0,
-                  height: 0,
-                  borderLeftWidth: 18,
-                  borderLeftColor: 'transparent',
-                  borderRightWidth: 0,
-                  borderRightColor: 'transparent',
-                  borderTopWidth: 18,
-                  borderTopColor: '#2252fea9',
-                }}
-              />
+                <Text ml={7} fontSize="$md">Obtendo localização...</Text>
+              )}
             </View>
-          ) : (
-            messages.map((message, index) =>
-              message.sender === "user" ? (
-                <UserBalloon
-                  key={index}
-                  message={message.text}
-                  avatarUrl={message.avatarUrl}
-                  senderName={message.name}
-                />
-              ) : (
-                <AiBalloon
-                  key={index}
-                  message={message.text}
-                  senderName={message.name}
-                />
-              )
-            )
-          )}
-        </ScrollView>
-      </View>
-
-      <View>
-        <View alignItems="flex-end" mr={15}>
-          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200} />
+            <View flexDirection="row" alignItems="center">
+              <Cloud size={50} color="#e9ad2d" />
+              <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
+                { weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition }
+              </Text>
+            </View>
+          </View>
         </View>
-        <Input
-          variant="outline"
-          size="lg"
-          isDisabled={false}
-          isInvalid={false}
-          isReadOnly={false}
-          borderRadius={30}
-          borderColor="#e9ad2d"
-          borderWidth={2}
-        >
-          <InputField 
-            placeholder={ isLoading ? "Aguarde..." : "Conversar com o seu Guia" } 
-            value={ currentMessage }
-            maxLength={200} 
-            onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); } } 
-          />
-          <InputSlot pr={10}>
-            <Pressable onPress={ handleChatRequest } alignSelf="center" disabled={ isLoading ? true : false }>
-              <InputIcon as={ MessageCircle } color="#e9ad2d" size="xl" />
-            </Pressable>
-          </InputSlot>
-        </Input>
+
+        <View flex={1} mt={20}>
+          <ScrollView showsVerticalScrollIndicator={ false }>
+            { messages.length === 0 ? (
+              <View
+                position="relative"
+                alignItems="flex-end"
+                mt={50}
+                mx={10}
+                minHeight={250}
+              >
+                <View
+                  bg="#2252fea9"
+                  borderRadius={20}
+                  p={30}
+                  alignItems="center"
+                  justifyContent="center"
+                  minHeight={250}
+                  width="100%"
+                >
+                  <Text fontWeight="$bold" fontSize="$xl" color="#fff" mb={10}>
+                    Conversar com a IA
+                  </Text>
+                  <Text fontSize="$md" color="#e0e0ff" textAlign="center">
+                    Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: -18,
+                    right: 25,
+                    width: 0,
+                    height: 0,
+                    borderLeftWidth: 18,
+                    borderLeftColor: 'transparent',
+                    borderRightWidth: 0,
+                    borderRightColor: 'transparent',
+                    borderTopWidth: 18,
+                    borderTopColor: '#2252fea9',
+                  }}
+                />
+              </View>
+            ) : (
+              messages.map((message, index) =>
+                message.sender === "user" ? (
+                  <UserBalloon
+                    key={ index }
+                    message={ message.text }
+                    avatarUrl={ message.avatarUrl }
+                    senderName={ message.name }
+                  />
+                ) : (
+                  <AiBalloon
+                    key={ index }
+                    message={ message.text }
+                    senderName={ message.name }
+                  />
+                )
+              )
+            )}
+          </ScrollView>
+        </View>
+
+        <View>
+          <View alignItems="flex-end" mr={15}>
+            <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} style={{ marginBottom: 6 }} />
+          </View>
+          <Input
+            variant="outline"
+            size="lg"
+            isDisabled={false}
+            isInvalid={false}
+            isReadOnly={false}
+            borderRadius={30}
+            borderColor="#e9ad2d"
+            borderWidth={2}
+          >
+            <InputField
+              placeholder={isLoading ? "Aguarde..." : "Conversar com o seu Guia"}
+              value={currentMessage}
+              maxLength={200}
+              onChangeText={(text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
+            />
+            <InputSlot pr={10}>
+              <Pressable onPress={ handleChatRequest } alignSelf="center" disabled={isLoading ? true : false}>
+                <InputIcon as={ MessageCircle } color="#e9ad2d" size="xl" />
+              </Pressable>
+            </InputSlot>
+          </Input>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }

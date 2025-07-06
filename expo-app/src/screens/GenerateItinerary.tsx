@@ -31,16 +31,15 @@ export function GenerateItinerary() {
   const tags = tagsArray.join(', ');
 
   useEffect(() =>{
-
     const loadSavedItinerary = async () => {
       try{
         const savedItinerary = await AsyncStorage.getItem(ITINERARY_STORAGE_KEY);
         if(savedItinerary != null){
           setItinerary(savedItinerary);
         }
-        } catch (error) {
-          console.error('Erro ao carregar o roteiro salvo:', error);
-        }
+      } catch (error) {
+        console.error('Erro ao carregar o roteiro salvo:', error);
+      }
     };
     loadSavedItinerary();
   }, []);

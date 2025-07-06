@@ -1,13 +1,14 @@
-
 [
-    { "id": "1", "title": "Av.Paulista", "description": "", "image": "av_paulista.png" },
-    { "id": "2", "title": "Ibirapuera", "description": "", "image": "ibirapuera.png" },
-    { "id": "3", "title": "Shopping JK", "description": "", "image": "shopping_jk.png" },
-    { "id": "4", "title": "Teatro Municipal", "description": "", "image": "teatro_municipal.png" },
-    { "id": "5", "title": "Masp", "description": "", "image": "masp.png" },
-    { "id": "6", "title": "Aquario São Paulo", "description": "", "image": "aquario_sao_paulo.png" },
-    { "id": "7", "title": "Liberdade", "description": "", "image": "liberdade.png" },
-    { "id": "8", "title": "Pinacoteca", "description": "", "image": "pinacoteca.png" },
-    { "id": "9", "title": "Farol Santander", "description": "", "image": "farol_santander.png" },
-    { "id": "10", "title": "Estádio do Pacaembu", "description": "", "image": "pacaembu.png" }
+    { "id": "1", "title": "Nova York", "description": "A cidade que nunca dorme, famosa por seus arranha-céus e a Times Square.", "image": "https://cdn.pixabay.com/photo/2019/10/04/21/27/new-york-4526573_960_720.jpg" },
+    { "id": "2", "title": "Paris", "description": "A capital da França, conhecida pela Torre Eiffel e sua rica cultura.", "image": "https://cdn.pixabay.com/photo/2019/06/15/14/36/the-seine-river-4275721_1280.jpg" },
+    { "id": "3", "title": "Londres", "description": "Uma cidade histórica com o Big Ben e a Abadia de Westminster.", "image": "https://cdn.pixabay.com/photo/2021/08/12/05/19/cathedral-6539937_1280.jpg" },
+    { "id": "4", "title": "Tóquio", "description": "Uma metrópole vibrante, famosa por sua tecnologia e cultura tradicional.", "image": "https://cdn.pixabay.com/photo/2018/04/17/01/20/japan-3326336_1280.jpg" },
+    { "id": "5", "title": "Dubai", "description": "Uma cidade futurista com arranha-céus e luxuosos shoppings.", "image": "https://cdn.pixabay.com/photo/2016/02/28/20/23/dubai-1227538_1280.jpg" },
+    { "id": "6", "title": "Sydney", "description": "Lar da icônica Opera House e belas praias.", "image": "https://cdn.pixabay.com/photo/2017/11/02/10/31/sydney-2910646_1280.jpg" },
+    { "id": "7", "title": "Rio de Janeiro", "description": "Famosa pelo Cristo Redentor e suas praias deslumbrantes.", "image": "https://cdn.pixabay.com/photo/2017/01/08/19/30/rio-de-janeiro-1963744_1280.jpg" },
+    { "id": "8", "title": "Cidade do Cabo", "description": "Conhecida por sua beleza natural e a Table Mountain.", "image": "https://cdn.pixabay.com/photo/2016/08/02/09/46/cape-town-1562907_1280.jpg" },
+    { "id": "9", "title": "Bangkok", "description": "A capital da Tailândia, famosa por seus templos e vida noturna.", "image": "https://cdn.pixabay.com/photo/2023/05/16/09/15/bangkok-7997046_1280.jpg" },
+    { "id": "10", "title": "Roma", "description": "Uma cidade histórica com o Coliseu e rica herança cultural.", "image": "https://cdn.pixabay.com/photo/2021/04/25/23/17/rome-6207755_1280.jpg" },
+    { "id": "11", "title": "São Paulo", "description": "Uma metrópole brasileira, conhecida por sua diversidade cultural.", "image": "https://images.unsplash.com/photo-1629984557780-4dde2292e245?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+    { "id": "12", "title": "Porto", "description": "Uma cidade portuguesa famosa pelo vinho do Porto e arquitetura charmosa.", "image": "https://cdn.pixabay.com/photo/2021/11/30/21/13/porto-cathedral-6836243_1280.jpg" }
 ]
