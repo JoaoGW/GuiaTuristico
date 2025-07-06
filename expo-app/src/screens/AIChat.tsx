@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
 
@@ -7,9 +8,12 @@ import { CharacterLimiter } from "@components/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
 
+import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
+
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
-import { LocationContext } from "@contexts/requestDeviceLocation";
 import { generateChatAnswers } from "@utils/gptRequests"
+
+import { LocationContext } from "@contexts/requestDeviceLocation";
 
 type Message = {
   sender: "ai" | "user",
@@ -103,6 +107,15 @@ export function AIChat() {
     }
   }
 
+  const storeChatHistory = async (messages: Message[]) => {
+    try {
+      const jsonValue = JSON.stringify(messages);
+      await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
+    }catch(e){
+      Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
+    }
+  }
+
   useEffect(() => {
     if (location) {
       (async () => {
@@ -115,6 +128,25 @@ export function AIChat() {
       })();
     }
   }, [location]);
+
+  useEffect(() => {
+    storeChatHistory(messages);
+  }, [messages]);
+
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@eztripai_chatHistory');
+        if (jsonValue != null) {
+          setMessages(JSON.parse(jsonValue));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar histórico de mensagens:', error);
+      }
+    };
+
+    loadChatHistory();
+  }, []);
 
   useEffect(() => {
     if (location) {
@@ -205,16 +237,16 @@ export function AIChat() {
             messages.map((message, index) =>
               message.sender === "user" ? (
                 <UserBalloon
-                  key={index}
-                  message={message.text}
-                  avatarUrl={message.avatarUrl}
-                  senderName={message.name}
+                  key={ index }
+                  message={ message.text }
+                  avatarUrl={ message.avatarUrl }
+                  senderName={ message.name }
                 />
               ) : (
                 <AiBalloon
-                  key={index}
-                  message={message.text}
-                  senderName={message.name}
+                  key={ index }
+                  message={ message.text }
+                  senderName={ message.name }
                 />
               )
             )
@@ -224,14 +256,14 @@ export function AIChat() {
 
       <View>
         <View alignItems="flex-end" mr={15}>
-          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200} />
+          <CharacterLimiter currentCharactersQuantity={ currentCharactersQuantity } characterLimitQuantity={200} style={{ marginBottom: 6 }} />
         </View>
         <Input
           variant="outline"
           size="lg"
-          isDisabled={false}
-          isInvalid={false}
-          isReadOnly={false}
+          isDisabled={ false }
+          isInvalid={ false }
+          isReadOnly={ false }
           borderRadius={30}
           borderColor="#e9ad2d"
           borderWidth={2}

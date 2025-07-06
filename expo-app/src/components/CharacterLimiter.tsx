@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 type LimiterAttributes = {
   currentCharactersQuantity: number,
   characterLimitQuantity: number,
+  style?: Object
 }
 
-export function CharacterLimiter({ currentCharactersQuantity, characterLimitQuantity }: LimiterAttributes) {
+export function CharacterLimiter({ currentCharactersQuantity, characterLimitQuantity, style }: LimiterAttributes) {
   const [limitStatus, setLimitStatus] = useState<'normal' | 'warning' | 'error'>('normal');
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export function CharacterLimiter({ currentCharactersQuantity, characterLimitQuan
   }, [currentCharactersQuantity, characterLimitQuantity]);
 
   return (
-    <View>
+    <View style={ style }>
       <Text color={ limitStatus === "normal" ? '$black' : limitStatus === "warning" ? '$yellow500' : '$red500' }>
         {currentCharactersQuantity} / {characterLimitQuantity}
       </Text>
