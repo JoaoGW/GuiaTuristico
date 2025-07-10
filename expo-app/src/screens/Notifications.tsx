@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -13,10 +13,14 @@ import { NotificationCard } from "@components/Cards/NotificationCard";
 import { ChooseDialog } from "@components/ChooseDialog";
 import { NotificationError } from "@components/Errors/NotificationsError";
 
-import { Earth, Trash } from "lucide-react-native";
+import NotificationsData from '@data/notifications.json';
+
+import { NotificationsTypes } from "../../@types/NotificationsTypes";
+
+import { Earth, Trash, CircleX } from "lucide-react-native";
 
 export function Notifications() {
-  const [notificacoes, setNotificacoes] = useState([]);
+  const [notificacoes, setNotificacoes] = useState<NotificationsTypes[]>([]);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const drag = useSharedValue(0);
@@ -33,6 +37,13 @@ export function Notifications() {
       </Pressable>
     )
   };
+
+  useEffect(() => {
+    setNotificacoes(NotificationsData.map(data => ({
+      ...data,
+      routeIcon: CircleX,
+    })));
+  }, []);
 
   const styles = StyleSheet.create({
     container: {
@@ -59,13 +70,16 @@ export function Notifications() {
         {
           notificacoes.length > 0
             ?
-            <ReanimatedSwipeable containerStyle={styles.container} friction={2} rightThreshold={40} renderRightActions={RightAction}>
-              <NotificationCard
-                title="Exemplo de título"
-                description="Exemplo de coisa de descrição, lembrando que este aqui pode ser maior como fazer?"
-                routeIcon={Earth}
-              />
-            </ReanimatedSwipeable>
+              notificacoes.map((data, index) => (
+                <ReanimatedSwipeable key={index} containerStyle={ styles.container } friction={2} rightThreshold={40} renderRightActions={ RightAction }>
+                  <NotificationCard
+                    id={ index }
+                    title={ data.title }
+                    description={ data.description }
+                    routeIcon={ Earth }
+                  />
+                </ReanimatedSwipeable>
+              ))
             :
             <NotificationError />
         }

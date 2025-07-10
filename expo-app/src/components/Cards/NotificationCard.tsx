@@ -4,15 +4,11 @@ import { Pressable, Text, View } from "@gluestack-ui/themed";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
-import { LucideIcon, ArrowRightToLine } from "lucide-react-native";
+import { NotificationsTypes } from "../../../@types/NotificationsTypes";
 
-type NotificationProps = {
-  routeIcon: LucideIcon,
-  title: string,
-  description: string
-}
+import { ArrowRightToLine } from "lucide-react-native";
 
-export function NotificationCard({ routeIcon: RouteIcon, title, description }: NotificationProps){
+export function NotificationCard({ routeIcon: RouteIcon, title, description }: Notifications){
   const navigation = useNavigation<AuthNavigationProp>();
 
   return(
