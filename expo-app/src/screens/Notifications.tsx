@@ -13,15 +13,15 @@ import { NotificationCard } from "@components/Cards/NotificationCard";
 import { ChooseDialog } from "@components/ChooseDialog";
 import { NotificationError } from "@components/Errors/NotificationsError";
 
-import NotificationsData from '@data/notifications.json';
+import { useNotificationStore } from '@utils/notificationStore';
 
-import { NotificationsTypes } from "../../@types/NotificationsTypes";
-
-import { Earth, Trash, CircleX } from "lucide-react-native";
+import { Earth, Trash } from "lucide-react-native";
 
 export function Notifications() {
-  const [notificacoes, setNotificacoes] = useState<NotificationsTypes[]>([]);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<number | null>(null);
+
+  const { notifications, removeNotification } = useNotificationStore();
 
   const drag = useSharedValue(0);
   const styleAnimation = useAnimatedStyle(() => {
@@ -30,20 +30,27 @@ export function Notifications() {
     };
   });
 
-  const RightAction = () => {
+  const RightAction = (notificationId: number) => {
     return (
-      <Pressable style={[styles.rightAction, styleAnimation]} onPress={ () => setShowAlertDialog(true) }>
+      <Pressable 
+        style={[styles.rightAction, styleAnimation]} 
+        onPress={() => {
+          setSelectedNotificationId(notificationId);
+          setShowAlertDialog(true);
+        }}
+      >
         <Trash color="#FFF" size={30}/>
       </Pressable>
-    )
+    );
   };
 
-  useEffect(() => {
-    setNotificacoes(NotificationsData.map(data => ({
-      ...data,
-      routeIcon: CircleX,
-    })));
-  }, []);
+  const handleDeleteNotification = () => {
+    if (selectedNotificationId !== null) {
+      removeNotification(selectedNotificationId);
+      setShowAlertDialog(false);
+      setSelectedNotificationId(null);
+    }
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -68,15 +75,21 @@ export function Notifications() {
       </View>
       <Reanimated.ScrollView>
         {
-          notificacoes.length > 0
+          notifications.length > 0
             ?
-              notificacoes.map((data, index) => (
-                <ReanimatedSwipeable key={index} containerStyle={ styles.container } friction={2} rightThreshold={40} renderRightActions={ RightAction }>
+              notifications.map((data) => (
+                <ReanimatedSwipeable 
+                  key={ data.id } 
+                  containerStyle={styles.container} 
+                  friction={2} 
+                  rightThreshold={40} 
+                  renderRightActions={() => RightAction(data.id)}
+                >
                   <NotificationCard
-                    id={ index }
+                    id={ data.id }
                     title={ data.title }
                     description={ data.description }
-                    routeIcon={ Earth }
+                    routeIcon={Earth}
                   />
                 </ReanimatedSwipeable>
               ))
@@ -89,8 +102,9 @@ export function Notifications() {
           <ChooseDialog 
             title="Excluir Notificação"
             message="Você tem certeza que deseja excluir esta notificação?"
-            isOpen={ showAlertDialog }
+            isOpen={showAlertDialog}
             setShowAlertDialog={ setShowAlertDialog }
+            performAction={ handleDeleteNotification }
           />
       }
     </>

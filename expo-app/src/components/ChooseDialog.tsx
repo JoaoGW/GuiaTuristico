@@ -16,10 +16,11 @@ type DialogProps = {
   title: string,
   message: string,
   isOpen: boolean,
-  setShowAlertDialog: (state: boolean) => void
+  setShowAlertDialog: (state: boolean) => void,
+  performAction: () => void;
 }
 
-export function ChooseDialog({ title, message, isOpen, setShowAlertDialog }: DialogProps) {
+export function ChooseDialog({ title, message, isOpen, setShowAlertDialog, performAction }: DialogProps) {
   const handleClose = () => setShowAlertDialog(false);
 
   return (
@@ -51,7 +52,7 @@ export function ChooseDialog({ title, message, isOpen, setShowAlertDialog }: Dia
             >
               <ButtonText>Cancelar</ButtonText>
             </Button>
-            <Button size="sm" onPress={ handleClose } bgColor="$red500">
+            <Button size="sm" onPress={ performAction } bgColor="$red500">
               <ButtonText>Excluir</ButtonText>
             </Button>
           </AlertDialogFooter>
