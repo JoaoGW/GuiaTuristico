@@ -6,7 +6,7 @@ import { Box, Spinner, Text, VStack, View, Button, ScrollView, Badge, BadgeText,
 
 import { Expand, TrendingUp, MapPinHouse, LandPlot, Map, Radio } from 'lucide-react-native';
 
-import { UserInfo } from '@components/UserInfo';
+import { UserInfo } from '@components/Home/UserInfo';
 import { GoPremium } from '@components/GoPremium';
 import { CurrentStatusBar } from '@components/CurrentStatusBar';
 import { HomeDestinations } from '@components/Home/Destinations';

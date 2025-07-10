@@ -1,4 +1,4 @@
-import { View, Box, Text } from "@gluestack-ui/themed";
+import { Box, Text } from "@gluestack-ui/themed";
 
 import { TriangleAlert } from 'lucide-react-native';
 

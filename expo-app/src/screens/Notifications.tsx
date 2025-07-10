@@ -11,11 +11,12 @@ import { View, Text, Pressable } from "@gluestack-ui/themed";
 
 import { NotificationCard } from "@components/Cards/NotificationCard";
 import { ChooseDialog } from "@components/ChooseDialog";
+import { NotificationError } from "@components/Errors/NotificationsError";
 
 import { Earth, Trash } from "lucide-react-native";
 
 export function Notifications() {
-  const [notificacoes, setNotificacoes] = useState();
+  const [notificacoes, setNotificacoes] = useState([]);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   const drag = useSharedValue(0);
@@ -55,13 +56,19 @@ export function Notifications() {
         </Text>
       </View>
       <Reanimated.ScrollView>
-        <ReanimatedSwipeable containerStyle={ styles.container } friction={2} rightThreshold={40} renderRightActions={ RightAction }>
-          <NotificationCard
-            title="Exemplo de título"
-            description="Exemplo de coisa de descrição, lembrando que este aqui pode ser maior como fazer?"
-            routeIcon={Earth}
-          />
-        </ReanimatedSwipeable>
+        {
+          notificacoes.length > 0
+            ?
+            <ReanimatedSwipeable containerStyle={styles.container} friction={2} rightThreshold={40} renderRightActions={RightAction}>
+              <NotificationCard
+                title="Exemplo de título"
+                description="Exemplo de coisa de descrição, lembrando que este aqui pode ser maior como fazer?"
+                routeIcon={Earth}
+              />
+            </ReanimatedSwipeable>
+            :
+            <NotificationError />
+        }
       </Reanimated.ScrollView>
       {
         showAlertDialog && 
