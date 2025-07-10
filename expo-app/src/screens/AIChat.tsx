@@ -8,12 +8,13 @@ import { CharacterLimiter } from "@components/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
 
-import { MapPinned, Cloud, MessageCircle } from 'lucide-react-native';
-
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { generateChatAnswers } from "@utils/gptRequests"
+import { useNotificationStore } from "@utils/notificationStore";
 
 import { LocationContext } from "@contexts/requestDeviceLocation";
+
+import { MapPinned, Cloud, MessageCircle, Bot } from 'lucide-react-native';
 
 type Message = {
   sender: "ai" | "user",
@@ -37,6 +38,7 @@ export function AIChat() {
 
   const { location, errorMsg } = useContext(LocationContext);
   const scrollViewRef = useRef(null);
+  const addNotification = useNotificationStore(state => state.addNotification);
 
   const handleChatRequest = async () => {
     try {
@@ -65,6 +67,12 @@ export function AIChat() {
       }
 
       setMessages((prev) => [...prev, newAIMessage]);
+
+      addNotification({
+        title: "Nova Mensagem",
+        description: "Seu Guia Turístico acaba de te enviar uma nova mensagem. Venha aqui conferir!",
+        routeIcon: Bot
+      });
 
     } catch (error) {
       setMessages((prev) => [

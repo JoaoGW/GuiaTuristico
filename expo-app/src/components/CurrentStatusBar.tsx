@@ -6,18 +6,19 @@ import { HStack, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestac
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import NotificationsData from '@data/notifications.json';
-
 import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';
+import { useNotificationStore } from '@utils/notificationStore';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { LocateFixed, Bell } from 'lucide-react-native';
 
 export function CurrentStatusBar() {
-  const { location, errorMsg } = useContext(LocationContext);
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
+
+  const { location, errorMsg } = useContext(LocationContext);
   const navigation = useNavigation<AuthNavigationProp>();
+  const checkNotifications = useNotificationStore(state => state.notifications);
 
   useEffect(() => {
     if (location) {
@@ -56,7 +57,7 @@ export function CurrentStatusBar() {
         <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
           <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
           { 
-            NotificationsData.length > 0
+            checkNotifications.length > 0
               ? <AvatarBadge bgColor='$red500'/>
               : ''
           }
