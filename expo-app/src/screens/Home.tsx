@@ -15,7 +15,7 @@ import { LocalFetchError } from '@components/Errors/LocalFetchError';
 import { ButtonSelect } from '@components/Buttons/ButtonSelect';
 import { GlobalDestinations } from '@components/Home/GlobalDestinations';
 
-import GlobalDestinationsData from '@data/destinations.json'
+import GlobalDestinationsData from '@data/destinations.json';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 

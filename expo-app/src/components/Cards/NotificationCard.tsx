@@ -8,7 +8,7 @@ import { NotificationsTypes } from "../../../@types/NotificationsTypes";
 
 import { ArrowRightToLine } from "lucide-react-native";
 
-export function NotificationCard({ routeIcon: RouteIcon, title, description }: Notifications){
+export function NotificationCard({ routeIcon: RouteIcon, title, description }: NotificationsTypes){
   const navigation = useNavigation<AuthNavigationProp>();
 
   return(

@@ -2,13 +2,17 @@ import { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { HStack, VStack, Text, Button, ButtonIcon } from '@gluestack-ui/themed';
+import { HStack, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { LocateFixed, Bell } from 'lucide-react-native';
+import NotificationsData from '@data/notifications.json';
+
 import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';
+
 import { AuthNavigationProp } from '@routes/auth.routes';
+
+import { LocateFixed, Bell } from 'lucide-react-native';
 
 export function CurrentStatusBar() {
   const { location, errorMsg } = useContext(LocationContext);
@@ -51,6 +55,11 @@ export function CurrentStatusBar() {
         </VStack>
         <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
           <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
+          { 
+            NotificationsData.length > 0
+              ? <AvatarBadge bgColor='$red500'/>
+              : ''
+          }
         </Button>
       </HStack>
     </SafeAreaView>
