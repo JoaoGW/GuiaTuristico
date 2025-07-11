@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from 'react';
-import { Platform, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 
 import { HStack } from '@gluestack-ui/themed';
@@ -16,9 +16,6 @@ export const NavbarContext = createContext<NavbarContextType>({
   currentActive: "Home",
   setCurrentActive: () => {},
 });
-
-// Adapting the navbar bottom distance in case of iOS being in use
-const isIOS = Platform.OS === 'ios';
 
 export function NavigationBar() {
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
@@ -39,7 +36,6 @@ export function NavigationBar() {
       bg="$white"
       p={4}
       pt={8}
-      mb={isIOS ? 30 : 0}
       position="absolute"
       bottom={0}
       left={0}

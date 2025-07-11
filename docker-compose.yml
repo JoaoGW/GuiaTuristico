@@ -29,6 +29,8 @@ services:
       - '19002:19002'   # Expo web UI for Expo Web Debugging
     environment:
       - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    env_file:
+      - ./expo-app/.env.local
     volumes:
       - ./expo-app:/app
       - /app/node_modules

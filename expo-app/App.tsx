@@ -1,18 +1,20 @@
+import 'react-native-gesture-handler';
+
 import { useState } from "react";
 import { StatusBar, useColorScheme, SafeAreaView } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
 
 import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 
 import { Loading } from "@components/Loading";
-import { AuthRoute } from "@routes/auth.routes";
-import { ProvideUserLocation } from "@utils/requestDeviceLocation";
 import { NavbarContext } from "@components/NavigationBar";
 
+import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
 import { AuthProvider } from '@contexts/AuthContext';
+
 import { Routes } from '@routes/index';
 
 const lightMode = {
@@ -53,7 +55,9 @@ export default function App() {
             <AuthProvider>
               <ProvideUserLocation>
                 <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
-                  <Routes />
+                  <GestureHandlerRootView>
+                    <Routes />
+                  </GestureHandlerRootView> 
                 </NavbarContext.Provider>
               </ProvideUserLocation>
             </AuthProvider>

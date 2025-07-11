@@ -27,7 +27,7 @@ export function SettingsOption(props: SettingsRules) {
           marginLeft: 20,
         }}
       >
-        {optionText}
+        { optionText }
       </Text>
       <ChevronRight />
     </Pressable>

@@ -1,7 +1,7 @@
 // Use this method to request the OpenAI API to generate a travel itinerary
 export const generateItinerary = async (prompt: string) => {
   try {
-    const response = await fetch(`http://<SEU-IP-AQUI>:3000/api/generateItinerary`, {
+    const response = await fetch(`https://guia-turistico-alpha.vercel.app/api/generateItinerary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const generateItinerary = async (prompt: string) => {
 
 export const generateChatAnswers = async (prompt: string) => {
   try {
-    const response = await fetch(`http://<SEU-IP-AQUI>:3000/api/justchat`, {
+    const response = await fetch(`https://guia-turistico-alpha.vercel.app/api/justchat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

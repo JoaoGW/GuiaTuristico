@@ -10,10 +10,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { NavigationBar } from '@components/NavigationBar';
-
 import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
+
+import { useNotificationStore } from '@utils/notificationStore';
+
+import { Globe } from 'lucide-react-native';
 
 import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
 
@@ -27,22 +29,23 @@ export function GenerateItinerary() {
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [proceedAnyway, setProceedAnyway] = useState(false);
+
   const navigation = useNavigation<AuthNavigationProp>();
+  const addNotification = useNotificationStore(state => state.addNotification);
 
   const tagsArray = utilsGetSelectedTags();
   const tags = tagsArray.join(', ');
 
   useEffect(() =>{
-
     const loadSavedItinerary = async () => {
       try{
         const savedItinerary = await AsyncStorage.getItem(ITINERARY_STORAGE_KEY);
         if(savedItinerary != null){
           setItinerary(savedItinerary);
         }
-        } catch (error) {
-          console.error('Erro ao carregar o roteiro salvo:', error);
-        }
+      } catch (error) {
+        console.error('Erro ao carregar o roteiro salvo:', error);
+      }
     };
     loadSavedItinerary();
   }, []);
@@ -61,6 +64,12 @@ export function GenerateItinerary() {
     try {
       const result = await generateItinerary(prompt);
       setItinerary(result);
+
+      addNotification({
+        title: "Novo Roteiro",
+        description: "Um novo roteiro para a sua incrível próxima viagem foi gerado pela Inteligência Artificial. Confira já!",
+        routeIcon: Globe
+      });
 
       await AsyncStorage.setItem(ITINERARY_STORAGE_KEY, result);
     } catch (error) {
@@ -128,7 +137,7 @@ export function GenerateItinerary() {
         }
       </View>
 
-      <AlertDialog isOpen={showConfirmation} onClose={handleConfirmNo}>
+      <AlertDialog isOpen={ showConfirmation } onClose={ handleConfirmNo }>
         <AlertDialogBackdrop />
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -136,14 +145,14 @@ export function GenerateItinerary() {
           </AlertDialogHeader>
           <AlertDialogBody>
             <Text>
-              Tem certeza que deseja continuar? Isso pode gerar roteiros imprecisos para sua viagem.
+              Tem certeza que deseja continuar? Isso pode gerar roteiros imprecisos para sua viagem, pois não saberemos onde focar.
             </Text>
           </AlertDialogBody>
           <AlertDialogFooter justifyContent="space-between">
-            <Button bg="$red600" onPress={handleConfirmYes} sx={{ px: 10, py: 6, borderRadius: 6 }}>
+            <Button bg="$red600" onPress={ handleConfirmYes } sx={{ px: 10, py: 6, borderRadius: 6 }}>
               <ButtonText fontSize="$sm">Continuar mesmo assim</ButtonText>
             </Button>
-            <Button bg="$green600" onPress={handleConfirmNo} sx={{ px: 10, py: 6, borderRadius: 6 }}>
+            <Button bg="$green600" onPress={ handleConfirmNo } sx={{ px: 10, py: 6, borderRadius: 6 }}>
               <ButtonText fontSize="$sm">Configurações</ButtonText>
             </Button>
           </AlertDialogFooter>
