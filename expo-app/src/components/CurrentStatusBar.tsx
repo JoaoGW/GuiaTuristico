@@ -1,16 +1,24 @@
-import { SafeAreaView } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-import { HStack, VStack, Text } from '@gluestack-ui/themed';
+import { HStack, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
-import { LocateFixed, Bell } from 'lucide-react-native';
 import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';
+import { useNotificationStore } from '@utils/notificationStore';
+
+import { AuthNavigationProp } from '@routes/auth.routes';
+
+import { LocateFixed, Bell } from 'lucide-react-native';
 
 export function CurrentStatusBar() {
-  const { location, errorMsg } = useContext(LocationContext);
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
+
+  const { location, errorMsg } = useContext(LocationContext);
+  const navigation = useNavigation<AuthNavigationProp>();
+  const checkNotifications = useNotificationStore(state => state.notifications);
 
   useEffect(() => {
     if (location) {
@@ -30,7 +38,7 @@ export function CurrentStatusBar() {
       <HStack justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
         <VStack flex={1}>
           <HStack alignItems="center">
-            <LocateFixed size={26} color="#535353" />
+            <LocateFixed size={28} color="#535353" />
             { errorMsg ? (
               <Text color="red.500" ml={7}>{errorMsg}</Text>
             ) : location ? (
@@ -46,7 +54,14 @@ export function CurrentStatusBar() {
             )}
           </HStack>
         </VStack>
-        <Bell size={26} color="#535353" style={{ marginRight: 15 }} />
+        <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
+          <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
+          { 
+            checkNotifications.length > 0
+              ? <AvatarBadge bgColor='$red500'/>
+              : ''
+          }
+        </Button>
       </HStack>
     </SafeAreaView>
   );
