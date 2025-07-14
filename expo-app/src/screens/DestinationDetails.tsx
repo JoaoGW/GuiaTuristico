@@ -7,6 +7,7 @@ import DestinationData from '@data/destinations.json';
 import { CarouselImages } from "@components/CarouselImages";
 
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
+import { SafeAreaView, StatusBar } from "react-native";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 
@@ -45,8 +46,12 @@ export function DestinationDetails(){
   };
 
   return (
-    <View>
+    <View flex={1} style={{ backgroundColor: 'your-background-color' }}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <CarouselImages images={ destinationInfo.imagesUrlCarousel }/>
+      <SafeAreaView style={{ flex: 1 }}>
+        
+      </SafeAreaView>
     </View>
   )
 }

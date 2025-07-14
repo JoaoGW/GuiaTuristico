@@ -32,11 +32,11 @@ export function CarouselImages({ images }: CarouselImagesProps) {
 
   return (
     <View flex={1} justifyContent="center" alignItems="center">
-      <View width={width} height={525} position="relative">
+      <View width={width} height={325} position="relative">
         <Carousel
           loop
           width={width}
-          height={525}
+          height={325}
           autoPlay={true}
           data={images}
           scrollAnimationDuration={3000}
@@ -47,7 +47,12 @@ export function CarouselImages({ images }: CarouselImagesProps) {
               justifyContent="center"
               alignItems="center"
               overflow="hidden"
-              style={{ borderTopWidth: 0, borderWidth: 0, shadowOpacity: 0, backgroundColor: 'transparent' }}
+              style={{
+              borderTopWidth: 0,
+              borderWidth: 0,
+              shadowOpacity: 0,
+              backgroundColor: 'transparent'
+              }}
             >
               <Image
                 source={{ uri: item }}
