@@ -4,7 +4,7 @@ import { View } from "@gluestack-ui/themed";
 
 import DestinationData from '@data/destinations.json';
 
-import { ImageCarousel } from "@components/ImageCarousel";
+import { CarouselImages } from "@components/CarouselImages";
 
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
 
@@ -46,7 +46,7 @@ export function DestinationDetails(){
 
   return (
     <View>
-      <ImageCarousel images={ destinationInfo.imagesUrlCarousel }/>
+      <CarouselImages images={ destinationInfo.imagesUrlCarousel }/>
     </View>
   )
 }
