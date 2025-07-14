@@ -1,8 +1,10 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
 
-import { View, Image } from "@gluestack-ui/themed";
+import { View } from "@gluestack-ui/themed";
 
 import DestinationData from '@data/destinations.json';
+
+import { ImageCarousel } from "@components/ImageCarousel";
 
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
 
@@ -43,7 +45,7 @@ export function DestinationDetails(){
 
   return (
     <View>
-      
+      <ImageCarousel />
     </View>
   )
 }

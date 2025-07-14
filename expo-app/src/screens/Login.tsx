@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { VStack, Image, Center, Text, ScrollView, Box } from "@gluestack-ui/themed"
-import { Input } from "@components/Input";
+import { Input } from "@components/InputItems/Input";
 import { Button } from "@components/Buttons/Button";
 
 import { useAuth } from '@contexts/AuthContext';
