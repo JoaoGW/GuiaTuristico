@@ -1,5 +1,5 @@
 import { SafeAreaView, StatusBar, ScrollView } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import CountryFlag from "react-native-country-flag";
 
@@ -10,11 +10,13 @@ import { CarouselImages } from "@components/CarouselImages";
 import DestinationData from '@data/destinations.json';
 
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
-import { Car, Cloud, Home, Info, Map, Shield, Tag, Utensils, Star } from "lucide-react-native";
+import { Car, Cloud, Home, Info, Map, Shield, Tag, Utensils, Star, ArrowLeft, Heart, Share } from "lucide-react-native";
+import { AuthNavigationProp } from "@routes/auth.routes";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 
 export function DestinationDetails(){
+  const navigation = useNavigation<AuthNavigationProp>();
   const route = useRoute<DestinationRouteProp>();
   const { destinationId } = route.params;
 
@@ -52,6 +54,52 @@ export function DestinationDetails(){
   return (
     <View flex={1}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <View flexDirection="row" justifyContent="space-between">
+        <View>
+          <ArrowLeft
+            onPress={() => navigation.goBack()}
+            style={{
+              position: 'absolute',
+              padding: 19,
+              top: 17,
+              left: 25,
+              zIndex: 1,
+              marginTop: 50,
+              backgroundColor: "#FFF",
+              borderRadius: "100%"
+            }}
+          />
+        </View>
+        <View>
+          <Heart
+            onPress={() => navigation.goBack()}
+            color="red"
+            style={{
+              position: 'absolute',
+              padding: 19,
+              top: 17,
+              right: 75,
+              zIndex: 1,
+              marginTop: 50,
+              backgroundColor: "#FFF",
+              borderRadius: "100%"
+            }}
+          />
+          <Share
+            onPress={() => navigation.goBack()}
+            style={{
+              position: 'absolute',
+              padding: 19,
+              top: 17,
+              right: 25,
+              zIndex: 1,
+              marginTop: 50,
+              backgroundColor: "#FFF",
+              borderRadius: "100%"
+            }}
+          />
+        </View>
+      </View>
       <CarouselImages images={ destinationInfo.imagesUrlCarousel } />
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ marginBottom: 30 }}>

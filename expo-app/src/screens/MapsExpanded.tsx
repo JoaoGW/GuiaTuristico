@@ -56,7 +56,7 @@ export function MapsExpanded() {
           }}
         />
         <RecenterButton
-          onPress={recenterMap}
+          onPress={ recenterMap }
           styles={{
             position: 'absolute',
             paddingVertical: 10,
