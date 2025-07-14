@@ -145,13 +145,35 @@ export function Home() {
               <FlatList
                 data={ GlobalDestinationsData }
                 numColumns={2}
-                keyExtractor={ (item) => item.id }
+                keyExtractor={ (item) => String(item.id) }
                 renderItem={({ item }) => (
                   <Box flex={1} px={4} py={2}>
                     { location && (
                       <GlobalDestinations
-                        imageUrl={ item.image }
-                        title={ item.title }
+                        id={ Number(item.id) }
+                        imageUrl={ item.image || '' }
+                        title={ item.title || '' }
+                        description={ item.description || '' }
+                        country={ item.country || '' }
+                        continent={ item.continent || '' }
+                        rating={ item.rating || 0 }
+                        averageCost={ item.averageCost || '' }
+                        currency={ item.currency || '' }
+                        language={ item.language || '' }
+                        timeZone={ item.timeZone || '' }
+                        climate={ item.climate || '' }
+                        temperature={ item.temperature || { min: 0, max: 0 } }
+                        coordinates={ item.coordinates || { latitude: 0, longitude: 0 } }
+                        attractions={ item.attractions || [] }
+                        activities={ item.activities || [] }
+                        transportation={ item.transportation || [] }
+                        accommodation={ item.accommodation || { budget: '', midRange: '', luxury: '' } }
+                        foodSpecialties={ item.foodSpecialties || [] }
+                        tips={ item.tips || [] }
+                        safety={ item.safety || 0 }
+                        familyFriendly={ item.familyFriendly ?? false }
+                        bestTimeToVisit={ item.bestTimeToVisit || '' }
+                        tags={ item.tags || [] }
                       />
                     )}
                   </Box>
