@@ -368,7 +368,7 @@
         "climate": "Tropical",
         "temperature": {
             "min": 20,
-            "max": 30
+            "max": 41
         },
         "coordinates": {
             "latitude": -22.9068,
@@ -599,8 +599,8 @@
         "bestTimeToVisit": "Abril-Maio, Setembro-Novembro",
         "climate": "Subtropical",
         "temperature": {
-            "min": 12,
-            "max": 28
+            "min": 6,
+            "max": 35
         },
         "coordinates": {
             "latitude": -23.5505,

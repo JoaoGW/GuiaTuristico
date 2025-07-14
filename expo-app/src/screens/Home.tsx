@@ -150,7 +150,7 @@ export function Home() {
                 keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => (
                   <Box flex={1} px={4} py={2}>
-                    {location && (
+                    { location && (
                       <GlobalDestinations
                         id={Number(item.id)}
                         imageUrl={item.image || ''}

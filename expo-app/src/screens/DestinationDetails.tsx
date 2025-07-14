@@ -1,7 +1,7 @@
 import { SafeAreaView, StatusBar, ScrollView } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
-import ReactCountryFlag from "react-country-flag"
+import CountryFlag from "react-native-country-flag";
 
 import { View, Text, Box, VStack, HStack, Icon } from "@gluestack-ui/themed";
 
@@ -54,29 +54,36 @@ export function DestinationDetails(){
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <CarouselImages images={ destinationInfo.imagesUrlCarousel } />
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ marginBottom: 50 }}>
+        <ScrollView style={{ marginBottom: 30 }}>
           <Box p="$6" w={"100%"}>
-            <Text fontSize="$3xl" fontWeight="bold" color="#E9AD2D" mb="$6">{ destinationInfo.title }</Text>
+            <View flexDirection="row" alignItems="center" justifyContent="space-between">
+              <Text fontSize="$3xl" fontWeight="bold" color="#E9AD2D" mb="$6">{ destinationInfo.title }</Text>
+              <CountryFlag isoCode={ destinationInfo.countryCode } size={25} style={{ marginBottom: 20 }}/>
+            </View>
             <Text fontSize="$lg" color="#E9AD2D" mb="$6">{ destinationInfo.description }</Text>
             <VStack space="lg">
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Info size="md" color="#E9AD2D" />
+                  <Info size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="bold" color="#E9AD2D" ml="$4">Informações Gerais</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">País:</Text> { destinationInfo.country }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Continente:</Text> { destinationInfo.continent }</Text>
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Classificação:</Text>
-                    <Star
-                      size={14}
-                      color="#FFD700"
-                      fill={ destinationInfo.rating < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-                      stroke={ destinationInfo.rating < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-                      style={{ marginHorizontal: 30 }}
-                    />
-                    ({ destinationInfo.rating })
-                  </Text>
+                  <View flexDirection="row" alignContent="center">
+                    <Text fontSize="$lg"><Text fontWeight="$bold">Classificação:</Text>
+                      {[...Array(5)].map((_, index) => (
+                        <Star
+                          key={index}
+                          size={18}
+                          color="#FFD700"
+                          fill={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+                          stroke={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+                        />
+                      ))}
+                      ({ destinationInfo.rating })
+                    </Text>
+                  </View>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Custo médio:</Text> { destinationInfo.averageCost }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Moeda:</Text> { destinationInfo.currency }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Idioma:</Text> { destinationInfo.language }</Text>
@@ -86,7 +93,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Cloud size="md" color="#E9AD2D" />
+                  <Cloud size={40} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Clima</Text>
                 </HStack>
                 <VStack space="md">
@@ -98,7 +105,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Map size="md" color="#E9AD2D" />
+                  <Map size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Atrações e Atividades</Text>
                 </HStack>
                 <VStack space="md">
@@ -109,7 +116,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Car size="md" color="#E9AD2D" />
+                  <Car size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Transporte</Text>
                 </HStack>
                 <VStack space="md">
@@ -119,7 +126,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Home size="md" color="#E9AD2D" />
+                  <Home size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Acomodações</Text>
                 </HStack>
                 <VStack space="md">
@@ -132,7 +139,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Utensils size="md" color="#E9AD2D" />
+                  <Utensils size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Gastronomia</Text>
                 </HStack>
                 <VStack space="md">
@@ -142,7 +149,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Shield size="md" color="#E9AD2D" />
+                  <Shield size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Dicas e Segurança</Text>
                 </HStack>
                 <VStack space="md">
@@ -154,7 +161,7 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Tag size="md" color="#E9AD2D" />
+                  <Tag size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Tags</Text>
                 </HStack>
                 <VStack space="md">
