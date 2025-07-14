@@ -19,6 +19,7 @@ export function DestinationDetails(){
     ...item,
     id: Number(item.id),
     imageUrl: item.image || '',
+    imagesUrlCarousel: item.imagesUrlCarousel || [],
     title: item.title ?? '',
     description: item.description ?? '',
     country: item.country ?? '',
@@ -45,7 +46,7 @@ export function DestinationDetails(){
 
   return (
     <View>
-      <ImageCarousel />
+      <ImageCarousel images={ destinationInfo.imagesUrlCarousel }/>
     </View>
   )
 }

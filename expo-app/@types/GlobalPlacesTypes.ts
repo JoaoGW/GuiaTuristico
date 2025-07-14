@@ -3,6 +3,7 @@ export interface GlobalPlaces {
   title: string;
   description: string;
   imageUrl: string;
+  imagesUrlCarousel: string[];
   country: string;
   continent: string;
   rating: number;

@@ -152,6 +152,7 @@ export function Home() {
                       <GlobalDestinations
                         id={ Number(item.id) }
                         imageUrl={ item.image || '' }
+                        imagesUrlCarousel={ item.imagesUrlCarousel || [] }
                         title={ item.title || '' }
                         description={ item.description || '' }
                         country={ item.country || '' }
