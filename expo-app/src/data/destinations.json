@@ -2,7 +2,7 @@
     {
         "id": 1,
         "title": "Nova York",
-        "description": "A cidade que nunca dorme, famosa por seus arranha-céus e a Times Square.",
+        "description": "A cidade que nunca dorme, famosa por seus arranha-céus icônicos, a vibrante Times Square e uma energia única que pulsa 24 horas por dia. Nova York é o centro financeiro mundial, lar da Broadway e dos melhores museus, oferecendo uma experiência urbana incomparável com sua diversidade cultural e oportunidades infinitas.",
         "image": "https://cdn.pixabay.com/photo/2019/10/04/21/27/new-york-4526573_960_720.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2023/04/16/11/27/bridge-7930004_640.jpg",
@@ -14,10 +14,11 @@
             "https://cdn.pixabay.com/photo/2020/01/06/22/01/broadway-4746384_640.jpg"
         ],
         "country": "Estados Unidos",
+        "countryCode": "US",
         "continent": "América do Norte",
         "rating": 4.7,
         "averageCost": "$$$",
-        "currency": "USD",
+        "currency": "USD ($)",
         "language": "Inglês",
         "timeZone": "UTC-5",
         "bestTimeToVisit": "Abril-Junho, Setembro-Novembro",
@@ -40,9 +41,10 @@
         "activities": ["Museus", "Broadway", "Compras", "Gastronomia", "Vida Noturna"],
         "transportation": ["Metrô", "Taxi", "Uber", "A pé"],
         "accommodation": {
-            "budget": "$80-150",
-            "midRange": "$150-350",
-            "luxury": "$350+"
+            "simples": "$60-120",
+            "semiLuxo": "$120-250",
+            "luxo": "$250-500",
+            "airbnb": "$80-200"
         },
         "foodSpecialties": ["Pizza de Nova York", "Bagels", "Hot Dogs", "Cheesecake"],
         "tips": [
@@ -57,7 +59,7 @@
     {
         "id": 2,
         "title": "Paris",
-        "description": "A capital da França, conhecida pela Torre Eiffel e sua rica cultura.",
+        "description": "A capital francesa é o epítome da elegância e romantismo, conhecida mundialmente pela majestosa Torre Eiffel, museus de classe mundial como o Louvre, e uma rica herança cultural que se manifesta em cada boulevar, café e bistrô. Paris combina perfeitamente história, arte, moda e gastronomia em uma experiência urbana sofisticada.",
         "image": "https://cdn.pixabay.com/photo/2019/06/15/14/36/the-seine-river-4275721_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2014/10/15/19/20/notre-dame-490222_640.jpg",
@@ -70,10 +72,11 @@
             "https://cdn.pixabay.com/photo/2015/02/28/23/35/arc-de-triomphe-654114_640.jpg"
         ],
         "country": "França",
+        "countryCode": "FR",
         "continent": "Europa",
         "rating": 4.8,
         "averageCost": "$$$",
-        "currency": "EUR",
+        "currency": "EUR (€)",
         "language": "Francês",
         "timeZone": "UTC+1",
         "bestTimeToVisit": "Abril-Junho, Setembro-Outubro",
@@ -96,9 +99,10 @@
         "activities": ["Museus", "Arte", "Gastronomia", "Romance", "Arquitetura"],
         "transportation": ["Metrô", "Ônibus", "Bicicleta", "A pé"],
         "accommodation": {
-            "budget": "€60-120",
-            "midRange": "€120-250",
-            "luxury": "€250+"
+            "simples": "€50-100",
+            "semiLuxo": "€100-200",
+            "luxo": "€200-400",
+            "airbnb": "€70-150"
         },
         "foodSpecialties": ["Croissants", "Macarons", "Vinho", "Queijos", "Baguette"],
         "tips": [
@@ -113,7 +117,7 @@
     {
         "id": 3,
         "title": "Londres",
-        "description": "Uma cidade histórica com o Big Ben e a Abadia de Westminster.",
+        "description": "A capital britânica é uma fascinante mistura de tradição e modernidade, onde palácios reais coexistem com arranha-céus futuristas. Londres oferece uma rica história que remonta aos tempos romanos, teatros da famosa West End, museus excepcionais e uma diversidade cultural incomparável, tudo conectado por seu icônico sistema de transporte.",
         "image": "https://cdn.pixabay.com/photo/2021/08/12/05/19/cathedral-6539937_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2016/08/05/15/02/london-1572444_1280.jpg",
@@ -126,10 +130,11 @@
             "https://cdn.pixabay.com/photo/2018/01/12/11/55/london-3078109_640.jpg"
         ],
         "country": "Reino Unido",
+        "countryCode": "GB",
         "continent": "Europa",
         "rating": 4.6,
         "averageCost": "$$$",
-        "currency": "GBP",
+        "currency": "GBP (£)",
         "language": "Inglês",
         "timeZone": "UTC+0",
         "bestTimeToVisit": "Maio-Setembro",
@@ -152,9 +157,10 @@
         "activities": ["História", "Museus", "Teatros", "Pubs", "Parques"],
         "transportation": ["Underground", "Ônibus", "Táxi", "A pé"],
         "accommodation": {
-            "budget": "£50-100",
-            "midRange": "£100-200",
-            "luxury": "£200+"
+            "simples": "£40-80",
+            "semiLuxo": "£80-150",
+            "luxo": "£150-300",
+            "airbnb": "£60-120"
         },
         "foodSpecialties": ["Fish and Chips", "Sunday Roast", "Afternoon Tea", "Bangers and Mash"],
         "tips": [
@@ -169,7 +175,7 @@
     {
         "id": 4,
         "title": "Tóquio",
-        "description": "Uma metrópole vibrante, famosa por sua tecnologia e cultura tradicional.",
+        "description": "A fascinante capital japonesa é uma metrópole futurista que harmoniza perfeitamente a ultra-modernidade com tradições milenares. Tóquio oferece desde templos serenos e jardins zen até distritos tecnológicos vibrantes, uma gastronomia refinada que vai além do sushi, e uma cultura pop única que influencia o mundo inteiro.",
         "image": "https://cdn.pixabay.com/photo/2018/04/17/01/20/japan-3326336_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2019/08/28/14/24/tokyo-4436914_640.jpg",
@@ -183,10 +189,11 @@
             "https://cdn.pixabay.com/photo/2020/03/19/05/03/bullet-train-4946293_640.jpg"
         ],
         "country": "Japão",
+        "countryCode": "JP",
         "continent": "Ásia",
         "rating": 4.9,
         "averageCost": "$$$",
-        "currency": "JPY",
+        "currency": "JPY (¥)",
         "language": "Japonês",
         "timeZone": "UTC+9",
         "bestTimeToVisit": "Março-Maio, Setembro-Novembro",
@@ -209,9 +216,10 @@
         "activities": ["Cultura", "Tecnologia", "Gastronomia", "Templos", "Anime/Manga"],
         "transportation": ["JR Pass", "Metrô", "Trem", "Táxi"],
         "accommodation": {
-            "budget": "¥3000-8000",
-            "midRange": "¥8000-20000",
-            "luxury": "¥20000+"
+            "simples": "¥2500-6000",
+            "semiLuxo": "¥6000-15000",
+            "luxo": "¥15000-35000",
+            "airbnb": "¥4000-10000"
         },
         "foodSpecialties": ["Sushi", "Ramen", "Tempura", "Yakitori", "Matcha"],
         "tips": [
@@ -226,7 +234,7 @@
     {
         "id": 5,
         "title": "Dubai",
-        "description": "Uma cidade futurista com arranha-céus e luxuosos shoppings.",
+        "description": "Uma cidade futurista que surgiu do deserto como um oásis de luxo e inovação, onde arranha-céus recordistas tocam as nuvens e shoppings extravagantes oferecem experiências únicas. Dubai combina tradições árabes com visão futurista, oferecendo desde aventuras no deserto até experiências culinárias de classe mundial.",
         "image": "https://cdn.pixabay.com/photo/2016/02/28/20/23/dubai-1227538_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2019/03/09/21/30/downtown-4045036_640.jpg",
@@ -237,10 +245,11 @@
             "https://cdn.pixabay.com/photo/2020/11/13/23/31/dubai-5740306_640.jpg"
         ],
         "country": "Emirados Árabes Unidos",
+        "countryCode": "AE",
         "continent": "Ásia",
         "rating": 4.5,
         "averageCost": "$$$$",
-        "currency": "AED",
+        "currency": "AED (د.إ)",
         "language": "Árabe",
         "timeZone": "UTC+4",
         "bestTimeToVisit": "Novembro-Março",
@@ -263,9 +272,10 @@
         "activities": ["Compras", "Luxo", "Deserto", "Praia", "Arranha-céus"],
         "transportation": ["Metrô", "Táxi", "Uber", "Ônibus"],
         "accommodation": {
-            "budget": "200-400 AED",
-            "midRange": "400-800 AED",
-            "luxury": "800+ AED"
+            "simples": "150-300 AED",
+            "semiLuxo": "300-600 AED",
+            "luxo": "600-1200 AED",
+            "airbnb": "200-500 AED"
         },
         "foodSpecialties": ["Shawarma", "Hummus", "Kunafa", "Camel Burger", "Arabic Coffee"],
         "tips": [
@@ -280,7 +290,7 @@
     {
         "id": 6,
         "title": "Sydney",
-        "description": "Lar da icônica Opera House e belas praias.",
+        "description": "A deslumbrante cidade australiana é famosa mundialmente por sua icônica Opera House e pelo majestoso Harbour Bridge, mas oferece muito mais: praias paradisíacas como Bondi Beach, uma cultura cosmopolita vibrante, jardins botânicos exuberantes e uma qualidade de vida invejável em um cenário natural espetacular.",
         "image": "https://cdn.pixabay.com/photo/2017/11/02/10/31/sydney-2910646_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2017/08/17/15/25/sydney-2651711_640.jpg",
@@ -291,10 +301,11 @@
             "https://cdn.pixabay.com/photo/2019/12/03/17/02/sydney-4670481_640.jpg"
         ],
         "country": "Austrália",
+        "countryCode": "AU",
         "continent": "Oceania",
         "rating": 4.7,
         "averageCost": "$$$",
-        "currency": "AUD",
+        "currency": "AUD (A$)",
         "language": "Inglês",
         "timeZone": "UTC+10",
         "bestTimeToVisit": "Setembro-Novembro, Março-Maio",
@@ -317,9 +328,10 @@
         "activities": ["Praia", "Surf", "Ópera", "Caminhadas", "Vida Noturna"],
         "transportation": ["Trem", "Ferry", "Ônibus", "Táxi"],
         "accommodation": {
-            "budget": "$80-150 AUD",
-            "midRange": "$150-300 AUD",
-            "luxury": "$300+ AUD"
+            "simples": "$70-130 AUD",
+            "semiLuxo": "$130-250 AUD",
+            "luxo": "$250-500 AUD",
+            "airbnb": "$90-180 AUD"
         },
         "foodSpecialties": ["Meat Pies", "Lamington", "Barramundi", "Pavlova", "Tim Tams"],
         "tips": [
@@ -334,7 +346,7 @@
     {
         "id": 7,
         "title": "Rio de Janeiro",
-        "description": "Famosa pelo Cristo Redentor e suas praias deslumbrantes.",
+        "description": "A Cidade Maravilhosa é mundialmente famosa por suas praias icônicas como Copacabana e Ipanema, pelo majestoso Cristo Redentor no topo do Corcovado, e por ser o berço do Carnaval mais famoso do mundo. O Rio combina belezas naturais deslumbrantes com uma cultura vibrante, música contagiante e um povo acolhedor.",
         "image": "https://cdn.pixabay.com/photo/2017/01/08/19/30/rio-de-janeiro-1963744_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2016/04/03/02/28/rio-1303951_1280.jpg",
@@ -345,10 +357,11 @@
             "https://cdn.pixabay.com/photo/2021/02/02/20/40/beach-5975314_640.jpg"
         ],
         "country": "Brasil",
+        "countryCode": "BR",
         "continent": "América do Sul",
         "rating": 4.4,
         "averageCost": "$$",
-        "currency": "BRL",
+        "currency": "BRL (R$)",
         "language": "Português",
         "timeZone": "UTC-3",
         "bestTimeToVisit": "Dezembro-Março",
@@ -371,9 +384,10 @@
         "activities": ["Praia", "Carnaval", "Samba", "Futebol", "Trilhas"],
         "transportation": ["Metrô", "Ônibus", "Táxi", "Uber"],
         "accommodation": {
-            "budget": "R$80-150",
-            "midRange": "R$150-300",
-            "luxury": "R$300+"
+            "simples": "R$60-120",
+            "semiLuxo": "R$120-250",
+            "luxo": "R$250-500",
+            "airbnb": "R$80-180"
         },
         "foodSpecialties": ["Feijoada", "Açaí", "Pão de Açúcar", "Caipirinha", "Churrasco"],
         "tips": [
@@ -388,7 +402,7 @@
     {
         "id": 8,
         "title": "Cidade do Cabo",
-        "description": "Conhecida por sua beleza natural e a Table Mountain.",
+        "description": "Localizada no extremo sul da África, a Cidade do Cabo é conhecida por sua beleza natural extraordinária, dominada pela imponente Table Mountain. A cidade oferece vinícolas mundialmente reconhecidas, praias pristinas, uma rica história que inclui Robben Island, e é porta de entrada para safáris inesquecíveis na região.",
         "image": "https://cdn.pixabay.com/photo/2016/08/02/09/46/cape-town-1562907_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2020/06/10/16/28/cape-town-5283355_640.jpg",
@@ -398,10 +412,11 @@
             "https://cdn.pixabay.com/photo/2017/07/09/22/33/sea-point-2488429_640.jpg"
         ],
         "country": "África do Sul",
+        "countryCode": "ZA",
         "continent": "África",
         "rating": 4.6,
         "averageCost": "$$",
-        "currency": "ZAR",
+        "currency": "ZAR (R)",
         "language": "Inglês/Africânder",
         "timeZone": "UTC+2",
         "bestTimeToVisit": "Novembro-Março",
@@ -424,9 +439,10 @@
         "activities": ["Natureza", "Vinícolas", "Safári", "Praia", "História"],
         "transportation": ["Carro", "Ônibus", "Táxi", "Uber"],
         "accommodation": {
-            "budget": "R400-800",
-            "midRange": "R800-1500",
-            "luxury": "R1500+"
+            "simples": "R300-600",
+            "semiLuxo": "R600-1200",
+            "luxo": "R1200-2500",
+            "airbnb": "R400-900"
         },
         "foodSpecialties": ["Bobotie", "Biltong", "Boerewors", "Koeksisters", "Rooibos Tea"],
         "tips": [
@@ -441,7 +457,7 @@
     {
         "id": 9,
         "title": "Bangkok",
-        "description": "A capital da Tailândia, famosa por seus templos e vida noturna.",
+        "description": "A vibrante capital tailandesa é uma metrópole fascinante que mistura templos dourados majestosos com arranha-céus modernos, mercados flutuantes tradicionais com shoppings luxuosos. Bangkok oferece uma das melhores culinárias de rua do mundo, vida noturna energética e uma riqueza cultural impressionante que reflete a alma do Sudeste Asiático.",
         "image": "https://cdn.pixabay.com/photo/2023/05/16/09/15/bangkok-7997046_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2016/10/22/00/04/bangkok-1759467_640.jpg",
@@ -454,10 +470,11 @@
             "https://cdn.pixabay.com/photo/2015/01/02/07/07/thailand-586342_640.jpg"
         ],
         "country": "Tailândia",
+        "countryCode": "TH",
         "continent": "Ásia",
         "rating": 4.3,
         "averageCost": "$$",
-        "currency": "THB",
+        "currency": "THB (฿)",
         "language": "Tailandês",
         "timeZone": "UTC+7",
         "bestTimeToVisit": "Novembro-Março",
@@ -480,9 +497,10 @@
         "activities": ["Templos", "Mercados", "Vida Noturna", "Massagem", "Culinária"],
         "transportation": ["BTS", "MRT", "Tuk-tuk", "Táxi", "Barco"],
         "accommodation": {
-            "budget": "$10-30",
-            "midRange": "$30-80",
-            "luxury": "$80+"
+            "simples": "$8-25",
+            "semiLuxo": "$25-60",
+            "luxo": "$60-150",
+            "airbnb": "$15-40"
         },
         "foodSpecialties": ["Pad Thai", "Tom Yum", "Green Curry", "Mango Sticky Rice", "Som Tam"],
         "tips": [
@@ -497,7 +515,7 @@
     {
         "id": 10,
         "title": "Roma",
-        "description": "Uma cidade histórica com o Coliseu e rica herança cultural.",
+        "description": "A Cidade Eterna é um museu a céu aberto onde cada esquina conta milênios de história. Roma combina monumentos ancestrais como o Coliseu e o Fórum Romano com a grandiosidade do Vaticano, uma gastronomia autêntica e inigualável, e um estilo de vida que celebra tanto o passado glorioso quanto a dolce vita italiana.",
         "image": "https://cdn.pixabay.com/photo/2021/04/25/23/17/rome-6207755_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2020/04/21/19/30/rome-5074421_1280.jpg",
@@ -508,10 +526,11 @@
             "https://cdn.pixabay.com/photo/2017/09/28/19/51/trevi-fountain-2796711_640.jpg"
         ],
         "country": "Itália",
+        "countryCode": "IT",
         "continent": "Europa",
         "rating": 4.7,
         "averageCost": "$$$",
-        "currency": "EUR",
+        "currency": "EUR (€)",
         "language": "Italiano",
         "timeZone": "UTC+1",
         "bestTimeToVisit": "Abril-Junho, Setembro-Outubro",
@@ -534,9 +553,10 @@
         "activities": ["História", "Arte", "Gastronomia", "Arquitetura", "Museus"],
         "transportation": ["Metrô", "Ônibus", "Táxi", "A pé"],
         "accommodation": {
-            "budget": "€50-100",
-            "midRange": "€100-250",
-            "luxury": "€250+"
+            "simples": "€40-90",
+            "semiLuxo": "€90-200",
+            "luxo": "€200-450",
+            "airbnb": "€60-140"
         },
         "foodSpecialties": ["Pizza", "Pasta Carbonara", "Gelato", "Supplì", "Maritozzo"],
         "tips": [
@@ -551,7 +571,7 @@
     {
         "id": 11,
         "title": "São Paulo",
-        "description": "Uma metrópole brasileira, conhecida por sua diversidade cultural.",
+        "description": "A maior metrópole da América do Sul é um verdadeiro caldeirão cultural onde convivem mais de 100 nacionalidades diferentes. São Paulo é o centro gastronômico do Brasil, oferece uma vida cultural intensa com museus de classe mundial, teatros renomados, vida noturna vibrante e uma energia urbana única que nunca para.",
         "image": "https://images.unsplash.com/photo-1629984557780-4dde2292e245?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2016/11/20/08/34/buildings-1842205_1280.jpg",
@@ -569,10 +589,11 @@
             "https://cdn.pixabay.com/photo/2019/08/23/22/40/city-4426650_640.jpg"
         ],
         "country": "Brasil",
+        "countryCode": "BR",
         "continent": "América do Sul",
         "rating": 4.5,
         "averageCost": "$$",
-        "currency": "BRL",
+        "currency": "BRL (R$)",
         "language": "Português",
         "timeZone": "UTC-3",
         "bestTimeToVisit": "Abril-Maio, Setembro-Novembro",
@@ -595,9 +616,10 @@
         "activities": ["Gastronomia", "Museus", "Arte", "Vida Noturna", "Compras"],
         "transportation": ["Metrô", "Ônibus", "Uber", "Táxi"],
         "accommodation": {
-            "budget": "R$60-120",
-            "midRange": "R$120-250",
-            "luxury": "R$250+"
+            "simples": "R$50-100",
+            "semiLuxo": "R$100-200",
+            "luxo": "R$200-400",
+            "airbnb": "R$70-150"
         },
         "foodSpecialties": ["Pizza paulista", "Pastel", "Mortadela", "Guaraná", "Coxinha"],
         "tips": [
@@ -612,7 +634,7 @@
     {
         "id": 12,
         "title": "Porto",
-        "description": "Uma cidade portuguesa famosa pelo vinho do Porto e arquitetura charmosa.",
+        "description": "A encantadora cidade portuguesa, situada às margens do Rio Douro, é mundialmente famosa pelos seus vinhos do Porto e pela arquitetura única que mistura azulejos tradicionais com pontes imponentes. Porto oferece um centro histórico Património da Humanidade, uma gastronomia autêntica e um charme especial que cativa todos os visitantes.",
         "image": "https://cdn.pixabay.com/photo/2021/11/30/21/13/porto-cathedral-6836243_1280.jpg",
         "imagesUrlCarousel": [
             "https://cdn.pixabay.com/photo/2017/10/03/17/32/porto-2813368_640.jpg",
@@ -628,10 +650,11 @@
             "https://cdn.pixabay.com/photo/2021/11/10/20/42/porto-6784783_640.jpg"
         ],
         "country": "Portugal",
+        "countryCode": "PT",
         "continent": "Europa",
         "rating": 4.5,
         "averageCost": "$$",
-        "currency": "EUR",
+        "currency": "EUR (€)",
         "language": "Português",
         "timeZone": "UTC+0",
         "bestTimeToVisit": "Maio-Setembro",
@@ -654,9 +677,10 @@
         "activities": ["Vinho", "História", "Arquitetura", "Gastronomia", "Fado"],
         "transportation": ["Metrô", "Elétrico", "Ônibus", "A pé"],
         "accommodation": {
-            "budget": "€30-60",
-            "midRange": "€60-120",
-            "luxury": "€120+"
+            "simples": "€25-50",
+            "semiLuxo": "€50-100",
+            "luxo": "€100-200",
+            "airbnb": "€35-75"
         },
         "foodSpecialties": ["Francesinha", "Pastéis de Nata", "Bacalhau", "Vinho do Porto", "Tripas à Moda do Porto"],
         "tips": [

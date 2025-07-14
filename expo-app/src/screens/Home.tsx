@@ -158,6 +158,7 @@ export function Home() {
                         title={item.title || ''}
                         description={item.description || ''}
                         country={item.country || ''}
+                        countryCode={item.countryCode || ''}
                         continent={item.continent || ''}
                         rating={item.rating || 0}
                         averageCost={item.averageCost || ''}
@@ -170,7 +171,7 @@ export function Home() {
                         attractions={item.attractions || []}
                         activities={item.activities || []}
                         transportation={item.transportation || []}
-                        accommodation={item.accommodation || { budget: '', midRange: '', luxury: '' }}
+                        accommodation={item.accommodation || { simples: '', semiLuxo: '', luxo: '', airbnb: '' }}
                         foodSpecialties={item.foodSpecialties || []}
                         tips={item.tips || []}
                         safety={item.safety || 0}

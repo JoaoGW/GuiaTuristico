@@ -5,6 +5,7 @@ export interface GlobalPlaces {
   imageUrl: string;
   imagesUrlCarousel: string[];
   country: string;
+  countryCode: string;
   continent: string;
   rating: number;
   averageCost: string;
@@ -25,9 +26,10 @@ export interface GlobalPlaces {
   activities: string[];
   transportation: string[];
   accommodation: {
-    budget: string;
-    midRange: string;
-    luxury: string;
+    simples: string;
+    semiLuxo: string;
+    luxo: string;
+    airbnb: string;
   };
   foodSpecialties: string[];
   tips: string[];
