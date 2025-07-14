@@ -3,72 +3,552 @@
         "id": "1",
         "title": "Nova York",
         "description": "A cidade que nunca dorme, famosa por seus arranha-céus e a Times Square.",
-        "image": "https://cdn.pixabay.com/photo/2019/10/04/21/27/new-york-4526573_960_720.jpg"
+        "image": "https://cdn.pixabay.com/photo/2019/10/04/21/27/new-york-4526573_960_720.jpg",
+        "country": "Estados Unidos",
+        "continent": "América do Norte",
+        "rating": 4.7,
+        "averageCost": "$$$",
+        "currency": "USD",
+        "language": "Inglês",
+        "timeZone": "UTC-5",
+        "bestTimeToVisit": "Abril-Junho, Setembro-Novembro",
+        "climate": "Continental",
+        "temperature": {
+            "min": -3,
+            "max": 29
+        },
+        "coordinates": {
+            "latitude": 40.7128,
+            "longitude": -74.0060
+        },
+        "attractions": [
+            "Times Square",
+            "Central Park",
+            "Estátua da Liberdade",
+            "Empire State Building",
+            "Brooklyn Bridge"
+        ],
+        "activities": ["Museus", "Broadway", "Compras", "Gastronomia", "Vida Noturna"],
+        "transportation": ["Metrô", "Taxi", "Uber", "A pé"],
+        "accommodation": {
+            "budget": "$80-150",
+            "midRange": "$150-350",
+            "luxury": "$350+"
+        },
+        "foodSpecialties": ["Pizza de Nova York", "Bagels", "Hot Dogs", "Cheesecake"],
+        "tips": [
+            "Use o MetroCard para transporte público",
+            "Reserve shows da Broadway com antecedência",
+            "Caminhe pelo Central Park ao entardecer"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["Urbano", "Cultural", "Compras", "Vida Noturna"]
     },
     {
         "id": "2",
         "title": "Paris",
         "description": "A capital da França, conhecida pela Torre Eiffel e sua rica cultura.",
-        "image": "https://cdn.pixabay.com/photo/2019/06/15/14/36/the-seine-river-4275721_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2019/06/15/14/36/the-seine-river-4275721_1280.jpg",
+        "country": "França",
+        "continent": "Europa",
+        "rating": 4.8,
+        "averageCost": "$$$",
+        "currency": "EUR",
+        "language": "Francês",
+        "timeZone": "UTC+1",
+        "bestTimeToVisit": "Abril-Junho, Setembro-Outubro",
+        "climate": "Oceânico",
+        "temperature": {
+            "min": 3,
+            "max": 25
+        },
+        "coordinates": {
+            "latitude": 48.8566,
+            "longitude": 2.3522
+        },
+        "attractions": [
+            "Torre Eiffel",
+            "Museu do Louvre",
+            "Catedral de Notre-Dame",
+            "Arco do Triunfo",
+            "Champs-Élysées"
+        ],
+        "activities": ["Museus", "Arte", "Gastronomia", "Romance", "Arquitetura"],
+        "transportation": ["Metrô", "Ônibus", "Bicicleta", "A pé"],
+        "accommodation": {
+            "budget": "€60-120",
+            "midRange": "€120-250",
+            "luxury": "€250+"
+        },
+        "foodSpecialties": ["Croissants", "Macarons", "Vinho", "Queijos", "Baguette"],
+        "tips": [
+            "Compre o Museum Pass para pular filas",
+            "Experimente um café parisiense típico",
+            "Passeie pelo Sena ao entardecer"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["Cultural", "Romance", "Arte", "Gastronomia"]
     },
     {
         "id": "3",
         "title": "Londres",
         "description": "Uma cidade histórica com o Big Ben e a Abadia de Westminster.",
-        "image": "https://cdn.pixabay.com/photo/2021/08/12/05/19/cathedral-6539937_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2021/08/12/05/19/cathedral-6539937_1280.jpg",
+        "country": "Reino Unido",
+        "continent": "Europa",
+        "rating": 4.6,
+        "averageCost": "$$$",
+        "currency": "GBP",
+        "language": "Inglês",
+        "timeZone": "UTC+0",
+        "bestTimeToVisit": "Maio-Setembro",
+        "climate": "Oceânico",
+        "temperature": {
+            "min": 2,
+            "max": 23
+        },
+        "coordinates": {
+            "latitude": 51.5074,
+            "longitude": -0.1278
+        },
+        "attractions": [
+            "Big Ben",
+            "Palácio de Buckingham",
+            "London Eye",
+            "Tower Bridge",
+            "British Museum"
+        ],
+        "activities": ["História", "Museus", "Teatros", "Pubs", "Parques"],
+        "transportation": ["Underground", "Ônibus", "Táxi", "A pé"],
+        "accommodation": {
+            "budget": "£50-100",
+            "midRange": "£100-200",
+            "luxury": "£200+"
+        },
+        "foodSpecialties": ["Fish and Chips", "Sunday Roast", "Afternoon Tea", "Bangers and Mash"],
+        "tips": [
+            "Use o Oyster Card para transporte",
+            "Visite os mercados de Camden e Borough",
+            "Experimente um pub tradicional"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["História", "Cultural", "Arquitetura", "Teatros"]
     },
     {
         "id": "4",
         "title": "Tóquio",
         "description": "Uma metrópole vibrante, famosa por sua tecnologia e cultura tradicional.",
-        "image": "https://cdn.pixabay.com/photo/2018/04/17/01/20/japan-3326336_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2018/04/17/01/20/japan-3326336_1280.jpg",
+        "country": "Japão",
+        "continent": "Ásia",
+        "rating": 4.9,
+        "averageCost": "$$$",
+        "currency": "JPY",
+        "language": "Japonês",
+        "timeZone": "UTC+9",
+        "bestTimeToVisit": "Março-Maio, Setembro-Novembro",
+        "climate": "Subtropical húmido",
+        "temperature": {
+            "min": 5,
+            "max": 31
+        },
+        "coordinates": {
+            "latitude": 35.6762,
+            "longitude": 139.6503
+        },
+        "attractions": [
+            "Senso-ji Temple",
+            "Shibuya Crossing",
+            "Tokyo Skytree",
+            "Meiji Shrine",
+            "Tsukiji Fish Market"
+        ],
+        "activities": ["Cultura", "Tecnologia", "Gastronomia", "Templos", "Anime/Manga"],
+        "transportation": ["JR Pass", "Metrô", "Trem", "Táxi"],
+        "accommodation": {
+            "budget": "¥3000-8000",
+            "midRange": "¥8000-20000",
+            "luxury": "¥20000+"
+        },
+        "foodSpecialties": ["Sushi", "Ramen", "Tempura", "Yakitori", "Matcha"],
+        "tips": [
+            "Compre o JR Pass antes de viajar",
+            "Aprenda algumas palavras básicas em japonês",
+            "Experimente um hotel cápsula"
+        ],
+        "safety": 5,
+        "familyFriendly": true,
+        "tags": ["Tecnologia", "Cultura", "Gastronomia", "Tradição"]
     },
     {
         "id": "5",
         "title": "Dubai",
         "description": "Uma cidade futurista com arranha-céus e luxuosos shoppings.",
-        "image": "https://cdn.pixabay.com/photo/2016/02/28/20/23/dubai-1227538_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2016/02/28/20/23/dubai-1227538_1280.jpg",
+        "country": "Emirados Árabes Unidos",
+        "continent": "Ásia",
+        "rating": 4.5,
+        "averageCost": "$$$$",
+        "currency": "AED",
+        "language": "Árabe",
+        "timeZone": "UTC+4",
+        "bestTimeToVisit": "Novembro-Março",
+        "climate": "Desértico",
+        "temperature": {
+            "min": 15,
+            "max": 45
+        },
+        "coordinates": {
+            "latitude": 25.2048,
+            "longitude": 55.2708
+        },
+        "attractions": [
+            "Burj Khalifa",
+            "Palm Jumeirah",
+            "Dubai Mall",
+            "Burj Al Arab",
+            "Dubai Marina"
+        ],
+        "activities": ["Compras", "Luxo", "Deserto", "Praia", "Arranha-céus"],
+        "transportation": ["Metrô", "Táxi", "Uber", "Ônibus"],
+        "accommodation": {
+            "budget": "200-400 AED",
+            "midRange": "400-800 AED",
+            "luxury": "800+ AED"
+        },
+        "foodSpecialties": ["Shawarma", "Hummus", "Kunafa", "Camel Burger", "Arabic Coffee"],
+        "tips": [
+            "Respeite os costumes locais",
+            "Use roupas adequadas em locais públicos",
+            "Experimente um safari no deserto"
+        ],
+        "safety": 5,
+        "familyFriendly": true,
+        "tags": ["Luxo", "Moderno", "Compras", "Deserto"]
     },
     {
         "id": "6",
         "title": "Sydney",
         "description": "Lar da icônica Opera House e belas praias.",
-        "image": "https://cdn.pixabay.com/photo/2017/11/02/10/31/sydney-2910646_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2017/11/02/10/31/sydney-2910646_1280.jpg",
+        "country": "Austrália",
+        "continent": "Oceania",
+        "rating": 4.7,
+        "averageCost": "$$$",
+        "currency": "AUD",
+        "language": "Inglês",
+        "timeZone": "UTC+10",
+        "bestTimeToVisit": "Setembro-Novembro, Março-Maio",
+        "climate": "Subtropical oceânico",
+        "temperature": {
+            "min": 9,
+            "max": 26
+        },
+        "coordinates": {
+            "latitude": -33.8688,
+            "longitude": 151.2093
+        },
+        "attractions": [
+            "Sydney Opera House",
+            "Harbour Bridge",
+            "Bondi Beach",
+            "Royal Botanic Gardens",
+            "The Rocks"
+        ],
+        "activities": ["Praia", "Surf", "Ópera", "Caminhadas", "Vida Noturna"],
+        "transportation": ["Trem", "Ferry", "Ônibus", "Táxi"],
+        "accommodation": {
+            "budget": "$80-150 AUD",
+            "midRange": "$150-300 AUD",
+            "luxury": "$300+ AUD"
+        },
+        "foodSpecialties": ["Meat Pies", "Lamington", "Barramundi", "Pavlova", "Tim Tams"],
+        "tips": [
+            "Use o Opal Card para transporte público",
+            "Reserve ingressos para a Opera House",
+            "Experimente um ferry até Manly Beach"
+        ],
+        "safety": 5,
+        "familyFriendly": true,
+        "tags": ["Praia", "Cultural", "Natureza", "Urbano"]
     },
     {
         "id": "7",
         "title": "Rio de Janeiro",
         "description": "Famosa pelo Cristo Redentor e suas praias deslumbrantes.",
-        "image": "https://cdn.pixabay.com/photo/2017/01/08/19/30/rio-de-janeiro-1963744_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2017/01/08/19/30/rio-de-janeiro-1963744_1280.jpg",
+        "country": "Brasil",
+        "continent": "América do Sul",
+        "rating": 4.4,
+        "averageCost": "$$",
+        "currency": "BRL",
+        "language": "Português",
+        "timeZone": "UTC-3",
+        "bestTimeToVisit": "Dezembro-Março",
+        "climate": "Tropical",
+        "temperature": {
+            "min": 20,
+            "max": 30
+        },
+        "coordinates": {
+            "latitude": -22.9068,
+            "longitude": -43.1729
+        },
+        "attractions": [
+            "Cristo Redentor",
+            "Pão de Açúcar",
+            "Copacabana",
+            "Ipanema",
+            "Maracanã"
+        ],
+        "activities": ["Praia", "Carnaval", "Samba", "Futebol", "Trilhas"],
+        "transportation": ["Metrô", "Ônibus", "Táxi", "Uber"],
+        "accommodation": {
+            "budget": "R$80-150",
+            "midRange": "R$150-300",
+            "luxury": "R$300+"
+        },
+        "foodSpecialties": ["Feijoada", "Açaí", "Pão de Açúcar", "Caipirinha", "Churrasco"],
+        "tips": [
+            "Mantenha objetos de valor em local seguro",
+            "Use protetor solar e hidrate-se",
+            "Experimente a vida noturna de Lapa"
+        ],
+        "safety": 2,
+        "familyFriendly": true,
+        "tags": ["Praia", "Carnaval", "Natureza", "Cultura"]
     },
     {
         "id": "8",
         "title": "Cidade do Cabo",
         "description": "Conhecida por sua beleza natural e a Table Mountain.",
-        "image": "https://cdn.pixabay.com/photo/2016/08/02/09/46/cape-town-1562907_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2016/08/02/09/46/cape-town-1562907_1280.jpg",
+        "country": "África do Sul",
+        "continent": "África",
+        "rating": 4.6,
+        "averageCost": "$$",
+        "currency": "ZAR",
+        "language": "Inglês/Africânder",
+        "timeZone": "UTC+2",
+        "bestTimeToVisit": "Novembro-Março",
+        "climate": "Mediterrâneo",
+        "temperature": {
+            "min": 7,
+            "max": 27
+        },
+        "coordinates": {
+            "latitude": -33.9249,
+            "longitude": 18.4241
+        },
+        "attractions": [
+            "Table Mountain",
+            "Robben Island",
+            "V&A Waterfront",
+            "Kirstenbosch Gardens",
+            "Cape Point"
+        ],
+        "activities": ["Natureza", "Vinícolas", "Safári", "Praia", "História"],
+        "transportation": ["Carro", "Ônibus", "Táxi", "Uber"],
+        "accommodation": {
+            "budget": "R400-800",
+            "midRange": "R800-1500",
+            "luxury": "R1500+"
+        },
+        "foodSpecialties": ["Bobotie", "Biltong", "Boerewors", "Koeksisters", "Rooibos Tea"],
+        "tips": [
+            "Visite as vinícolas de Stellenbosch",
+            "Suba a Table Mountain no teleférico",
+            "Experimente um safári nos arredores"
+        ],
+        "safety": 3,
+        "familyFriendly": true,
+        "tags": ["Natureza", "Vinho", "Safari", "História"]
     },
     {
         "id": "9",
         "title": "Bangkok",
         "description": "A capital da Tailândia, famosa por seus templos e vida noturna.",
-        "image": "https://cdn.pixabay.com/photo/2023/05/16/09/15/bangkok-7997046_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2023/05/16/09/15/bangkok-7997046_1280.jpg",
+        "country": "Tailândia",
+        "continent": "Ásia",
+        "rating": 4.3,
+        "averageCost": "$$",
+        "currency": "THB",
+        "language": "Tailandês",
+        "timeZone": "UTC+7",
+        "bestTimeToVisit": "Novembro-Março",
+        "climate": "Tropical",
+        "temperature": {
+            "min": 23,
+            "max": 35
+        },
+        "coordinates": {
+            "latitude": 13.7563,
+            "longitude": 100.5018
+        },
+        "attractions": [
+            "Wat Pho",
+            "Grand Palace",
+            "Wat Arun",
+            "Chatuchak Market",
+            "Khao San Road"
+        ],
+        "activities": ["Templos", "Mercados", "Vida Noturna", "Massagem", "Culinária"],
+        "transportation": ["BTS", "MRT", "Tuk-tuk", "Táxi", "Barco"],
+        "accommodation": {
+            "budget": "$10-30",
+            "midRange": "$30-80",
+            "luxury": "$80+"
+        },
+        "foodSpecialties": ["Pad Thai", "Tom Yum", "Green Curry", "Mango Sticky Rice", "Som Tam"],
+        "tips": [
+            "Negocie preços em mercados locais",
+            "Experimente comida de rua",
+            "Respeite os costumes nos templos"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["Templos", "Culinária", "Mercados", "Vida Noturna"]
     },
     {
         "id": "10",
         "title": "Roma",
         "description": "Uma cidade histórica com o Coliseu e rica herança cultural.",
-        "image": "https://cdn.pixabay.com/photo/2021/04/25/23/17/rome-6207755_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2021/04/25/23/17/rome-6207755_1280.jpg",
+        "country": "Itália",
+        "continent": "Europa",
+        "rating": 4.7,
+        "averageCost": "$$$",
+        "currency": "EUR",
+        "language": "Italiano",
+        "timeZone": "UTC+1",
+        "bestTimeToVisit": "Abril-Junho, Setembro-Outubro",
+        "climate": "Mediterrâneo",
+        "temperature": {
+            "min": 3,
+            "max": 30
+        },
+        "coordinates": {
+            "latitude": 41.9028,
+            "longitude": 12.4964
+        },
+        "attractions": [
+            "Coliseu",
+            "Vaticano",
+            "Fórum Romano",
+            "Fontana di Trevi",
+            "Panteão"
+        ],
+        "activities": ["História", "Arte", "Gastronomia", "Arquitetura", "Museus"],
+        "transportation": ["Metrô", "Ônibus", "Táxi", "A pé"],
+        "accommodation": {
+            "budget": "€50-100",
+            "midRange": "€100-250",
+            "luxury": "€250+"
+        },
+        "foodSpecialties": ["Pizza", "Pasta Carbonara", "Gelato", "Supplì", "Maritozzo"],
+        "tips": [
+            "Reserve ingressos para o Coliseu antecipadamente",
+            "Visite o Vaticano pela manhã cedo",
+            "Experimente um aperitivo ao entardecer"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["História", "Arte", "Gastronomia", "Arquitetura"]
     },
     {
         "id": "11",
         "title": "São Paulo",
         "description": "Uma metrópole brasileira, conhecida por sua diversidade cultural.",
-        "image": "https://images.unsplash.com/photo-1629984557780-4dde2292e245?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        "image": "https://images.unsplash.com/photo-1629984557780-4dde2292e245?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "country": "Brasil",
+        "continent": "América do Sul",
+        "rating": 4.5,
+        "averageCost": "$$",
+        "currency": "BRL",
+        "language": "Português",
+        "timeZone": "UTC-3",
+        "bestTimeToVisit": "Abril-Maio, Setembro-Novembro",
+        "climate": "Subtropical",
+        "temperature": {
+            "min": 12,
+            "max": 28
+        },
+        "coordinates": {
+            "latitude": -23.5505,
+            "longitude": -46.6333
+        },
+        "attractions": [
+            "Museu de Arte de São Paulo",
+            "Mercado Municipal",
+            "Teatro Municipal",
+            "Parque Ibirapuera",
+            "Bairro da Liberdade"
+        ],
+        "activities": ["Gastronomia", "Museus", "Arte", "Vida Noturna", "Compras"],
+        "transportation": ["Metrô", "Ônibus", "Uber", "Táxi"],
+        "accommodation": {
+            "budget": "R$60-120",
+            "midRange": "R$120-250",
+            "luxury": "R$250+"
+        },
+        "foodSpecialties": ["Pizza paulista", "Pastel", "Mortadela", "Guaraná", "Coxinha"],
+        "tips": [
+            "Explore os diversos bairros gastronômicos",
+            "Use o transporte público fora dos horários de pico",
+            "Visite a Vila Madalena à noite"
+        ],
+        "safety": 4,
+        "familyFriendly": true,
+        "tags": ["Gastronomia", "Cultural", "Urbano", "Arte"]
     },
     {
         "id": "12",
         "title": "Porto",
         "description": "Uma cidade portuguesa famosa pelo vinho do Porto e arquitetura charmosa.",
-        "image": "https://cdn.pixabay.com/photo/2021/11/30/21/13/porto-cathedral-6836243_1280.jpg"
+        "image": "https://cdn.pixabay.com/photo/2021/11/30/21/13/porto-cathedral-6836243_1280.jpg",
+        "country": "Portugal",
+        "continent": "Europa",
+        "rating": 4.5,
+        "averageCost": "$$",
+        "currency": "EUR",
+        "language": "Português",
+        "timeZone": "UTC+0",
+        "bestTimeToVisit": "Maio-Setembro",
+        "climate": "Oceânico",
+        "temperature": {
+            "min": 5,
+            "max": 25
+        },
+        "coordinates": {
+            "latitude": 41.1579,
+            "longitude": -8.6291
+        },
+        "attractions": [
+            "Torre dos Clérigos",
+            "Ribeira",
+            "Ponte Dom Luís I",
+            "Casa da Guitarra",
+            "Caves de Vinho do Porto"
+        ],
+        "activities": ["Vinho", "História", "Arquitetura", "Gastronomia", "Fado"],
+        "transportation": ["Metrô", "Elétrico", "Ônibus", "A pé"],
+        "accommodation": {
+            "budget": "€30-60",
+            "midRange": "€60-120",
+            "luxury": "€120+"
+        },
+        "foodSpecialties": ["Francesinha", "Pastéis de Nata", "Bacalhau", "Vinho do Porto", "Tripas à Moda do Porto"],
+        "tips": [
+            "Visite as caves de vinho em Vila Nova de Gaia",
+            "Caminhe pela Ribeira ao entardecer",
+            "Experimente uma francesinha tradicional"
+        ],
+        "safety": 5,
+        "familyFriendly": true,
+        "tags": ["Vinho", "História", "Arquitetura", "Gastronomia"]
     }
 ]
