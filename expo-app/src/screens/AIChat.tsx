@@ -170,7 +170,7 @@ export function AIChat() {
   }, [location]);
 
   return (
-    <View flex={1} style={{ backgroundColor: 'your-background-color' }}>
+    <View flex={1}>
       <StatusBar barStyle="default" backgroundColor="transparent" translucent />
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView

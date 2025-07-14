@@ -1,13 +1,13 @@
+import { SafeAreaView, StatusBar } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 import { View } from "@gluestack-ui/themed";
 
-import DestinationData from '@data/destinations.json';
-
 import { CarouselImages } from "@components/CarouselImages";
 
+import DestinationData from '@data/destinations.json';
+
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
-import { SafeAreaView, StatusBar } from "react-native";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 
@@ -46,11 +46,13 @@ export function DestinationDetails(){
   };
 
   return (
-    <View flex={1} style={{ backgroundColor: 'your-background-color' }}>
+    <View flex={1}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <CarouselImages images={ destinationInfo.imagesUrlCarousel }/>
+      <CarouselImages images={destinationInfo.imagesUrlCarousel} />
       <SafeAreaView style={{ flex: 1 }}>
-        
+        <View flex={1}>
+          
+        </View>
       </SafeAreaView>
     </View>
   )

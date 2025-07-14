@@ -7,7 +7,8 @@ type CarouselImagesProps = {
   images: string[];
 };
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+const CAROUSEL_HEIGHT = height * 0.4;
 
 function CustomPagination({ length, activeIndex }: { length: number; activeIndex: number }) {
   return (
@@ -31,41 +32,39 @@ export function CarouselImages({ images }: CarouselImagesProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <View flex={1} justifyContent="center" alignItems="center">
-      <View width={width} height={325} position="relative">
-        <Carousel
-          loop
-          width={width}
-          height={325}
-          autoPlay={true}
-          data={images}
-          scrollAnimationDuration={3000}
-          onSnapToItem={(index) => setActiveIndex(index)}
-          renderItem={({ item }) => (
-            <View
-              flex={1}
-              justifyContent="center"
-              alignItems="center"
-              overflow="hidden"
-              style={{
-              borderTopWidth: 0,
-              borderWidth: 0,
-              shadowOpacity: 0,
-              backgroundColor: 'transparent'
-              }}
-            >
-              <Image
-                source={{ uri: item }}
-                style={{ width: '100%', height: '100%' }}
-                resizeMode="cover"
-                alt="Imagens da cidade"
-              />
-            </View>
-          )}
-        />
-        <View position="absolute" bottom={8} left={0} right={0}>
-          <CustomPagination length={images.length} activeIndex={activeIndex} />
-        </View>
+    <View width={width} height={CAROUSEL_HEIGHT} position="relative">
+      <Carousel
+        loop
+        width={width}
+        height={CAROUSEL_HEIGHT}
+        autoPlay={true}
+        data={images}
+        scrollAnimationDuration={3000}
+        onSnapToItem={(index) => setActiveIndex(index)}
+        renderItem={({ item }) => (
+          <View
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            overflow="hidden"
+            style={{
+            borderTopWidth: 0,
+            borderWidth: 0,
+            shadowOpacity: 0,
+            backgroundColor: 'transparent'
+            }}
+          >
+            <Image
+              source={{ uri: item }}
+              style={{ width: '100%', height: '100%' }}
+              resizeMode="cover"
+              alt="Imagens da cidade"
+            />
+          </View>
+        )}
+      />
+      <View position="absolute" bottom={8} left={0} right={0}>
+        <CustomPagination length={images.length} activeIndex={activeIndex} />
       </View>
     </View>
   );
