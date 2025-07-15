@@ -80,10 +80,10 @@ export function Notifications() {
               notifications.map((data) => (
                 <ReanimatedSwipeable 
                   key={ data.id } 
-                  containerStyle={styles.container} 
+                  containerStyle={ styles.container } 
                   friction={2} 
                   rightThreshold={40} 
-                  renderRightActions={() => RightAction(data.id)}
+                  renderRightActions={ () => RightAction(data.id) }
                 >
                   <NotificationCard
                     id={ data.id }

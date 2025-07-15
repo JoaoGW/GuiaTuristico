@@ -32,16 +32,16 @@ export function CarouselImages({ images }: CarouselImagesProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <View width={width} height={CAROUSEL_HEIGHT} position="relative">
+    <View width={ width } height={ CAROUSEL_HEIGHT } position="relative">
       <Carousel
         loop
-        width={width}
-        height={CAROUSEL_HEIGHT}
-        autoPlay={true}
-        data={images}
-        scrollAnimationDuration={3000}
-        onSnapToItem={(index) => setActiveIndex(index)}
-        renderItem={({ item }) => (
+        width={ width }
+        height={ CAROUSEL_HEIGHT }
+        autoPlay={ true }
+        data={ images }
+        scrollAnimationDuration={ 3000}
+        onSnapToItem={ (index) => setActiveIndex(index) }
+        renderItem={ ({ item }) => (
           <View
             flex={1}
             justifyContent="center"
@@ -64,7 +64,7 @@ export function CarouselImages({ images }: CarouselImagesProps) {
         )}
       />
       <View position="absolute" bottom={8} left={0} right={0}>
-        <CustomPagination length={images.length} activeIndex={activeIndex} />
+        <CustomPagination length={ images.length } activeIndex={ activeIndex } />
       </View>
     </View>
   );

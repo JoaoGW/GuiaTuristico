@@ -6,13 +6,29 @@ import CountryFlag from "react-native-country-flag";
 import { View, Text, Box, VStack, HStack, Icon } from "@gluestack-ui/themed";
 
 import { CarouselImages } from "@components/CarouselImages";
+import { IconButton } from "@components/Buttons/IconButton";
+import { CategoryBadges } from "@components/Badges/CategoryBadges";
+
+import { 
+  Car, 
+  Cloud, 
+  Home, 
+  Info, 
+  Map, 
+  Shield, 
+  Tag, 
+  Utensils, 
+  Star, 
+  ArrowLeft, 
+  Heart, 
+  Share
+} from "lucide-react-native";
 
 import DestinationData from '@data/destinations.json';
 
-import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
-import { Car, Cloud, Home, Info, Map, Shield, Tag, Utensils, Star, ArrowLeft, Heart, Share } from "lucide-react-native";
 import { AuthNavigationProp } from "@routes/auth.routes";
-import { IconButton } from "@components/Buttons/IconButton";
+
+import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 
@@ -186,7 +202,7 @@ export function DestinationDetails(){
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Gastronomia</Text>
                 </HStack>
                 <VStack space="md">
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Especialidades culinárias:</Text> {destinationInfo.foodSpecialties.join(', ')}</Text>
+                  <Text fontSize="$lg"><Text fontWeight="$bold">Especialidades culinárias:</Text> { destinationInfo.foodSpecialties.join(', ') }</Text>
                 </VStack>
               </Box>
 
@@ -196,9 +212,9 @@ export function DestinationDetails(){
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Dicas e Segurança</Text>
                 </HStack>
                 <VStack space="md">
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Dicas:</Text> {destinationInfo.tips.join(', ')}</Text>
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Segurança:</Text> {destinationInfo.safety}</Text>
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Amigável para famílias:</Text> {destinationInfo.familyFriendly ? 'Sim' : 'Não'}</Text>
+                  <Text fontSize="$lg"><Text fontWeight="$bold">Dicas:</Text> { destinationInfo.tips.join(', ') }</Text>
+                  <Text fontSize="$lg"><Text fontWeight="$bold">Segurança:</Text> { destinationInfo.safety }</Text>
+                  <Text fontSize="$lg"><Text fontWeight="$bold">Amigável para famílias:</Text> { destinationInfo.familyFriendly ? 'Sim' : 'Não' }</Text>
                 </VStack>
               </Box>
 
@@ -207,8 +223,10 @@ export function DestinationDetails(){
                   <Tag size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
                   <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Tags</Text>
                 </HStack>
-                <VStack space="md">
-                  <Text fontSize="$lg"><Text fontWeight="$bold">Tags:</Text> {destinationInfo.tags.join(', ')}</Text>
+                <VStack space="md" flexDirection="row" flexWrap="wrap">
+                  { destinationInfo.tags.map((data, index) => (
+                    <CategoryBadges key={ index } iconSize={22} text={ data } />
+                  )) }
                 </VStack>
               </Box>
             </VStack>
