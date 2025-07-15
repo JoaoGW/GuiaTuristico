@@ -1,7 +1,8 @@
 import 'react-native-gesture-handler';
 
 import { useState } from "react";
-import { StatusBar, useColorScheme, SafeAreaView } from "react-native";
+import { StatusBar, useColorScheme } from "react-native";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
@@ -40,7 +41,7 @@ export default function App() {
 
   return (
     <GluestackUIProvider config={config}>
-      <SafeAreaView style={{
+      <SafeAreaProvider style={{
         flex: 1,
         backgroundColor: viewMode.background
       }}>
@@ -65,7 +66,7 @@ export default function App() {
             <Loading />
           )
         }
-      </SafeAreaView>
+      </SafeAreaProvider>
     </GluestackUIProvider>
   );
 }

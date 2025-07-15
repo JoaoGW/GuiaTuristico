@@ -45,7 +45,7 @@ export function UserPreferences() {
 
   return (
     <Box flex={1} px="$4" py="$4">
-      <Center mt="$8" mb="$4">
+      <Center mt="$12" mb="$4">
         <Heading fontSize='$2xl'>Quais tópicos está interessado?</Heading>
       </Center>
       <FlatList

@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HStack } from '@gluestack-ui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ export function NavigationBar() {
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
   const navigation = useNavigation<AuthNavigationProp>();
   const navigationState = useNavigationState((state) => state);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (navigationState && navigationState.routes) {
@@ -35,12 +37,12 @@ export function NavigationBar() {
       alignItems="center"
       bg="$white"
       p={4}
-      pt={8}
+      pb={insets.bottom + 4}
       position="absolute"
       bottom={0}
       left={0}
       right={0}
-      h={50}
+      h={47.5 + insets.bottom}
       borderTopWidth={2}
       borderColor='#e9ad2d'
     >

@@ -1,6 +1,39 @@
 export interface GlobalPlaces {
-  id?: number,
-  title: string,
-  description?: string
-  imageUrl: string
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  imagesUrlCarousel: string[];
+  country: string;
+  countryCode: string;
+  continent: string;
+  rating: number;
+  averageCost: string;
+  currency: string;
+  language: string;
+  timeZone: string;
+  bestTimeToVisit: string;
+  climate: string;
+  temperature: {
+    min: number;
+    max: number;
+  };
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+  attractions: string[];
+  activities: string[];
+  transportation: string[];
+  accommodation: {
+    simples: string;
+    semiLuxo: string;
+    luxo: string;
+    airbnb: string;
+  };
+  foodSpecialties: string[];
+  tips: string[];
+  safety: number;
+  familyFriendly: boolean;
+  tags: string[];
 }

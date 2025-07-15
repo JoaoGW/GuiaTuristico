@@ -1,4 +1,6 @@
 import { useRef } from "react";
+import { SafeAreaView, StatusBar } from "react-native";
+
 import MapView from "react-native-maps";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 
@@ -34,7 +36,7 @@ export function MapsExpanded() {
       );
     }
   };
-  
+
   return (
     <View flex={1} position="relative">
       <View flexDirection="row" alignItems="center">
@@ -49,7 +51,8 @@ export function MapsExpanded() {
             paddingHorizontal: 10,
             top: 10,
             left: 10,
-            zIndex: 1
+            zIndex: 1,
+            marginTop: 50
           }}
         />
         <RecenterButton
@@ -60,14 +63,18 @@ export function MapsExpanded() {
             paddingHorizontal: 10,
             top: 10,
             right: 10,
-            zIndex: 1
+            zIndex: 1,
+            marginTop: 50
           }}
         />
       </View>
-      <View style={{ flex: 1 }}>
-        <Maps ref={ mapUserPositionRef } />
-        <SlideUp places={ places } isLoading={ isLoading }/>
-      </View>
+        <StatusBar barStyle="dark-content"/>
+        <View style={{ flex: 1 }}>
+          <Maps ref={mapUserPositionRef} />
+          <SafeAreaView>
+            <SlideUp places={places} isLoading={isLoading} />
+          </SafeAreaView>
+        </View>
     </View>
   )
 }

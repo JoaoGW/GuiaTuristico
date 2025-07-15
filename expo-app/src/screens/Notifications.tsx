@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, {
@@ -67,8 +67,8 @@ export function Notifications() {
   });
 
   return (
-    <>
-      <View flexDirection="row" justifyContent="center" my={20}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View flexDirection="row" justifyContent="center" mt={10} mb={20}>
         <Text size="xl" color="$black" fontWeight="$bold">
           Notificações
         </Text>
@@ -80,10 +80,10 @@ export function Notifications() {
               notifications.map((data) => (
                 <ReanimatedSwipeable 
                   key={ data.id } 
-                  containerStyle={styles.container} 
+                  containerStyle={ styles.container } 
                   friction={2} 
                   rightThreshold={40} 
-                  renderRightActions={() => RightAction(data.id)}
+                  renderRightActions={ () => RightAction(data.id) }
                 >
                   <NotificationCard
                     id={ data.id }
@@ -107,6 +107,6 @@ export function Notifications() {
             performAction={ handleDeleteNotification }
           />
       }
-    </>
+    </SafeAreaView>
   );
 }

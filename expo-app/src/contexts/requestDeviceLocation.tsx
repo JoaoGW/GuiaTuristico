@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Location from 'expo-location';
 
-import { AlertToast } from '@components/AlertToast';
+import { AlertToast } from '@components/Errors/AlertToast';
 
 type LocationContextType = {
   location: Location.LocationObject | null
