@@ -12,6 +12,7 @@ import DestinationData from '@data/destinations.json';
 import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
 import { Car, Cloud, Home, Info, Map, Shield, Tag, Utensils, Star, ArrowLeft, Heart, Share } from "lucide-react-native";
 import { AuthNavigationProp } from "@routes/auth.routes";
+import { IconButton } from "@components/Buttons/IconButton";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 
@@ -54,53 +55,47 @@ export function DestinationDetails(){
   return (
     <View flex={1}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <View flexDirection="row" justifyContent="space-between">
-        <View>
-          <ArrowLeft
-            onPress={() => navigation.goBack()}
-            style={{
-              position: 'absolute',
-              padding: 19,
-              top: 17,
-              left: 25,
-              zIndex: 1,
-              marginTop: 50,
-              backgroundColor: "#FFF",
-              borderRadius: "100%"
-            }}
-          />
-        </View>
-        <View>
-          <Heart
-            onPress={() => navigation.goBack()}
-            color="red"
-            style={{
-              position: 'absolute',
-              padding: 19,
-              top: 17,
-              right: 75,
-              zIndex: 1,
-              marginTop: 50,
-              backgroundColor: "#FFF",
-              borderRadius: "100%"
-            }}
-          />
-          <Share
-            onPress={() => navigation.goBack()}
-            style={{
-              position: 'absolute',
-              padding: 19,
-              top: 17,
-              right: 25,
-              zIndex: 1,
-              marginTop: 50,
-              backgroundColor: "#FFF",
-              borderRadius: "100%"
-            }}
-          />
+      <View position="relative">
+        <CarouselImages images={ destinationInfo.imagesUrlCarousel } />
+        <View 
+          position="absolute" 
+          top="$16" 
+          left="$4" 
+          right="$4" 
+          flexDirection="row" 
+          justifyContent="space-between"
+          zIndex={10}
+        >
+          <View>
+            <IconButton 
+              icon={ ArrowLeft }
+              iconColor="black" 
+              iconSize="xl"
+              buttonBgColor="#ffffffee"
+              buttonFunctionality={ () => navigation.goBack() }
+              styles={{ width: 40, borderRadius: '100%' }}
+            />
+          </View>
+          <View flexDirection="row" gap="$2">
+            <IconButton 
+              icon={ Heart }
+              iconColor="red" 
+              iconSize="xl"
+              buttonBgColor="#e8e8e89c"
+              buttonFunctionality={ () => navigation.goBack() }
+              styles={{ width: 40, borderRadius: '100%', marginRight: 10 }}
+            />
+            <IconButton 
+              icon={ Share }
+              iconColor="white" 
+              iconSize="xl"
+              buttonBgColor="#e8e8e89c"
+              buttonFunctionality={ () => navigation.goBack() }
+              styles={{ width: 40, borderRadius: '100%' }}
+            />
+          </View>
         </View>
       </View>
-      <CarouselImages images={ destinationInfo.imagesUrlCarousel } />
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ marginBottom: 30 }}>
           <Box p="$6" w={"100%"}>
@@ -108,7 +103,7 @@ export function DestinationDetails(){
               <Text fontSize="$3xl" fontWeight="bold" color="#E9AD2D" mb="$6">{ destinationInfo.title }</Text>
               <CountryFlag isoCode={ destinationInfo.countryCode } size={25} style={{ marginBottom: 20 }}/>
             </View>
-            <Text fontSize="$lg" color="#E9AD2D" mb="$6">{ destinationInfo.description }</Text>
+            <Text fontSize="$md" fontWeight="$bold" color="#000" mb="$6">{ destinationInfo.description }</Text>
             <VStack space="lg">
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
