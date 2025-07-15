@@ -37,7 +37,12 @@ export function DestinationDetails(){
   const route = useRoute<DestinationRouteProp>();
   const { destinationId } = route.params;
 
-  const item = DestinationData.find((item: any) => String(item.id) === String(destinationId))!;
+  const item = DestinationData.find((item: any) => String(item.id) === String(destinationId));
+  if (!item) {
+    console.error(`Destination with ID ${destinationId} not found.`);
+    navigation.goBack(); // Navigate back if no destination is found
+    return null; // Exit the component rendering
+  }
   const destinationInfo: GlobalPlaces = {
     ...item,
     id: Number(item.id),
