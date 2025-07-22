@@ -23,7 +23,7 @@ export function UserInfo() {
           borderRadius={40}
           ml="auto"
           borderWidth={3}
-          borderColor="#e9ad2d"
+          borderColor="#2752B7"
         />
       </HStack>
     </View>

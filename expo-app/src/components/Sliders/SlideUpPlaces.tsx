@@ -92,7 +92,7 @@ export function SlideUp({ places, isLoading }: PlacesSlider) {
             renderItem={({ item }) => (
               <Box flex={1} px={4} py={2}>
                 { isLoading ? (
-                  <Spinner size="large" color="#e9ad2d" />
+                  <Spinner size="large" color="#2752B7" />
                 ) : (
                   location && <HomeDestinations item={item} userLocation={{ coords: location.coords }} currentScreen="MapsExpanded" />
                 )}

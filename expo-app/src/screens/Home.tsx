@@ -94,7 +94,7 @@ export function Home() {
               borderRadius={15}
               overflow="hidden"
               borderWidth={2}
-              borderColor="#e9ad2d"
+              borderColor="#2752B7"
               shadowColor="#000"
               shadowOffset={{ width: 0, height: 2 }}
               shadowOpacity={0.2}
@@ -105,7 +105,7 @@ export function Home() {
                 position="absolute"
                 top={2}
                 right={2}
-                bg="#e9ad2d"
+                bg="#2752B7"
                 px={8}
                 py={2}
                 borderRadius={5}
@@ -184,7 +184,7 @@ export function Home() {
                 )}
                 ListEmptyComponent={
                   <Box>
-                    {!loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} />}
+                    {!loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} />}
                   </Box>
                 }
                 ListFooterComponent={
@@ -213,7 +213,7 @@ export function Home() {
                 )}
                 ListEmptyComponent={
                   <Box>
-                    {!loading ? <LocalFetchError /> : <Spinner size="large" color="#e9ad2d" my={25} />}
+                    {!loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} />}
                   </Box>
                 }
                 ListFooterComponent={

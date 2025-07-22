@@ -21,9 +21,9 @@ export function ButtonSelect({ text, isSelected, objective, icon, style }: Selec
       <Button
         onPress={ objective }
         style={{
-          backgroundColor: isSelected ? "#E9AD2D" : "#FDFDFD",
+          backgroundColor: isSelected ? "#2752B7" : "#FDFDFD",
           borderWidth: isSelected ? 0 : 2,
-          borderColor: isSelected ? undefined : "#E9AD2D"
+          borderColor: isSelected ? undefined : "#2752B7"
         }}
       >
         {

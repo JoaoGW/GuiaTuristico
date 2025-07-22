@@ -120,15 +120,15 @@ export function DestinationDetails(){
         <ScrollView style={{ marginBottom: 30 }}>
           <Box p="$6" w={"100%"}>
             <View flexDirection="row" alignItems="center" justifyContent="space-between">
-              <Text fontSize="$3xl" fontWeight="bold" color="#E9AD2D" mb="$6">{ destinationInfo.title }</Text>
+              <Text fontSize="$3xl" fontWeight="bold" color="#2752B7" mb="$6">{ destinationInfo.title }</Text>
               <CountryFlag isoCode={ destinationInfo.countryCode } size={25} style={{ marginBottom: 20 }}/>
             </View>
             <Text fontSize="$md" fontWeight="$bold" color="#000" mb="$6">{ destinationInfo.description }</Text>
             <VStack space="lg">
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Info size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="bold" color="#E9AD2D" ml="$4">Informações Gerais</Text>
+                  <Info size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="bold" color="#2752B7" ml="$4">Informações Gerais</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">País:</Text> { destinationInfo.country }</Text>
@@ -156,8 +156,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Cloud size={40} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Clima</Text>
+                  <Cloud size={40} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Clima</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Melhor época para visitar:</Text> {destinationInfo.bestTimeToVisit}</Text>
@@ -168,8 +168,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Map size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Atrações e Atividades</Text>
+                  <Map size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Atrações e Atividades</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Atrações:</Text> {destinationInfo.attractions.join(', ')}</Text>
@@ -179,8 +179,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Car size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Transporte</Text>
+                  <Car size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Transporte</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Transportes:</Text> {destinationInfo.transportation.join(', ')}</Text>
@@ -189,8 +189,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Home size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Acomodações</Text>
+                  <Home size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Acomodações</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Acomodações Simples:</Text> {destinationInfo.accommodation.simples}</Text>
@@ -202,8 +202,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Utensils size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Gastronomia</Text>
+                  <Utensils size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Gastronomia</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Especialidades culinárias:</Text> { destinationInfo.foodSpecialties.join(', ') }</Text>
@@ -212,8 +212,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Shield size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Dicas e Segurança</Text>
+                  <Shield size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Dicas e Segurança</Text>
                 </HStack>
                 <VStack space="md">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Dicas:</Text> { destinationInfo.tips.join(', ') }</Text>
@@ -224,8 +224,8 @@ export function DestinationDetails(){
 
               <Box mb="$6">
                 <HStack alignItems="center" mb="$4">
-                  <Tag size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Tags</Text>
+                  <Tag size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Tags</Text>
                 </HStack>
                 <VStack space="md" flexDirection="row" flexWrap="wrap">
                   { destinationInfo.tags.map((data, index) => (
