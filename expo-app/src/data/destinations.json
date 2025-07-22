@@ -54,7 +54,7 @@
         ],
         "safety": 4,
         "familyFriendly": true,
-        "tags": ["Urbano", "Cultural", "Compras", "Vida Noturna"]
+        "tags": ["Urbano", "Cultural", "Compras", "Vida Noturna", "Histórico", "Turismo Gastronômico"]
     },
     {
         "id": 2,
@@ -112,7 +112,7 @@
         ],
         "safety": 4,
         "familyFriendly": true,
-        "tags": ["Cultural", "Romance", "Arte", "Gastronomia"]
+        "tags": ["Cultural", "Romance", "Arte", "Gastronomia", "Histórico", "Arquitetura"]
     },
     {
         "id": 3,
@@ -170,7 +170,7 @@
         ],
         "safety": 4,
         "familyFriendly": true,
-        "tags": ["História", "Cultural", "Arquitetura", "Teatros"]
+        "tags": ["História", "Cultural", "Arquitetura", "Teatros", "Vida Noturna", "Turismo Gastronômico"]
     },
     {
         "id": 4,
