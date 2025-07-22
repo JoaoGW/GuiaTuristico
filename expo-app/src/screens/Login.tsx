@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
-
-import { useNavigation } from '@react-navigation/native';
-import { AuthNavigationProp } from '@routes/auth.routes';
+import { StatusBar } from 'react-native';
 
 import { VStack, Image, Center, Text, ScrollView, Box, View } from "@gluestack-ui/themed";
 import { Input } from "@components/InputItems/Input";
@@ -15,7 +12,6 @@ export function LoginScreen() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const navigation = useNavigation<AuthNavigationProp>();
   const { login } = useAuth();
 
   return (

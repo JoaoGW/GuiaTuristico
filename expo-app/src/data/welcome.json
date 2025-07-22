@@ -1,0 +1,56 @@
+[
+  {
+    "page": 1,
+    "title": "Escolha o seu Destino",
+    "description": "Selecione entre diversas cidades turísticas disponíveis para começar a geração de seu roteiro personalizado",
+    "image": "Search.svg"
+  },
+  {
+    "page": 2,
+    "title": "Perfil de Preferências",
+    "description": "Informe preferências como tipo de passeio, orçamento e disponibilidade para personalizar sua experiência",
+    "image": "Preferences.svg"
+  },
+  {
+    "page": 3,
+    "title": "Geração de Roteiro com IA",
+    "description": "A aplicação utiliza a OpenAI para gerar roteiros únicos e adaptados às suas preferências de viagem",
+    "image": "Ai.svg"
+  },
+  {
+    "page": 4,
+    "title": "Converse com seu Guia Turístico",
+    "description": "Você agora possui um Guia Turístico funcionando com Inteligência Artificial para te ajudar no que fazer a qualquer momento!",
+    "image": "AiChat.svg"
+  },
+  {
+    "page": 5,
+    "title": "Atrações Turísticas",
+    "description": "Explore detalhes sobre pontos turísticos com descrição, localização e tempo estimado de visita",
+    "image": "Attractions.svg"
+  },
+  {
+    "page": 6,
+    "title": "Visualização de Rotas",
+    "description": "Visualize no mapa o percurso das atrações sugeridas e o trajeto completo do roteiro",
+    "image": "Navigation.svg"
+  },
+  {
+    "page": 7,
+    "title": "Controle seus Gastos",
+    "description": "Não perca controle do quanto você está gastando com a nossa carteira digital, que te informa se caso você estourar algum limite",
+    "image": "Expenses.svg"
+  },
+  {
+    "page": 8,
+    "title": "Clima e Geolocalização",
+    "description": "Integração com informações de clima e localização em tempo real para fornecer recomendações relevantes e seguras",
+    "image": "Weather.svg"
+  },
+  {
+    "page": 9,
+    "title": "Bora arrumar as malas?",
+    "description": "Reinventamos a forma de viajar. Uma nova experiência de viagem te aguarda aqui no EZ Trip!",
+    "image": "Travel.svg"
+  }
+]
