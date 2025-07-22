@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Linking, StatusBar, SafeAreaView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { View, Text, Button, ButtonText } from "@gluestack-ui/themed";
 
-import { useAuth } from '@contexts/AuthContext';
+import { NoAuthNavigationProp } from "@routes/noauth.routes";
 
 import WelcomeGuideData from '@data/welcome.json';
 
@@ -32,8 +33,7 @@ const images: Record<string, React.FC<any>> = {
 export function Welcome() {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const { login } = useAuth();
-
+  const navigation = useNavigation<NoAuthNavigationProp>();
   const currentPageData = WelcomeGuideData.find(page => page.page === currentPage);
   const CurrentImage = currentPageData?.image ? images[currentPageData.image] : null;
 
@@ -42,9 +42,15 @@ export function Welcome() {
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={{ flex: 1 }}>
         <View mx={10} alignItems="center" flex={1}>
-          <Button bgColor="transparent" size="md" mb={40} alignSelf="flex-end" onPress={ login }>
-            <ButtonText color="#FFF">Pular  &gt;</ButtonText>
-          </Button>
+          {
+            currentPage != 9
+              ?
+                <Button bgColor="transparent" size="md" mb={40} alignSelf="flex-end" onPress={ () => navigation.navigate("Login") }>
+                  <ButtonText color="#FFF">Pular  &gt;</ButtonText>
+                </Button>
+              :
+                <View mt={45}></View>
+          }
           <Text fontSize="$3xl" color="$white" fontWeight="$bold" textAlign="center" mb={20}>{ currentPageData?.title }</Text>
           <Text fontSize="$lg" color="$white" textAlign="center">{ currentPageData?.description }</Text>
           { CurrentImage && <CurrentImage width={350} height={350} style={{ marginVertical: 15 }} /> }
@@ -80,7 +86,7 @@ export function Welcome() {
                       borderRadius={25} 
                       size="xl" 
                       mb={10} 
-                      onPress={ login }
+                      onPress={ () => navigation.navigate("Login") }
                       style={{
                         shadowColor: "#000",
                         shadowOffset: {
@@ -99,7 +105,7 @@ export function Welcome() {
                       w="75%" 
                       borderRadius={25} 
                       size="xl" 
-                      onPress={ login }
+                      onPress={ () => navigation.navigate("Login") }
                       style={{
                         shadowColor: "#000",
                         shadowOffset: {
