@@ -53,15 +53,64 @@ export function Welcome() {
           {
             currentPage < 9 
               ?
-                <Button bgColor="#FFF" w="75%" borderRadius={25} size="xl" onPress={ () => setCurrentPage(currentPage => currentPage + 1) }>
+                <Button 
+                  bgColor="#FFF" 
+                  w="75%" 
+                  borderRadius={25} 
+                  size="xl" 
+                  onPress={ () => setCurrentPage(currentPage => currentPage + 1) }
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 2,
+                    elevation: 4,
+                  }}
+                >
                   <ButtonText color="#336df6">Continuar</ButtonText>
                 </Button>
               :
                 <View>
-                    <Button bgColor="#FFF" w="75%" borderRadius={25} size="xl" mb={10} onPress={ login }>
+                    <Button 
+                      bgColor="#FFF" 
+                      w="75%" 
+                      borderRadius={25} 
+                      size="xl" 
+                      mb={10} 
+                      onPress={ login }
+                      style={{
+                        shadowColor: "#000",
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.8,
+                        shadowRadius: 2,
+                        elevation: 4,
+                      }}
+                    >
                       <ButtonText color="#336df6" textAlign="center" style={{ width: "100%", textAlign: "center" }}>Fazer Login</ButtonText>
                     </Button>
-                    <Button bgColor="#FFF" w="75%" borderRadius={25} size="xl" onPress={ login }>
+                    <Button 
+                      bgColor="#FFF" 
+                      w="75%" 
+                      borderRadius={25} 
+                      size="xl" 
+                      onPress={ login }
+                      style={{
+                        shadowColor: "#000",
+                        shadowOffset: {
+                          width: 0,
+                          height: 2,
+                        },
+                        shadowOpacity: 0.8,
+                        shadowRadius: 2,
+                        elevation: 4,
+                      }}
+                    >
                       <ButtonText color="#336df6" textAlign="center" style={{ width: "100%", textAlign: "center" }}>Cadastrar-se</ButtonText>
                     </Button>
                 </View>
