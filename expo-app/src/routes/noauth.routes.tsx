@@ -2,8 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { LoginScreen } from "@screens/Login";
+import { SignUpScreen } from "@screens/SignUp";
 import { Welcome } from "@screens/Welcome";
-import { UserPreferences } from "@screens/UserPreferences";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +19,7 @@ export function NoAuthRoute(){
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Welcome" component={ Welcome } />
       <Stack.Screen name="Login" component={ LoginScreen }/>
-      <Stack.Screen name="UserPreferences" component={ UserPreferences } />
+      <Stack.Screen name="SignUp" component={ SignUpScreen }/>
     </Stack.Navigator>
   )
 }
