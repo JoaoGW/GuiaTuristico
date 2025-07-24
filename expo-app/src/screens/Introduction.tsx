@@ -105,7 +105,7 @@ export function Introduction() {
                       w="75%" 
                       borderRadius={25} 
                       size="xl" 
-                      onPress={ () => navigation.navigate("Login") }
+                      onPress={ () => navigation.navigate("SignUp") }
                       style={{
                         shadowColor: "#000",
                         shadowOffset: {
