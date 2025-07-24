@@ -24,7 +24,7 @@ import {
 } from "@gluestack-ui/themed";
 
 import { IconButton } from '@components/Buttons/IconButton';
-import { Loading } from '@components/Loading';
+import { Loading } from '@components/Loading/Loading';
 import { ButtonIconImageLeft } from '@components/Buttons/ButtonIconImageLeft';
 
 import { ArrowLeft, CircleAlert } from 'lucide-react-native';

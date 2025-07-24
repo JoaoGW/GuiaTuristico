@@ -30,6 +30,12 @@
       ],
       "@contexts/*": [
         "./src/contexts/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@config": [
+        "./src/config"
       ]
     }
   }

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useImperativeHandle, forwardRef, useRe
 import MapView, { Marker } from "react-native-maps";
 import { View, Text } from "@gluestack-ui/themed";
 
-import { Loading } from "@components/Loading";
+import { Loading } from "@components/Loading/Loading";
 import { LocationContext } from "@contexts/requestDeviceLocation";
 
 interface Place {

@@ -17,7 +17,7 @@ import { useNotificationStore } from '@utils/notificationStore';
 
 import { Globe } from 'lucide-react-native';
 
-import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
+import OpenAILogo from '@assets/Enterprises/OpenAI/OpenAI-black-wordmark.svg';
 import { SafeAreaView } from 'react-native';
 
 const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
