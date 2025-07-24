@@ -1,3 +1,4 @@
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -31,21 +32,59 @@ type AuthStackParamList = {
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
-export function AuthRoute() {
+function ScreenWrapper({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={ Home } />
-        <Stack.Screen name="Settings" component={ Settings } />
-        <Stack.Screen name="Profile" component={ Profile } />
-        <Stack.Screen name="UserPreferences" component={ UserPreferences } />
-        <Stack.Screen name="GenerateItinerary" component={ GenerateItinerary } />
-        <Stack.Screen name="AIChat" component={ AIChat } />
-        <Stack.Screen name="MapsExpanded" component={ MapsExpanded } />
-        <Stack.Screen name="Notifications" component={ Notifications } />
-        <Stack.Screen name="DestinationDetail" component={ DestinationDetails } />
-      </Stack.Navigator>
+      {children}
       <NavigationBar />
     </>
+  );
+}
+
+function HomeWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <Home />
+    </ScreenWrapper>
+  );
+}
+
+function SettingsWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <Settings />
+    </ScreenWrapper>
+  );
+}
+
+function GenerateItineraryWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <GenerateItinerary />
+    </ScreenWrapper>
+  );
+}
+
+function AIChatWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <AIChat />
+    </ScreenWrapper>
+  );
+}
+
+export function AuthRoute() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home" component={ HomeWithNavBar } />
+      <Stack.Screen name="Settings" component={ SettingsWithNavBar } />
+      <Stack.Screen name="Profile" component={ Profile } />
+      <Stack.Screen name="UserPreferences" component={ UserPreferences } />
+      <Stack.Screen name="GenerateItinerary" component={ GenerateItineraryWithNavBar } />
+      <Stack.Screen name="AIChat" component={ AIChatWithNavBar } />
+      <Stack.Screen name="MapsExpanded" component={ MapsExpanded } />
+      <Stack.Screen name="Notifications" component={ Notifications } />
+      <Stack.Screen name="DestinationDetail" component={ DestinationDetails } />
+    </Stack.Navigator>
   );
 }

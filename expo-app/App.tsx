@@ -11,7 +11,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
 
-import { NavbarContext } from "@components/NavigationBar";
 import { SplashLoading } from "@components/Loading/SplashLoading";
 
 import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
@@ -38,7 +37,6 @@ const darkMode = {
 };
 
 export default function App() {
-  const [currentActive, setCurrentActive] = useState<string>('Home');
   const [appIsReady, setAppIsReady] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Iniciando aplicação...");
   const [fontsLoaded] = useFonts({ Poppins_300Light, Poppins_400Regular, Poppins_500Medium });
@@ -109,9 +107,7 @@ export default function App() {
 
           <AuthProvider>
             <ProvideUserLocation>
-              <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
-                <Routes />
-              </NavbarContext.Provider>
+              <Routes />
             </ProvideUserLocation>
           </AuthProvider>
         </GluestackUIProvider>
