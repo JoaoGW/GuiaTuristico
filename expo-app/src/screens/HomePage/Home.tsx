@@ -21,7 +21,7 @@ import { LocationContext } from '@contexts/requestDeviceLocation';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { Place } from '../../@types/PlacesTypes';
+import { Place } from '../../../@types/PlacesTypes';
 
 export function Home() {
   const [places, setPlaces] = useState<Place[]>([]);

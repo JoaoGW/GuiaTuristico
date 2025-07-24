@@ -1,15 +1,15 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { Home } from "@screens/Home";
-import { Settings } from "@screens/Settings";
-import { Profile } from "@screens/EditProfile";
-import { UserPreferences } from "@screens/UserPreferences";
-import { GenerateItinerary } from "@screens/GenerateItinerary";
-import { AIChat } from "@screens/AIChat";
-import { MapsExpanded } from "@screens/MapsExpanded";
-import { Notifications } from "@screens/Notifications";
-import { DestinationDetails } from "@screens/DestinationDetails";
+import { Home } from "@screens/HomePage/Home";
+import { Settings } from "@screens/UserProfile/Settings";
+import { Profile } from "@screens/UserProfile/EditProfile";
+import { UserPreferences } from "@screens/UserProfile/UserPreferences";
+import { GenerateItinerary } from "@screens/Itinerary/GenerateItinerary";
+import { AIChat } from "@screens/AIChat/AIChat";
+import { MapsExpanded } from "@screens/HomePage/MapsExpanded";
+import { Notifications } from "@screens/HomePage/Notifications";
+import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
 
 import { NavigationBar } from "@components/NavigationBar";
 
