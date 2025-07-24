@@ -1,8 +1,8 @@
-import { Text, VStack, Image, View } from '@gluestack-ui/themed';
+import { Text, Image, View } from '@gluestack-ui/themed';
 
 export function UserInfo() {
   return (
-    <View p={10} my={10}>
+    <View p={10} mt={20} mb={10}>
       <Text fontSize="$lg" textAlign="left" mt={5} mb={-15}>
         Olá! Seja Bem-Vindo(a),
       </Text>

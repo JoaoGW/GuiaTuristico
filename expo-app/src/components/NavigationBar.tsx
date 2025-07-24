@@ -57,16 +57,16 @@ export function NavigationBar() {
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={ () => { setCurrentActive('AIChat'); navigation.navigate('AIChat') } }>
-        <MaterialIcons name="assistant" size={ currentActive === "AIChat" ? 40 : 30 } color={ currentActive === "AIChat" ? '#2752B7' : 'grey' } />
+        <MaterialIcons name="forum" size={ currentActive === "AIChat" ? 40 : 30 } color={ currentActive === "AIChat" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={ () => { setCurrentActive('Home'); navigation.navigate('Home') } }>
         <MaterialIcons name="home" size={ currentActive === "Home" ? 40 : 30 } color={ currentActive === "Home" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => { setCurrentActive('Settings'); navigation.navigate('Settings') }}>
-        <MaterialIcons name="settings" size={ currentActive === "Settings" ? 40 : 30 } color={ currentActive === "Settings" ? '#2752B7' : 'grey' } />
-      </TouchableOpacity>
       <TouchableOpacity onPress={ () => setCurrentActive('Games') }>
         <MaterialIcons name="sports-esports" size={ currentActive === "Games" ? 40 : 30 } color={ currentActive === "Games" ? '#2752B7' : 'grey' } />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => { setCurrentActive('Settings'); navigation.navigate('Settings') }}>
+        <MaterialIcons name="person" size={ currentActive === "Settings" ? 40 : 30 } color={ currentActive === "Settings" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
     </View>
   );
