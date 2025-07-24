@@ -3,7 +3,7 @@ import { TouchableOpacity } from 'react-native';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HStack } from '@gluestack-ui/themed';
+import { View } from '@gluestack-ui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { AuthNavigationProp } from "@routes/auth.routes";
@@ -32,19 +32,26 @@ export function NavigationBar() {
   }, [navigationState]);
 
   return (
-    <HStack
+    <View
+      flexDirection="row"
       justifyContent="space-around"
       alignItems="center"
       bg="$white"
-      p={4}
-      pb={insets.bottom + 4}
+      px={16}
+      pt={4}
+      pb={ (Math.max(insets.bottom, 15) / 1.5) + 4}
       position="absolute"
       bottom={0}
       left={0}
       right={0}
-      h={47.5 + insets.bottom}
+      minHeight={40 + (Math.max(insets.bottom, 15) / 1.5)}
       borderTopWidth={2}
-      borderColor='#2752B7'
+      borderTopColor="#2752B7"
+      elevation={10}
+      shadowColor="$black"
+      shadowOffset={{ width: 0, height: -2 }}
+      shadowOpacity={0.1}
+      shadowRadius={4}
     >
       <TouchableOpacity onPress={ () => { setCurrentActive('GenerateItinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#2752B7' : 'grey' } />
@@ -61,6 +68,6 @@ export function NavigationBar() {
       <TouchableOpacity onPress={ () => setCurrentActive('Games') }>
         <MaterialIcons name="sports-esports" size={ currentActive === "Games" ? 40 : 30 } color={ currentActive === "Games" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
-    </HStack>
+    </View>
   );
 }

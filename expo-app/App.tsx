@@ -92,7 +92,7 @@ export default function App() {
   }
 
   return (
-    <GluestackUIProvider config={config}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider 
         style={{
           flex: 1,
@@ -100,22 +100,22 @@ export default function App() {
         }}
         onLayout={onLayoutRootView}
       >
-        <StatusBar
-          barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"}
-          backgroundColor="transparent"
-          translucent
-        />
+        <GluestackUIProvider config={config}>
+          <StatusBar
+            barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"}
+            backgroundColor="transparent"
+            translucent
+          />
 
-        <AuthProvider>
-          <ProvideUserLocation>
-            <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
-              <GestureHandlerRootView style={{ flex: 1 }}>
+          <AuthProvider>
+            <ProvideUserLocation>
+              <NavbarContext.Provider value={{ currentActive, setCurrentActive }}>
                 <Routes />
-              </GestureHandlerRootView> 
-            </NavbarContext.Provider>
-          </ProvideUserLocation>
-        </AuthProvider>
+              </NavbarContext.Provider>
+            </ProvideUserLocation>
+          </AuthProvider>
+        </GluestackUIProvider>
       </SafeAreaProvider>
-    </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }

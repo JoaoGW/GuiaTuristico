@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from "@screens/Home";
 import { Settings } from "@screens/Settings";
-import { Profile } from "@screens/Profile";
+import { Profile } from "@screens/EditProfile";
 import { UserPreferences } from "@screens/UserPreferences";
 import { GenerateItinerary } from "@screens/GenerateItinerary";
 import { AIChat } from "@screens/AIChat";

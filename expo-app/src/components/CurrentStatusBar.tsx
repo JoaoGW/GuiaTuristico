@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { HStack, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
+import { View, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
@@ -35,9 +35,9 @@ export function CurrentStatusBar() {
 
   return (
     <SafeAreaView>
-      <HStack justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
+      <View flexDirection="row" justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
         <VStack flex={1}>
-          <HStack alignItems="center">
+          <View flexDirection="row" alignItems="center">
             <LocateFixed size={28} color="#535353" />
             { errorMsg ? (
               <Text color="red.500" ml={7}>{errorMsg}</Text>
@@ -52,7 +52,7 @@ export function CurrentStatusBar() {
             ) : (
               <Text ml={7}>Obtendo localização...</Text>
             )}
-          </HStack>
+          </View>
         </VStack>
         <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
           <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
@@ -62,7 +62,7 @@ export function CurrentStatusBar() {
               : ''
           }
         </Button>
-      </HStack>
+      </View>
     </SafeAreaView>
   );
 }

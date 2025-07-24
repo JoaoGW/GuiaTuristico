@@ -1,4 +1,5 @@
-import React from 'react';
+// Este componente foi criado inteiramente pela IA da Claude Sonnet 4 para testar suas capacidades no Agent Mode
+import { useEffect, useRef } from 'react';
 import { View, Text, Animated, Easing } from 'react-native';
 import { VStack, Spinner, HStack } from '@gluestack-ui/themed';
 
@@ -7,10 +8,10 @@ interface SplashLoadingProps {
 }
 
 export function SplashLoading({ message = "Carregando recursos..." }: SplashLoadingProps) {
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
-  const scaleAnim = React.useRef(new Animated.Value(0.8)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fadeIn = Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 800,
@@ -70,9 +71,9 @@ export function SplashLoading({ message = "Carregando recursos..." }: SplashLoad
 }
 
 function LoadingDot({ delay }: { delay: number }) {
-  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const animate = () => {
       Animated.sequence([
         Animated.timing(animatedValue, {

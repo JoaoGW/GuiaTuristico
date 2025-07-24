@@ -106,10 +106,10 @@ export function GenerateItinerary() {
           <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>
             Gere o seu próximo roteiro de viagem utilizando IA!
           </Text>
-          <HStack justifyContent='center'>
+          <View flexDirection='row' justifyContent='center'>
             <Text pt="4%">Powered by</Text>
             <OpenAILogo width={100} height={50} />
-          </HStack>
+          </View>
         </View>
 
         <View py={16} px={32}>

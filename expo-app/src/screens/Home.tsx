@@ -79,7 +79,7 @@ export function Home() {
           <VStack space="md">
             <CurrentStatusBar />
             <UserInfo />
-            <View flexDirection='row' ml={8}>
+            <View flexDirection='row' ml={8} mb={10} alignContent='center'>
               <Map color="black" size={30} style={{ marginRight: 8 }} />
               <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={5}>Seu Mapa</Text>
               <Badge size="md" variant="solid" action="muted" ml={10} bgColor='$red500'>
@@ -89,7 +89,7 @@ export function Home() {
             </View>
             <Box
               height={200}
-              mb={15}
+              mb={20}
               mx={6}
               borderRadius={15}
               overflow="hidden"
