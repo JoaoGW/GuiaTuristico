@@ -17,7 +17,7 @@ import { useNotificationStore } from '@utils/notificationStore';
 
 import { Globe } from 'lucide-react-native';
 
-import OpenAILogo from '@assets/OpenAI/OpenAI-black-wordmark.svg';
+import OpenAILogo from '@assets/Enterprises/OpenAI/OpenAI-black-wordmark.svg';
 import { SafeAreaView } from 'react-native';
 
 const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
@@ -106,14 +106,14 @@ export function GenerateItinerary() {
           <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>
             Gere o seu próximo roteiro de viagem utilizando IA!
           </Text>
-          <HStack justifyContent='center'>
+          <View flexDirection='row' justifyContent='center'>
             <Text pt="4%">Powered by</Text>
             <OpenAILogo width={100} height={50} />
-          </HStack>
+          </View>
         </View>
 
         <View py={16} px={32}>
-          <Button onPress={ handleGenerate } disabled={loading} bgColor='#cd9418'>
+          <Button onPress={ handleGenerate } disabled={loading} bgColor='#2752B7'>
             { loading ? <ButtonSpinner color="$white" mr={10} /> : '' }
             <ButtonText>{ loading ? 'Gerando...' : 'Gerar Roteiro com IA' }</ButtonText>
           </Button>

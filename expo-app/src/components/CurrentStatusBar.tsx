@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { HStack, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
+import { View, VStack, Text, Button, ButtonIcon, AvatarBadge } from '@gluestack-ui/themed';
 
 import { LocationContext } from '@contexts/requestDeviceLocation';
 
@@ -11,7 +11,7 @@ import { useNotificationStore } from '@utils/notificationStore';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { LocateFixed, Bell } from 'lucide-react-native';
+import { LocateFixed, BellRing } from 'lucide-react-native';
 
 export function CurrentStatusBar() {
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
@@ -35,9 +35,9 @@ export function CurrentStatusBar() {
 
   return (
     <SafeAreaView>
-      <HStack justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
+      <View flexDirection="row" justifyContent="space-between" alignItems="center" pt={20} px={10} width="100%">
         <VStack flex={1}>
-          <HStack alignItems="center">
+          <View flexDirection="row" alignItems="center">
             <LocateFixed size={28} color="#535353" />
             { errorMsg ? (
               <Text color="red.500" ml={7}>{errorMsg}</Text>
@@ -52,17 +52,17 @@ export function CurrentStatusBar() {
             ) : (
               <Text ml={7}>Obtendo localização...</Text>
             )}
-          </HStack>
+          </View>
         </VStack>
         <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
-          <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
+          <ButtonIcon as={ BellRing } color="#535353" size='xl' style={{ marginRight: 15 }} />
           { 
             checkNotifications.length > 0
               ? <AvatarBadge bgColor='$red500'/>
               : ''
           }
         </Button>
-      </HStack>
+      </View>
     </SafeAreaView>
   );
 }

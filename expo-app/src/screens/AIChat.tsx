@@ -183,7 +183,7 @@ export function AIChat() {
               <Text fontWeight="$bold" fontSize="$2xl" mb={15}>O que você procura hoje?</Text>
               <View gap={10}>
                 <View flexDirection="row" alignItems="center">
-                  <MapPinned size={50} color="#e9ad2d" />
+                  <MapPinned size={50} color="#2752B7" />
                   {errorMsg ? (
                     <Text color="red.500" ml={7} fontSize="$md">{errorMsg}</Text>
                   ) : location ? (
@@ -199,7 +199,7 @@ export function AIChat() {
                   )}
                 </View>
                 <View flexDirection="row" alignItems="center">
-                  <Cloud size={50} color="#e9ad2d" />
+                  <Cloud size={50} color="#2752B7" />
                   <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
                     {weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition}
                   </Text>
@@ -281,7 +281,7 @@ export function AIChat() {
                 isInvalid={false}
                 isReadOnly={false}
                 borderRadius={30}
-                borderColor="#e9ad2d"
+                borderColor="#2752B7"
                 borderWidth={2}
               >
                 <InputField
@@ -292,7 +292,7 @@ export function AIChat() {
                 />
                 <InputSlot pr={10}>
                   <Pressable onPress={handleChatRequest} alignSelf="center" disabled={isLoading ? true : false}>
-                    <InputIcon as={MessageCircle} color="#e9ad2d" size="xl" />
+                    <InputIcon as={MessageCircle} color="#2752B7" size="xl" />
                   </Pressable>
                 </InputSlot>
               </Input>

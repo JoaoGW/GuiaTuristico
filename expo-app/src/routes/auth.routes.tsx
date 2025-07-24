@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from "@screens/Home";
 import { Settings } from "@screens/Settings";
-import { Profile } from "@screens/Profile";
+import { Profile } from "@screens/EditProfile";
 import { UserPreferences } from "@screens/UserPreferences";
 import { GenerateItinerary } from "@screens/GenerateItinerary";
 import { AIChat } from "@screens/AIChat";
@@ -31,21 +31,95 @@ type AuthStackParamList = {
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
-export function AuthRoute() {
+function ScreenWrapper({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={ Home } />
-        <Stack.Screen name="Settings" component={ Settings } />
-        <Stack.Screen name="Profile" component={ Profile } />
-        <Stack.Screen name="UserPreferences" component={ UserPreferences } />
-        <Stack.Screen name="GenerateItinerary" component={ GenerateItinerary } />
-        <Stack.Screen name="AIChat" component={ AIChat } />
-        <Stack.Screen name="MapsExpanded" component={ MapsExpanded } />
-        <Stack.Screen name="Notifications" component={ Notifications } />
-        <Stack.Screen name="DestinationDetail" component={ DestinationDetails } />
-      </Stack.Navigator>
+      {children}
       <NavigationBar />
     </>
+  );
+}
+
+function HomeWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <Home />
+    </ScreenWrapper>
+  );
+}
+
+function SettingsWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <Settings />
+    </ScreenWrapper>
+  );
+}
+
+function GenerateItineraryWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <GenerateItinerary />
+    </ScreenWrapper>
+  );
+}
+
+function AIChatWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <AIChat />
+    </ScreenWrapper>
+  );
+}
+
+export function AuthRoute() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen 
+        name="Home" 
+        component={ HomeWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Settings" 
+        component={ SettingsWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Profile" 
+        component={ Profile }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="UserPreferences" 
+        component={ UserPreferences }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="GenerateItinerary" 
+        component={ GenerateItineraryWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="AIChat" 
+        component={ AIChatWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="MapsExpanded" 
+        component={ MapsExpanded }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Notifications" 
+        component={ Notifications }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="DestinationDetail" 
+        component={ DestinationDetails }
+        options={{ animation: 'none' }}
+      />
+    </Stack.Navigator>
   );
 }

@@ -30,7 +30,7 @@ export function NotificationCard({ routeIcon: RouteIcon, title, description }: N
     >
       <View flexDirection="row" alignItems="center" flex={1} maxWidth="90%">
         <View bgColor="$light100" p={5} borderRadius={15} mr={10}>
-          <RouteIcon size={32} color="#e9ad2d" />
+          <RouteIcon size={32} color="#2752B7" />
         </View>
         <View flex={1}>
           <Text fontSize={18} fontWeight="$bold" color="#000" textAlign="left">{ title }</Text>

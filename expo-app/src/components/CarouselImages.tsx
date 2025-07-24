@@ -20,7 +20,7 @@ function CustomPagination({ length, activeIndex }: { length: number; activeIndex
           height={10}
           borderRadius={4}
           mx={4}
-          bg={activeIndex === index ? "#E9AD2D" : '#E0E0E0'}
+          bg={activeIndex === index ? "#2752B7" : '#E0E0E0'}
           opacity={activeIndex === index ? 1 : 0.5}
         />
       ))}

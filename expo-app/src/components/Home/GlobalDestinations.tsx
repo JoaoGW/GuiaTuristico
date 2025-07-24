@@ -27,7 +27,7 @@ export function GlobalDestinations({ id, title, imageUrl }: GlobalPlaces) {
             borderRadius={10}
             marginBottom={10}
             borderWidth={2}
-            borderColor="#E9AD2D"
+            borderColor="#2752B7"
           />
         ) : (
           <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />

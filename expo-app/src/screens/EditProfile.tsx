@@ -80,7 +80,7 @@ export function Profile() {
         >
           <View flex={1} px="$10" py="$5" w="100%" maxWidth="90%" alignSelf="center">
             <VStack space="lg" alignItems="center">
-              <Heading p="$2" color="#e9ad2d" size='xl'>Perfil do Usuário</Heading>
+              <Heading p="$2" color="#2752B7" size='xl'>Perfil do Usuário</Heading>
               <Box position="relative">
                 <Button onPress={pickImage} style={{ width: 200, height: 160, borderRadius: 75, overflow: 'hidden', padding: 0, backgroundColor: 'transparent' }}>
                   {avatar ? (
@@ -90,7 +90,7 @@ export function Profile() {
                   )}
                 </Button>
                 <Box position="absolute" bottom={5} right={5}>
-                  <Edit size={24} color="#e9ad2d" />
+                  <Edit size={24} color="#2752B7" />
                 </Box>
               </Box>
               <VStack w="100%" space="3xl">
@@ -143,7 +143,7 @@ export function Profile() {
                 <Textarea size="lg" variant="default" py="$3">
                   <TextareaInput placeholder="Sua biografia como viajante" value={bio} onChangeText={setBio} multiline numberOfLines={3} />
                 </Textarea>
-                <Button size="lg" mt="$2" bgColor="#e9ad2d" onPress={handleSave}>
+                <Button size="lg" mt="$2" bgColor="#2752B7" onPress={handleSave}>
                   <Text color="$white">Salvar Informações</Text>
                 </Button>
               </VStack>

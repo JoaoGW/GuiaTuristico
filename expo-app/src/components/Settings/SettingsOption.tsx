@@ -29,7 +29,7 @@ export function SettingsOption(props: SettingsRules) {
       >
         { optionText }
       </Text>
-      <ChevronRight />
+      <ChevronRight color="black" />
     </Pressable>
   );
 }

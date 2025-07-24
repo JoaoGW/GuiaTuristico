@@ -93,7 +93,7 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
             borderRadius={10}
             marginBottom={15}
             borderWidth={2}
-            borderColor='#E9AD2D'
+            borderColor='#2752B7'
             mr={ currentScreen === "MapsExpanded" ? 10 : 0 }
           />
         ) : (

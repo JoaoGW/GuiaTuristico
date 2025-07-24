@@ -36,12 +36,12 @@ import { useAuth } from '@contexts/AuthContext';
 
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
 
-export function LoginScreen() {
+export function SignUpScreen() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
 
-  const { login } = useAuth();
   const navigation = useNavigation<NoAuthNavigationProp>();
   const fontsLoaded = useFonts({ LibreBodoni_700Bold });
 
@@ -50,7 +50,7 @@ export function LoginScreen() {
       setIsInvalid(true);
     } else {
       setIsInvalid(false);
-      login;
+      navigation.navigate('Welcome');
     }
   }
 
@@ -69,9 +69,9 @@ export function LoginScreen() {
               <View flexDirection='row' alignItems='center' justifyContent='space-between' p={15}>
                 <IconButton buttonBgColor='transparent' icon={ ArrowLeft } iconColor='white' iconSize='xl' buttonFunctionality={ () => navigation.goBack() }/>
                 <View flexDirection='row' alignItems='center'>
-                  <Text color='$white' mr={10} size='sm'>Novo por aqui?</Text>
-                  <Button bgColor='#8a8a9d72' size='sm' onPress={ () => navigation.navigate('SignUp') }>
-                    <ButtonText>Criar Conta</ButtonText>
+                  <Text color='$white' mr={10} size='sm'>Já possui uma conta?</Text>
+                  <Button bgColor='#8a8a9d72' size='sm' onPress={ () => navigation.navigate('Login') }>
+                    <ButtonText>Entrar</ButtonText>
                   </Button>
                 </View>
               </View>
@@ -98,8 +98,7 @@ export function LoginScreen() {
               p={20}
               zIndex={1}
             >
-              <Text fontSize="$2xl" fontWeight="$bold" color='$black' my={15}>Bem-Vindo de Volta!</Text>
-              <Text fontSize="$lg" color='$black' mb={20}>Insira suas credenciais para continuar</Text>
+              <Text fontSize="$2xl" fontWeight="$bold" color='$black' my={15}>Comece Gratuitamente!</Text>
               <FormControl
                 isInvalid={isInvalid}
                 size="lg"
@@ -109,12 +108,31 @@ export function LoginScreen() {
                 w="85%"
               >
                 <FormControlLabel>
+                  <FormControlLabelText>Nome</FormControlLabelText>
+                </FormControlLabel>
+                <Input my={1}>
+                  <InputField
+                    type="text"
+                    placeholder="Insira Seu Nome"
+                    value={ name }
+                    onChangeText={ (name) => setName(name) }
+                  />
+                </Input>
+                <FormControlHelper>
+                </FormControlHelper>
+                <FormControlError>
+                  <FormControlErrorIcon as={ CircleAlert } />
+                  <FormControlErrorText>
+                    Insira um nome válido
+                  </FormControlErrorText>
+                </FormControlError>
+                <FormControlLabel>
                   <FormControlLabelText>Email</FormControlLabelText>
                 </FormControlLabel>
                 <Input my={1}>
                   <InputField
                     type="text"
-                    placeholder="Email"
+                    placeholder="Insira seu melhor Email"
                     value={ email }
                     onChangeText={ (mail) => setEmail(mail) }
                   />
@@ -133,7 +151,7 @@ export function LoginScreen() {
                 <Input my={1}>
                   <InputField
                     type="password"
-                    placeholder="Senha"
+                    placeholder="Memorize sua Senha"
                     value={ password }
                     onChangeText={ (pass) => setPassword(pass) }
                   />
@@ -167,32 +185,26 @@ export function LoginScreen() {
                       elevation: 4,
                     }}
                   >
-                    <ButtonText color="#FFF">Continuar</ButtonText>
+                    <ButtonText color="#FFF">Fazer Cadastro</ButtonText>
                   </Button>
                 </View>
               </FormControl>
-              <Button
-                bgColor="transparent"
-                size="lg"
-                onPress={ login }
-              >
-                <ButtonText fontWeight="$medium" color="#000">Esqueceu sua senha?</ButtonText>
-              </Button>
               <View flexDirection='row' justifyContent='space-evenly' mt={15} mb={25} alignItems='center'>
                 <View borderBottomWidth={.7} borderColor='$gray' w="22.5%"></View>
                 <Text mx={10}>Faça login com</Text>
                 <View borderBottomWidth={.7} borderColor='$gray' w="22.5%"></View>
               </View>
-              <View flexDirection='row' justifyContent='center'>
+              <View flexDirection='row' justifyContent='center' alignItems='center' w="100%">
                 <ButtonIconImageLeft 
                   icon={ GoogleLogo }
                   iconWidth={30}
                   iconHeight={30}
                   textContent='Google'
                   buttonSize='xl'
-                  action={ login }
+                  action={ () => navigation.navigate('Welcome') }
                   iconStyles={{
-                    marginRight: 15
+                    marginRight: 15,
+                    marginLeft: 17
                   }}
                   styles={{ 
                     borderWidth: .6,
@@ -207,7 +219,7 @@ export function LoginScreen() {
                   iconHeight={50}
                   textContent='Facebook'
                   buttonSize='xl'
-                  action={ login } 
+                  action={ () => navigation.navigate('Welcome') } 
                   styles={{ 
                     borderWidth: .6,
                     borderRadius: 10,

@@ -3,7 +3,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import CountryFlag from "react-native-country-flag";
 
-import { View, Text, Box, VStack, HStack, Icon } from "@gluestack-ui/themed";
+import { View, Text, Box } from "@gluestack-ui/themed";
 
 import { CarouselImages } from "@components/CarouselImages";
 import { IconButton } from "@components/Buttons/IconButton";
@@ -39,9 +39,8 @@ export function DestinationDetails(){
 
   const item = DestinationData.find((item: any) => String(item.id) === String(destinationId));
   if (!item) {
-    console.error(`Destination with ID ${destinationId} not found.`);
-    navigation.goBack(); // Navigate back if no destination is found
-    return null; // Exit the component rendering
+    navigation.goBack();
+    return null;
   }
   const destinationInfo: GlobalPlaces = {
     ...item,
@@ -121,17 +120,17 @@ export function DestinationDetails(){
         <ScrollView style={{ marginBottom: 30 }}>
           <Box p="$6" w={"100%"}>
             <View flexDirection="row" alignItems="center" justifyContent="space-between">
-              <Text fontSize="$3xl" fontWeight="bold" color="#E9AD2D" mb="$6">{ destinationInfo.title }</Text>
+              <Text fontSize="$3xl" fontWeight="bold" color="#2752B7" mb="$6">{ destinationInfo.title }</Text>
               <CountryFlag isoCode={ destinationInfo.countryCode } size={25} style={{ marginBottom: 20 }}/>
             </View>
             <Text fontSize="$md" fontWeight="$bold" color="#000" mb="$6">{ destinationInfo.description }</Text>
-            <VStack space="lg">
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Info size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="bold" color="#E9AD2D" ml="$4">Informações Gerais</Text>
-                </HStack>
-                <VStack space="md">
+            <View flexDirection="column">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Info size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="bold" color="#2752B7" ml="$4">Informações Gerais</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">País:</Text> { destinationInfo.country }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Continente:</Text> { destinationInfo.continent }</Text>
                   <View flexDirection="row" alignContent="center">
@@ -152,89 +151,89 @@ export function DestinationDetails(){
                   <Text fontSize="$lg"><Text fontWeight="$bold">Moeda:</Text> { destinationInfo.currency }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Idioma:</Text> { destinationInfo.language }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Fuso horário:</Text> { destinationInfo.timeZone }</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Cloud size={40} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Clima</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Cloud size={40} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Clima</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Melhor época para visitar:</Text> {destinationInfo.bestTimeToVisit}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Clima:</Text> {destinationInfo.climate}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Temperatura máxima:</Text> {destinationInfo.temperature.max}°C</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Map size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Atrações e Atividades</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Map size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Atrações e Atividades</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Atrações:</Text> {destinationInfo.attractions.join(', ')}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Atividades:</Text> {destinationInfo.activities.join(', ')}</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Car size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Transporte</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Car size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Transporte</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Transportes:</Text> {destinationInfo.transportation.join(', ')}</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Home size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Acomodações</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Home size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Acomodações</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Acomodações Simples:</Text> {destinationInfo.accommodation.simples}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Acomodações de Semi-Luxo:</Text> {destinationInfo.accommodation.semiLuxo}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Acomodações de Luxo:</Text> {destinationInfo.accommodation.luxo}</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Acomodações AirBnB:</Text> {destinationInfo.accommodation.airbnb}</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Utensils size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Gastronomia</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Utensils size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Gastronomia</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Especialidades culinárias:</Text> { destinationInfo.foodSpecialties.join(', ') }</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Shield size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Dicas e Segurança</Text>
-                </HStack>
-                <VStack space="md">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Shield size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Dicas e Segurança</Text>
+                </View>
+                <View flexDirection="column">
                   <Text fontSize="$lg"><Text fontWeight="$bold">Dicas:</Text> { destinationInfo.tips.join(', ') }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Segurança:</Text> { destinationInfo.safety }</Text>
                   <Text fontSize="$lg"><Text fontWeight="$bold">Amigável para famílias:</Text> { destinationInfo.familyFriendly ? 'Sim' : 'Não' }</Text>
-                </VStack>
+                </View>
               </Box>
 
-              <Box mb="$6">
-                <HStack alignItems="center" mb="$4">
-                  <Tag size={35} color="#E9AD2D" style={{ marginRight: -10 }} />
-                  <Text fontSize="$xl" fontWeight="$bold" color="#E9AD2D" ml="$4">Tags</Text>
-                </HStack>
-                <VStack space="md" flexDirection="row" flexWrap="wrap">
+              <Box mb="$8">
+                <View flexDirection="row" alignItems="center" mb="$4">
+                  <Tag size={35} color="#2752B7" style={{ marginRight: -10 }} />
+                  <Text fontSize="$xl" fontWeight="$bold" color="#2752B7" ml="$4">Tags</Text>
+                </View>
+                <View flexDirection="row" flexWrap="wrap" gap={8}>
                   { destinationInfo.tags.map((data, index) => (
                     <CategoryBadges key={ index } iconSize={22} text={ data } />
                   )) }
-                </VStack>
+                </View>
               </Box>
-            </VStack>
+            </View>
           </Box>
         </ScrollView>
       </SafeAreaView>

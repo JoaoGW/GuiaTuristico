@@ -19,7 +19,7 @@ export function Settings(){
         <View style={{ flex: 1 }}>
           <TitleAndBack pageTitle="Settings" />
 
-          <VStack mx={20}>
+          <View flexDirection="column" mx={20}>
             <Text color="$blue500" fontSize="$xl" fontWeight="$bold" mb={20}>Account</Text>
             <Pressable onPress={ () => navigation.navigate('Profile') } bg="$f0f0f0" p={10} borderRadius={5} mb={10} ml={10} flexDirection="row" alignItems="center" justifyContent="space-between" >
               <View flexDirection="row" alignItems="center">
@@ -36,24 +36,24 @@ export function Settings(){
               </View>
               <ChevronRight style={{ marginRight: 10 }}/>
             </Pressable>
-          </VStack>
+          </View>
 
-          <VStack mx={20} mt={25} mb={20}>
+          <View flexDirection="column" mx={20} mt={25} mb={20}>
             <Text color="$blue500" fontSize="$xl" fontWeight="$bold" my={20}>General Settings</Text>
             <SettingsOption optionText="Change Language" icon={Languages} />
             <SettingsOption optionText="Change Currency" icon={CircleDollarSign} />
             <SettingsOption optionText="Dark/Light Mode" icon={Moon} />
             <SettingsOption optionText="Notifications" icon={Bell} />
             <SettingsOption optionText="Offline Mode" icon={WifiOff} />
-          </VStack>
+          </View>
 
-          <VStack mt={10} style={{ marginBottom: 60 }}>
+          <View flexDirection="column" mt={10} style={{ marginBottom: 60 }}>
             <Text textAlign="center" fontSize={"$lg"} color="$blue500">Contact Support</Text>
             <Pressable bgColor="$red500" w={200} h={50} mt={20} mx="auto" flexDirection="row" alignItems="center" justifyContent="center" borderRadius={10}>
               <LogOut color="#FFF" style={{ marginRight: 15 }} />
               <Text color="$white" textAlign="center" fontSize="$lg" fontWeight="$bold">Sign Out</Text>
             </Pressable>
-          </VStack>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
