@@ -11,7 +11,7 @@ import { useNotificationStore } from '@utils/notificationStore';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { LocateFixed, Bell } from 'lucide-react-native';
+import { LocateFixed, BellRing } from 'lucide-react-native';
 
 export function CurrentStatusBar() {
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
@@ -55,7 +55,7 @@ export function CurrentStatusBar() {
           </View>
         </VStack>
         <Button variant="link" onPress={ () => navigation.navigate("Notifications") }>
-          <ButtonIcon as={ Bell } color="#535353" size='xl' style={{ marginRight: 15 }} />
+          <ButtonIcon as={ BellRing } color="#535353" size='xl' style={{ marginRight: 15 }} />
           { 
             checkNotifications.length > 0
               ? <AvatarBadge bgColor='$red500'/>

@@ -20,9 +20,9 @@ export type NoAuthNavigationProp = NativeStackNavigationProp<NoAuthStackParamLis
 export function NoAuthRoute(){
   return(
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Introduction" component={ Introduction } />
       <Stack.Screen name="Login" component={ LoginScreen }/>
       <Stack.Screen name="SignUp" component={ SignUpScreen }/>
-      <Stack.Screen name="Introduction" component={ Introduction } />
       <Stack.Screen name="Welcome" component={ Welcome } />
     </Stack.Navigator>
   )

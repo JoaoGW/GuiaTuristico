@@ -76,15 +76,51 @@ function AIChatWithNavBar() {
 export function AuthRoute() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={ HomeWithNavBar } />
-      <Stack.Screen name="Settings" component={ SettingsWithNavBar } />
-      <Stack.Screen name="Profile" component={ Profile } />
-      <Stack.Screen name="UserPreferences" component={ UserPreferences } />
-      <Stack.Screen name="GenerateItinerary" component={ GenerateItineraryWithNavBar } />
-      <Stack.Screen name="AIChat" component={ AIChatWithNavBar } />
-      <Stack.Screen name="MapsExpanded" component={ MapsExpanded } />
-      <Stack.Screen name="Notifications" component={ Notifications } />
-      <Stack.Screen name="DestinationDetail" component={ DestinationDetails } />
+      <Stack.Screen 
+        name="Home" 
+        component={ HomeWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Settings" 
+        component={ SettingsWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Profile" 
+        component={ Profile }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="UserPreferences" 
+        component={ UserPreferences }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="GenerateItinerary" 
+        component={ GenerateItineraryWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="AIChat" 
+        component={ AIChatWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="MapsExpanded" 
+        component={ MapsExpanded }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="Notifications" 
+        component={ Notifications }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="DestinationDetail" 
+        component={ DestinationDetails }
+        options={{ animation: 'none' }}
+      />
     </Stack.Navigator>
   );
 }
