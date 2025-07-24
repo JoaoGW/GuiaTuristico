@@ -50,7 +50,7 @@ export function SignUpScreen() {
       setIsInvalid(true);
     } else {
       setIsInvalid(false);
-      navigation.navigate('Login');
+      navigation.navigate('Welcome');
     }
   }
 
@@ -194,16 +194,17 @@ export function SignUpScreen() {
                 <Text mx={10}>Faça login com</Text>
                 <View borderBottomWidth={.7} borderColor='$gray' w="22.5%"></View>
               </View>
-              <View flexDirection='row' justifyContent='center'>
+              <View flexDirection='row' justifyContent='center' alignItems='center' w="100%">
                 <ButtonIconImageLeft 
                   icon={ GoogleLogo }
                   iconWidth={30}
                   iconHeight={30}
                   textContent='Google'
                   buttonSize='xl'
-                  action={ () => navigation.navigate('Login') }
+                  action={ () => navigation.navigate('Welcome') }
                   iconStyles={{
-                    marginRight: 15
+                    marginRight: 15,
+                    marginLeft: 17
                   }}
                   styles={{ 
                     borderWidth: .6,
@@ -218,7 +219,7 @@ export function SignUpScreen() {
                   iconHeight={50}
                   textContent='Facebook'
                   buttonSize='xl'
-                  action={ () => navigation.navigate('Login') } 
+                  action={ () => navigation.navigate('Welcome') } 
                   styles={{ 
                     borderWidth: .6,
                     borderRadius: 10,
