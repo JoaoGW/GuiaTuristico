@@ -16,6 +16,7 @@ import { NotificationError } from "@components/Errors/NotificationsError";
 import { useNotificationStore } from '@utils/notificationStore';
 
 import { Earth, Trash } from "lucide-react-native";
+import { TitleAndBack } from "@components/TitleBack";
 
 export function Notifications() {
   const [showAlertDialog, setShowAlertDialog] = useState(false);
@@ -68,11 +69,7 @@ export function Notifications() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View flexDirection="row" justifyContent="center" mt={10} mb={20}>
-        <Text size="xl" color="$black" fontWeight="$bold">
-          Notificações
-        </Text>
-      </View>
+      <TitleAndBack pageTitle="Notificações" />
       <Reanimated.ScrollView>
         {
           notifications.length > 0
