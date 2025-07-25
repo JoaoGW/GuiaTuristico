@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, FlatList } from "react-native";
+import { SafeAreaView, StatusBar, FlatList, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +8,8 @@ import { Button, ButtonGroup, ButtonText, Text, View } from "@gluestack-ui/theme
 import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun } from "lucide-react-native";
 
 import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
+
+import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
@@ -70,13 +71,6 @@ type TopicsAttributes = {
   color: string
 }
 
-type HistoryAttributes = {
-  id: number,
-  title: string,
-  date: string,
-  icon: LucideIcon
-}
-
 const TopicItem = ({ title, icon: Icon, color }: TopicsAttributes) => (
   <View alignContent="center" mr={30} alignItems="center">
     <LinearGradient
@@ -101,7 +95,7 @@ const TopicItem = ({ title, icon: Icon, color }: TopicsAttributes) => (
   </View>
 );
 
-const HistoryItem = ({ title, date, icon: Icon }: HistoryAttributes) => (
+const HistoryItem = ({ title, date, icon: Icon }: ChatHistoryTypes) => (
   <View
     flexDirection="row"
     alignItems="center"
@@ -139,7 +133,12 @@ export function AIChatMenu(){
   return(
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
-      <View p={15}>
+      <ScrollView 
+        style={{ flex: 1 }} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        <View p={15}>
         <LinearGradient
           colors={['#b6e0c7', '#93deb4']}
           style={{ padding: 20, borderRadius: 15 }}
@@ -263,8 +262,9 @@ export function AIChatMenu(){
           <View mt={30}>
             <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={10}>Histórico</Text>
             <View>
-              <FlatList<HistoryAttributes>
+              <FlatList<ChatHistoryTypes>
                 showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
                 data={ topics.map((topic) => ({
                   id: topic.id,
                   title: topic.title,
@@ -284,7 +284,8 @@ export function AIChatMenu(){
             </View>
           </View>
         </View>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

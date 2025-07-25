@@ -1,5 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
+import { useContext, useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
@@ -12,16 +12,13 @@ import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { generateChatAnswers } from "@utils/gptRequests"
 import { useNotificationStore } from "@utils/notificationStore";
 
+import { loadChatHistory, storeChatHistory } from '@services/storageManager'
+
 import { LocationContext } from "@contexts/requestDeviceLocation";
 
 import { MapPinned, Cloud, MessageCircle, Bot } from 'lucide-react-native';
 
-type Message = {
-  sender: "ai" | "user",
-  text: string,
-  name: string,
-  avatarUrl: string
-}
+import { MessageTypes } from '../../../@types/MessagesTypes';
 
 type Weather = {
   temperature: number | string,
@@ -32,12 +29,11 @@ export function AIChat() {
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
   const [currentMessage, setCurrentMessage] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "Indisponível", condition: "Indisponível" });
+  const [messages, setMessages] = useState<MessageTypes[]>([]);
+  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "--", condition: "--" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { location, errorMsg } = useContext(LocationContext);
-  const scrollViewRef = useRef(null);
   const addNotification = useNotificationStore(state => state.addNotification);
 
   const handleChatRequest = async () => {
@@ -48,7 +44,7 @@ export function AIChat() {
         throw new Error("Sua mensagem é curta demais. Requisição para a IA cancelada!");
       }
 
-      const newUserMessage: Message = {
+      const newUserMessage: MessageTypes = {
         sender: "user",
         text: currentMessage,
         name: "Nome do Usuário",
@@ -59,7 +55,7 @@ export function AIChat() {
 
       const aiText = await generateChatAnswers(newUserMessage.text);
 
-      const newAIMessage: Message = {
+      const newAIMessage: MessageTypes = {
         sender: "ai",
         text: aiText,
         name: "Seu Guia Turístico - IA",
@@ -95,13 +91,13 @@ export function AIChat() {
     try {
       if (!location) {
         console.log("Localização não disponível.");
-        return { temperature: "Indisponível", condition: "Indisponível" };
+        return { temperature: "--", condition: "--" };
       }
       const { latitude, longitude } = location.coords;
       const response = await fetch(`https://guia-turistico-alpha.vercel.app/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
-        return { temperature: "Indisponível", condition: "Indisponível" };
+        return { temperature: "--", condition: "--" };
       }
       const result = await response.json();
 
@@ -111,16 +107,7 @@ export function AIChat() {
       return { temperature, condition };
     } catch (error) {
       console.log(error);
-      return { temperature: "Indisponível", condition: "Indisponível" };
-    }
-  }
-
-  const storeChatHistory = async (messages: Message[]) => {
-    try {
-      const jsonValue = JSON.stringify(messages);
-      await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
-    } catch (e) {
-      Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
+      return { temperature: "--", condition: "--" };
     }
   }
 
@@ -142,18 +129,7 @@ export function AIChat() {
   }, [messages]);
 
   useEffect(() => {
-    const loadChatHistory = async () => {
-      try {
-        const jsonValue = await AsyncStorage.getItem('@eztripai_chatHistory');
-        if (jsonValue != null) {
-          setMessages(JSON.parse(jsonValue));
-        }
-      } catch (error) {
-        console.error('Erro ao carregar histórico de mensagens:', error);
-      }
-    };
-
-    loadChatHistory();
+    loadChatHistory(setMessages);
   }, []);
 
   useEffect(() => {
@@ -175,7 +151,7 @@ export function AIChat() {
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={ Platform.OS === "ios" ? "padding" : "height" }
           keyboardVerticalOffset={0}
         >
           <View flex={1} px={30} py={20} style={{ paddingBottom: 65 }}>
@@ -253,16 +229,16 @@ export function AIChat() {
                   messages.map((message, index) =>
                     message.sender === "user" ? (
                       <UserBalloon
-                        key={index}
-                        message={message.text}
-                        avatarUrl={message.avatarUrl}
-                        senderName={message.name}
+                        key={ index }
+                        message={ message.text }
+                        avatarUrl={ message.avatarUrl }
+                        senderName={ message.name }
                       />
                     ) : (
                       <AiBalloon
-                        key={index}
-                        message={message.text}
-                        senderName={message.name}
+                        key={ index }
+                        message={ message.text }
+                        senderName={ message.name }
                       />
                     )
                   )
@@ -285,14 +261,14 @@ export function AIChat() {
                 borderWidth={2}
               >
                 <InputField
-                  placeholder={isLoading ? "Aguarde..." : "Conversar com o seu Guia"}
+                  placeholder={ isLoading ? "Aguarde..." : "Conversar com o seu Guia" }
                   value={currentMessage}
                   maxLength={200}
-                  onChangeText={(text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
+                  onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
                 />
                 <InputSlot pr={10}>
-                  <Pressable onPress={handleChatRequest} alignSelf="center" disabled={isLoading ? true : false}>
-                    <InputIcon as={MessageCircle} color="#2752B7" size="xl" />
+                  <Pressable onPress={ handleChatRequest } alignSelf="center" disabled={isLoading ? true : false}>
+                    <InputIcon as={ MessageCircle } color="#2752B7" size="xl" />
                   </Pressable>
                 </InputSlot>
               </Input>
