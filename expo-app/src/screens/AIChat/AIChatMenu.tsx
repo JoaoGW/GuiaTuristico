@@ -1,13 +1,16 @@
+import { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, FlatList, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { Button, ButtonGroup, ButtonText, Text, View } from "@gluestack-ui/themed";
+import { Button, ButtonGroup, ButtonText, Pressable, Text, View } from "@gluestack-ui/themed";
 
-import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun } from "lucide-react-native";
+import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun, ClockFading } from "lucide-react-native";
 
 import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
+
+import { loadAllChatsHistory } from '@services/storageManager'
 
 import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
 
@@ -91,12 +94,12 @@ const TopicItem = ({ title, icon: Icon, color }: TopicsAttributes) => (
     >
       <Icon color="white" size={28} />
     </LinearGradient>
-    <Text fontWeight="$bold" color="$black">{ title }</Text>
+    <Text fontWeight="$semibold" color="$black">{ title }</Text>
   </View>
 );
 
-const HistoryItem = ({ title, date, icon: Icon }: ChatHistoryTypes) => (
-  <View
+const HistoryItem = ({ title, date, icon: Icon, navigate, route, chatId }: ChatHistoryTypes) => (
+  <Pressable
     flexDirection="row"
     alignItems="center"
     bgColor="#ffffff"
@@ -108,9 +111,10 @@ const HistoryItem = ({ title, date, icon: Icon }: ChatHistoryTypes) => (
     elevation={5}
     p={15}
     mb={10}
+    onPress={ () => navigate(route, chatId) }
   >
     <View
-      bgColor="#8a4ab2"
+      bgColor="#2752B7"
       borderRadius={50}
       width={45}
       height={45}
@@ -124,11 +128,27 @@ const HistoryItem = ({ title, date, icon: Icon }: ChatHistoryTypes) => (
       <Text fontWeight="$bold" fontSize="$md" color="$black">{title}</Text>
       <Text fontSize="$sm" color="$gray500">{ date.toString() }</Text>
     </View>
-  </View>
+  </Pressable>
 );
 
 export function AIChatMenu(){
+  const [chatsHistory, setChatsHistory] = useState<ChatHistoryTypes[]>([]);
   const navigation = useNavigation<AuthNavigationProp>();
+
+  useEffect(() => {
+    const loadAllChats = async () => {
+      try {
+        const history = await loadAllChatsHistory();
+        if (history) {
+          setChatsHistory(history);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar histórico de chats:', error);
+      }
+    };
+
+    loadAllChats();
+  }, []);
 
   return(
     <SafeAreaView style={{ flex: 1 }}>
@@ -205,10 +225,10 @@ export function AIChatMenu(){
               >
                 <MessageCirclePlus color="white" size={25} />
               </View>
-              <View flexDirection="row" alignItems="center">
+              <Pressable flexDirection="row" alignItems="center" onPress={ () => navigation.navigate("AIChat") }>
                 <Text fontSize="$md" fontWeight="$semibold" mt={15} color="$black" maxWidth="60%">Converse com Felipe</Text>
                 <ArrowRight style={{ marginTop: 15, marginLeft: 10 }} />
-              </View>
+              </Pressable>
             </View>
             <View 
               bgColor="#ffffff" 
@@ -234,14 +254,14 @@ export function AIChatMenu(){
               >
                 <Mic color="white" size={27} />
               </View>
-              <View flexDirection="row" alignItems="center">
+              <Pressable flexDirection="row" alignItems="center">
                 <Text fontSize="$md" fontWeight="$semibold" mt={15} color="$black" maxWidth="60%">Falar com Felipe</Text>
                 <ArrowRight style={{ marginTop: 15, marginLeft: 10 }} />
-              </View>
+              </Pressable>
             </View>
           </View>
           <View mt={30}>
-            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={10}>Tópicos</Text>
+            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>Tópicos</Text>
             <View>
               <FlatList<TopicsAttributes>
                 horizontal={true}
@@ -260,16 +280,19 @@ export function AIChatMenu(){
             </View>
           </View>
           <View mt={30}>
-            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={10}>Histórico</Text>
+            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>Histórico</Text>
             <View>
               <FlatList<ChatHistoryTypes>
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                data={ topics.map((topic) => ({
+                data={ chatsHistory.map((topic) => ({
                   id: topic.id,
                   title: topic.title,
                   date: new Date().toUTCString().split(" ").slice(0, 5).join(" "),
                   icon: topic.icon,
+                  chatId: topic.chatId,
+                  route: topic.route,
+                  navigate: topic.navigate
                 }))}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
@@ -278,8 +301,17 @@ export function AIChatMenu(){
                     title={ item.title }
                     date={ item.date }
                     icon={ item.icon }
+                    chatId={ item.chatId }
+                    route={ item.route }
+                    navigate={ item.navigate }
                   />
                 )}
+                ListEmptyComponent={
+                  <View alignItems="center">
+                    <ClockFading color="red" size={55} />
+                    <Text textAlign="center" mt={10}>Por enquanto não há mensagens para exibir. Tente começar uma nova conversa com Felipe!</Text>
+                  </View>
+                }
               />
             </View>
           </View>

@@ -2,6 +2,8 @@ import { Alert } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { ChatHistoryTypes } from '../../@types/ChatHistoryTypes';
 import { MessageTypes } from '../../@types/MessagesTypes';
 
@@ -26,38 +28,38 @@ export const storeAtAllChatsHistory = async (chats: ChatHistoryTypes) => {
 
 export const clearAllChatsHistory = async () => {
   try {
-    const jsonValue = JSON.stringify("");
-    await AsyncStorage.setItem('@eztripai_allChatsHistory', jsonValue);
+    await AsyncStorage.setItem('@eztripai_allChatsHistory', "");
   } catch (e) {
     console.log("Erro ao apagar todos os itens armazenados: ", e);
   }
 };
 
 // Para cada mensagem em específico (TODAS AS FUNÇÕES ABAIXO)
-export const loadChatHistory = async (setMessages: React.Dispatch<React.SetStateAction<MessageTypes[]>>) => {
+export const loadChatHistory = async (chatId: string, setMessages: React.Dispatch<React.SetStateAction<MessageTypes[]>>) => {
   try {
-    const jsonValue = await AsyncStorage.getItem('@eztripai_chatHistory');
+    const jsonValue = await AsyncStorage.getItem(`@eztripai_chatHistory_${chatId}`);
     if (jsonValue != null) {
       setMessages(JSON.parse(jsonValue));
     }
   } catch (error) {
-    console.error('Erro ao carregar histórico de mensagens:', error);
+    console.error('Erro ao carregar histórico de mensagens: ', error);
   }
 };
 
 export const storeChatHistory = async (messages: MessageTypes[]) => {
+  const chatId = uuidv4();
+
   try {
     const jsonValue = JSON.stringify(messages);
-    await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
+    await AsyncStorage.setItem(`@eztripai_chatHistory_${chatId}`, jsonValue);
   } catch (e) {
     Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
   }
 }
 
-export const clearChatHistory = async () => {
+export const clearChatHistory = async (chatId: string) => {
   try {
-    const jsonValue = JSON.stringify("");
-    await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
+    await AsyncStorage.setItem(`@eztripai_chatHistory_${chatId}`, "");
   } catch (e) {
     console.log("Erro ao apagar todos as mensagens armazenadas: ", e);
   }

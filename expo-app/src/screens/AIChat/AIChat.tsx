@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
 
@@ -127,10 +126,6 @@ export function AIChat() {
   useEffect(() => {
     storeChatHistory(messages);
   }, [messages]);
-
-  useEffect(() => {
-    loadChatHistory(setMessages);
-  }, []);
 
   useEffect(() => {
     if (location) {
