@@ -190,9 +190,10 @@ export function LoginScreen() {
                   iconHeight={30}
                   textContent='Google'
                   buttonSize='xl'
-                  action={ login }
+                  action={ () => navigation.navigate('Welcome') }
                   iconStyles={{
-                    marginRight: 15
+                    marginRight: 15,
+                    marginLeft: 17
                   }}
                   styles={{ 
                     borderWidth: .6,

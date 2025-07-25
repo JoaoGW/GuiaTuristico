@@ -4,11 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { View, Text, ButtonGroup, Button, ButtonText, ButtonSpinner } from "@gluestack-ui/themed";
+import { View, Text, ButtonGroup, Button, ButtonText, ButtonSpinner, ButtonIcon } from "@gluestack-ui/themed";
 
 import FelipeMascot from '@assets/Mascot/Felipe_Mascot_Hello.svg';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
+import { X } from 'lucide-react-native';
 
 export function AIMascotIntroduction() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -33,6 +34,17 @@ export function AIMascotIntroduction() {
     >
       <SafeAreaView>
         <StatusBar barStyle="light-content" />
+        <Button
+          position='absolute'
+          top={-65}
+          right={10}
+          zIndex={10}
+          p={5}
+          bgColor='transparent'
+          onPress={() => navigation.goBack()}
+        >
+          <ButtonIcon as={X} color="$white" size="xl" />
+        </Button>
         <View style={{
           justifyContent: 'center',
           alignItems: 'center',
