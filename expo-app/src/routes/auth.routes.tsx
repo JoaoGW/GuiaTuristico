@@ -7,6 +7,8 @@ import { Profile } from "@screens/UserProfile/EditProfile";
 import { UserPreferences } from "@screens/UserProfile/UserPreferences";
 import { GenerateItinerary } from "@screens/Itinerary/GenerateItinerary";
 import { AIChat } from "@screens/AIChat/AIChat";
+import { AIMascotIntroduction } from "@screens/AIChat/AIMascotIntroduction";
+import { AIChatMenu } from "@screens/AIChat/AIChatMenu";
 import { MapsExpanded } from "@screens/HomePage/MapsExpanded";
 import { Notifications } from "@screens/HomePage/Notifications";
 import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
@@ -24,6 +26,8 @@ type AuthStackParamList = {
   GenerateItinerary: undefined;
   UserPreferences: undefined;
   AIChat: undefined;
+  AIMascotIntroduction: undefined;
+  AIChatMenu: undefined;
   MapsExpanded: { places: Place[], loading: boolean };
   Notifications: undefined;
   DestinationDetail: { destinationId: number }
@@ -72,6 +76,14 @@ function AIChatWithNavBar() {
   );
 }
 
+function AIChatMenuWithNavBar() {
+  return (
+    <ScreenWrapper>
+      <AIChatMenu />
+    </ScreenWrapper>
+  );
+}
+
 export function AuthRoute() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -103,6 +115,16 @@ export function AuthRoute() {
       <Stack.Screen 
         name="AIChat" 
         component={ AIChatWithNavBar } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="AIMascotIntroduction" 
+        component={ AIMascotIntroduction } 
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="AIChatMenu" 
+        component={ AIChatMenuWithNavBar } 
         options={{ animation: 'none' }}
       />
       <Stack.Screen 

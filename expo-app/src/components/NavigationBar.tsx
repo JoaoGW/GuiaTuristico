@@ -13,10 +13,7 @@ type NavbarContextType = {
   setCurrentActive: (value: string) => void;
 };
 
-export const NavbarContext = createContext<NavbarContextType>({
-  currentActive: "Home",
-  setCurrentActive: () => {},
-});
+export const NavbarContext = createContext<NavbarContextType>({ currentActive: "Home", setCurrentActive: () => {} });
 
 export function NavigationBar() {
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
@@ -39,7 +36,7 @@ export function NavigationBar() {
       bg="$white"
       px={16}
       pt={4}
-      pb={ (Math.max(insets.bottom, 15) / 1.5) + 4}
+      pb={ (Math.max(insets.bottom, 15) / 1.5) + 4 }
       position="absolute"
       bottom={0}
       left={0}
@@ -56,7 +53,7 @@ export function NavigationBar() {
       <TouchableOpacity onPress={ () => { setCurrentActive('GenerateItinerary'); navigation.navigate('GenerateItinerary') } }>
         <MaterialIcons name="public" size={ currentActive === "GenerateItinerary" ? 40 : 30 } color={ currentActive === "GenerateItinerary" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
-      <TouchableOpacity onPress={ () => { setCurrentActive('AIChat'); navigation.navigate('AIChat') } }>
+      <TouchableOpacity onPress={ () => { setCurrentActive('AIChat'); navigation.navigate('AIMascotIntroduction') } }>
         <MaterialIcons name="forum" size={ currentActive === "AIChat" ? 40 : 30 } color={ currentActive === "AIChat" ? '#2752B7' : 'grey' } />
       </TouchableOpacity>
       <TouchableOpacity onPress={ () => { setCurrentActive('Home'); navigation.navigate('Home') } }>
