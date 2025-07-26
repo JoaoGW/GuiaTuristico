@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
 
-import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
+import { Text, View, Input, InputField, InputIcon, Pressable, ScrollView, Button, ButtonIcon, AvatarBadge, InputSlot } from "@gluestack-ui/themed";
 
 import { CharacterLimiter } from "@components/InputItems/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
@@ -15,9 +15,13 @@ import { loadChatHistory, storeChatHistory } from '@services/storageManager'
 
 import { LocationContext } from "@contexts/requestDeviceLocation";
 
-import { MapPinned, Cloud, MessageCircle, Bot } from 'lucide-react-native';
+import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
+
+import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 import { MessageTypes } from '../../../@types/MessagesTypes';
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigationProp } from "@routes/auth.routes";
 
 type Weather = {
   temperature: number | string,
@@ -34,6 +38,8 @@ export function AIChat() {
 
   const { location, errorMsg } = useContext(LocationContext);
   const addNotification = useNotificationStore(state => state.addNotification);
+
+  const navigation = useNavigation<AuthNavigationProp>();
 
   const handleChatRequest = async () => {
     try {
@@ -150,34 +156,38 @@ export function AIChat() {
           keyboardVerticalOffset={0}
         >
           <View flex={1} px={30} py={20} style={{ paddingBottom: 65 }}>
-            <View flexDirection="column">
-              <Text fontWeight="$bold" fontSize="$2xl" mb={15}>O que você procura hoje?</Text>
-              <View gap={10}>
-                <View flexDirection="row" alignItems="center">
-                  <MapPinned size={50} color="#2752B7" />
-                  {errorMsg ? (
-                    <Text color="red.500" ml={7} fontSize="$md">{errorMsg}</Text>
-                  ) : location ? (
-                    address ? (
-                      <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                        {address.neighborhood}, {address.city}
-                      </Text>
-                    ) : (
-                      <Text ml={7} fontSize="$md">Obtendo endereço...</Text>
-                    )
-                  ) : (
-                    <Text ml={7} fontSize="$md">Obtendo localização...</Text>
-                  )}
-                </View>
-                <View flexDirection="row" alignItems="center">
-                  <Cloud size={50} color="#2752B7" />
-                  <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                    {weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition}
-                  </Text>
+            <View flexDirection="row" justifyContent="space-between" w="100%" alignItems="center" mt={-15} mr={15}>
+              <Button bgColor="transparent" onPress={ () => navigation.goBack() }>
+                <ButtonIcon as={ ArrowLeft } color="$black" size="xl" ml={-20} />
+              </Button>
+              <View flexDirection="column" alignItems="center" ml={8}>
+                <Text fontSize="$lg" fontWeight="$bold">Felipe</Text>
+                <View flexDirection="row">
+                  <Text pr={25}>Online</Text>
+                  <AvatarBadge />
                 </View>
               </View>
+                <View
+                position="relative"
+                justifyContent="center"
+                alignItems="center"
+                >
+                <View
+                  position="absolute"
+                  width={55}
+                  height={55}
+                  borderRadius={27.5}
+                  borderWidth={2}
+                  borderColor="#2752B7"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  margin="auto"
+                />
+                  <FelipeProfilePicture height={55} width={55} style={{ marginRight: -10 }} />
+                </View>
             </View>
-
             <View flex={1} mt={20}>
               <ScrollView showsVerticalScrollIndicator={false}>
                 { messages.length === 0 ? (
@@ -241,32 +251,22 @@ export function AIChat() {
               </ScrollView>
             </View>
 
-            <View>
-              <View alignItems="flex-end" mr={15}>
-                <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} style={{ marginBottom: 6 }} />
-              </View>
-              <Input
-                variant="outline"
-                size="lg"
-                isDisabled={false}
-                isInvalid={false}
-                isReadOnly={false}
-                borderRadius={30}
-                borderColor="#2752B7"
-                borderWidth={2}
-              >
+            <View flexDirection="row" mb={-10} w="110%" justifyContent="center" alignItems="center" alignSelf="center">
+              <Input variant="outline" size="lg" borderRadius={10} borderColor="#2752B7" borderWidth={2} w="85%" mr={7}>
                 <InputField
-                  placeholder={ isLoading ? "Aguarde..." : "Conversar com o seu Guia" }
-                  value={currentMessage}
+                  placeholder={ isLoading ? "Aguarde..." : "Converse com Felipe..." }
+                  value={ currentMessage }
                   maxLength={200}
                   onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
+                  flex={1}
                 />
-                <InputSlot pr={10}>
-                  <Pressable onPress={ handleChatRequest } alignSelf="center" disabled={isLoading ? true : false}>
-                    <InputIcon as={ MessageCircle } color="#2752B7" size="xl" />
-                  </Pressable>
+                <InputSlot justifyContent="center" alignItems="center" mt={2} mr={6}>
+                  <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} />
                 </InputSlot>
               </Input>
+              <Pressable onPress={ handleChatRequest } alignSelf="center" bgColor="#2752B7" p={10} borderRadius={10} disabled={ isLoading || currentCharactersQuantity < 10 }>
+                <InputIcon as={ isLoading ? Loader : Send } color="$white" size="xl" />
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>

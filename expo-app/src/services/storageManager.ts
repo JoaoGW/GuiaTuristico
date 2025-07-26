@@ -10,8 +10,15 @@ import { MessageTypes } from '../../@types/MessagesTypes';
 // Para todo histórico de mensagens e não o conteúdo de cada uma em específico (TODAS AS FUNÇÕES ABAIXO)
 export const loadAllChatsHistory = async () => {
   try {
-    const jsonValue = await AsyncStorage.getItem('@eztripai_allChatsHistory');
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
+    const keys = await AsyncStorage.getAllKeys();
+    const allChats = keys.filter(key => key.startsWith("@eztripai_chatHistory_"));
+
+    const items = await AsyncStorage.multiGet(allChats);
+
+    return items.map(([key, value]) => ({ 
+      id: key.replace('my_item_', ''), 
+      data: value ? JSON.parse(value) : null 
+    }));
   } catch (e) {
     console.log("Não foi possível resgatar todas as informações: ", e);
   }
