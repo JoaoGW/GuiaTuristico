@@ -254,7 +254,7 @@ export function AIChatMenu(){
               >
                 <Mic color="white" size={27} />
               </View>
-              <Pressable flexDirection="row" alignItems="center">
+              <Pressable flexDirection="row" alignItems="center" onPress={ () => navigation.navigate("AIVoiceChat") }>
                 <Text fontSize="$md" fontWeight="$semibold" mt={15} color="$black" maxWidth="60%">Falar com Felipe</Text>
                 <ArrowRight style={{ marginTop: 15, marginLeft: 10 }} />
               </Pressable>
