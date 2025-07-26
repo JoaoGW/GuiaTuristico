@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState, useMemo } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import { FlatList, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { Box, Spinner, Text, VStack, View, Button, ScrollView, Badge, BadgeText, BadgeIcon } from '@gluestack-ui/themed';
+import { Box, Spinner, Text, VStack, View, Button, Badge, BadgeText, BadgeIcon } from '@gluestack-ui/themed';
 
 import { Expand, TrendingUp, MapPinHouse, LandPlot, Map, Radio } from 'lucide-react-native';
 
@@ -31,45 +31,47 @@ export function Home() {
   const { location } = useContext(LocationContext);
   const navigation = useNavigation<AuthNavigationProp>();
 
-  const fetchNearbyPlaces = useMemo(() => {
-    return async () => {
-      if (!location) return;
+  const fetchNearbyPlaces = useCallback(async () => {
+    if (!location) {
+      return;
+    }
 
-      setLoading(true);
+    setLoading(true);
 
-      try {
-        const response = await fetch(
-          `https://guia-turistico-alpha.vercel.app/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
-        );
+    try {
+      const response = await fetch(
+        `http://192.168.1.156:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+      );
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch nearby places');
-        }
-
-        const data = await response.json();
-
-        const mappedPlaces = data.places.map((place: any) => ({
-          id: place.place_id,
-          name: place.name,
-          vicinity: place.vicinity,
-          rating: place.rating,
-          photos: place.photos,
-          geometry: place.geometry,
-          open_now: place.opening_hours?.open_now
-        }));
-
-        setPlaces(mappedPlaces || []);
-      } catch (error) {
-        console.error('Error fetching nearby places:', error);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch nearby places');
       }
-    };
-  }, [location, places]);
+
+      const data = await response.json();
+
+      const mappedPlaces = data.places.map((place: any) => ({
+        id: place.place_id,
+        name: place.name,
+        vicinity: place.vicinity,
+        rating: place.rating,
+        photos: place.photos,
+        geometry: place.geometry,
+        open_now: place.opening_hours?.open_now
+      }));
+
+      setPlaces(mappedPlaces || []);
+    } catch (error) {
+      console.error('Error fetching nearby places:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [location]);
 
   useEffect(() => {
-    fetchNearbyPlaces();
-  }, [fetchNearbyPlaces]);
+    if (location) {
+      fetchNearbyPlaces();
+    }
+  }, [location, fetchNearbyPlaces]);
 
   const renderHeader = () => (
     <VStack space="md">
@@ -150,7 +152,7 @@ export function Home() {
               data={GlobalDestinationsData}
               numColumns={2}
               keyExtractor={(item) => String(item.id)}
-              ListHeaderComponent={renderHeader}
+              ListHeaderComponent={ renderHeader }
               renderItem={({ item }) => (
                 <Box flex={1} px={4} py={2}>
                   { location && (

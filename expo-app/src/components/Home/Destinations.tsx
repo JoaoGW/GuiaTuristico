@@ -28,7 +28,7 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
   const [isHovered, setIsHovered] = useState(false);
 
   const photoUrl = item.photos?.[0]
-    ? `https://guia-turistico-alpha.vercel.app/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
+    ? `http://192.168.1.156:3000/api/googlePhotoProxy?photo_reference=${item.photos[0].photo_reference}`
     : null;
 
   const calculateDistance = () => {
@@ -101,7 +101,7 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
         )}
         <View style={ currentScreen === "Home" ? styles.homeStyle : styles.mapsExpandedStyle }>
           <View flexDirection="column">
-            <HStack justifyContent="space-between" alignItems="center" mb={ currentScreen === "Home" ? 7 : 15 }>
+            <View flexDirection='row' justifyContent="space-between" alignItems="center" mb={ currentScreen === "Home" ? 7 : 15 }>
               <Text
                 fontSize="$lg"
                 fontWeight="$bold"
@@ -118,26 +118,24 @@ export function HomeDestinations({ item, userLocation, currentScreen }: Destinat
                   ? <Text fontSize="$sm" color="$gray500">{calculateDistance()} km</Text>
                   : ''
               }
-            </HStack>
-            <HStack justifyContent="space-between" alignItems="center">
-              <HStack space="xs" alignItems="center">
-                {[...Array(5)].map((_, index) => (
-                  <Star
-                    key={ index }
-                    size={18}
-                    color="#FFD700"
-                    fill={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-                    stroke={ index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0" }
-                  />
-                ))}
-                <Text ml={5}>({ item.rating || '0.0' })</Text>
-                {
-                  currentScreen === "MapsExpanded"
-                    ? <Text fontSize="$sm" color="$gray500" fontWeight="$bold"> • { calculateDistance() } km</Text>
-                    : ''
-                }
-              </HStack>
-            </HStack>
+            </View>
+            <View flexDirection='row' alignItems="center" justifyContent="center">
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  size={18}
+                  color="#FFD700"
+                  fill={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+                  stroke={index < Math.floor(item.rating) ? "#FFD700" : "#E0E0E0"}
+                />
+              ))}
+              <Text ml={5}>({item.rating || '0.0'})</Text>
+              {
+                currentScreen === "MapsExpanded"
+                  ? <Text fontSize="$sm" color="$gray500" fontWeight="$bold"> • {calculateDistance()} km</Text>
+                  : ''
+              }
+            </View>
             {
               currentScreen === "MapsExpanded"
                 ?
