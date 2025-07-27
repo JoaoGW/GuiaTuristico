@@ -26,7 +26,7 @@ type AuthStackParamList = {
   Profile: undefined;
   GenerateItinerary: undefined;
   UserPreferences: undefined;
-  AIChat: { chatId?: string } | undefined;
+  AIChat: { chatId?: string, topic?: string } | undefined;
   AIVoiceChat: undefined;
   AIMascotIntroduction: undefined;
   AIChatMenu: undefined;

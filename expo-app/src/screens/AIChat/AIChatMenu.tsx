@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, FlatList, ScrollView, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -14,70 +14,24 @@ import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
 
 import { clearAllChatsHistory, loadAllChatsHistory } from '@services/storageManager'
 
-import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
+import { LocationContext } from "@contexts/requestDeviceLocation";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
-const topics = [
-  {
-    id: 1,
-    title: "Populares",
-    icon: MapPin,
-    color: "#4CAF50",
-  },
-  {
-    id: 2,
-    title: "Dicas",
-    icon: Lightbulb,
-    color: "#FFD700",
-  },
-  {
-    id: 3,
-    title: "Comer",
-    icon: Utensils,
-    color: "#FF6347",
-  },
-  {
-    id: 4,
-    title: "Dormir",
-    icon: Bed,
-    color: "#6A5ACD",
-  },
-  {
-    id: 5,
-    title: "Passear",
-    icon: Activity,
-    color: "#FF8C00",
-  },
-  {
-    id: 6,
-    title: "Cultura",
-    icon: BookOpen,
-    color: "#8B4513",
-  },
-  {
-    id: 7,
-    title: "Transporte",
-    icon: Bus,
-    color: "#4682B4",
-  },
-  {
-    id: 8,
-    title: "Previsão",
-    icon: CloudSun,
-    color: "#87CEEB",
-  },
-];
+import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
+
+import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
 
 type TopicsAttributes = {
   id: number,
   title: string,
   icon: LucideIcon,
-  color: string
+  color: string,
+  routeNav: string
 }
 
-const TopicItem = ({ title, icon: Icon, color }: TopicsAttributes) => (
-  <View alignContent="center" mr={30} alignItems="center">
+const TopicItem = ({ title, icon: Icon, color, onPress }: { title: string, icon: LucideIcon, color: string, onPress: () => void }) => (
+  <Pressable alignContent="center" mr={30} alignItems="center" onPress={ onPress }>
     <LinearGradient
       colors={[color, `${color}AA`]}
       style={{
@@ -97,7 +51,7 @@ const TopicItem = ({ title, icon: Icon, color }: TopicsAttributes) => (
       <Icon color="white" size={28} />
     </LinearGradient>
     <Text fontWeight="$semibold" color="$black">{ title }</Text>
-  </View>
+  </Pressable>
 );
 
 const HistoryItem = ({ title, date, icon: Icon, navigate, route, chatId }: ChatHistoryTypes) => (
@@ -136,8 +90,88 @@ const HistoryItem = ({ title, date, icon: Icon, navigate, route, chatId }: ChatH
 export function AIChatMenu(){
   const [chatsHistory, setChatsHistory] = useState<ChatHistoryTypes[]>([]);
   const [showAlertDialog, setShowAlertDialog] = useState<boolean>(false);
+  const [topics, setTopics] = useState<TopicsAttributes[]>([]);
 
   const navigation = useNavigation<AuthNavigationProp>();
+  const { location } = useContext(LocationContext);
+
+  useEffect(() => {
+    const loadTopics = async () => {
+      let locationUser = "Localização não disponível";
+      
+      if (location) {
+        try {
+          const address = await reverseGeocodeWithNominatim(location.coords.latitude, location.coords.longitude);
+          locationUser = `${address.city}, ${address.neighborhood}`;
+        } catch (error) {
+          console.error('Erro ao obter endereço:', error);
+        }
+      }
+
+      const topicsData = [
+        {
+          id: 1,
+          title: "Populares",
+          icon: MapPin,
+          color: "#4CAF50",
+          routeNav: location ? `Sugira locais populares para visitar em ${locationUser}` : "Sugira locais populares para visitar"
+        },
+        {
+          id: 2,
+          title: "Dicas",
+          icon: Lightbulb,
+          color: "#FFD700",
+          routeNav: "Me dê dicas de viagem, aquelas que ninguém nunca te conta e somente os mais experientes sabem."
+        },
+        {
+          id: 3,
+          title: "Comer",
+          icon: Utensils,
+          color: "#FF6347",
+          routeNav: location ? `Onde posso comer bem e com boa qualidade em ${locationUser}?` : "Onde posso comer bem"
+        },
+        {
+          id: 4,
+          title: "Dormir",
+          icon: Bed,
+          color: "#6A5ACD",
+          routeNav: location ? `Sugira lugares para hospedagem em ${locationUser} em todas as faixas de preço.` : "Sugira lugares para hospedagem"
+        },
+        {
+          id: 5,
+          title: "Passear",
+          icon: Activity,
+          color: "#FF8C00",
+          routeNav: location ? `O que fazer para se divertir em ${locationUser} sozinho? E com a família e amigos?` : "O que fazer para se divertir"
+        },
+        {
+          id: 6,
+          title: "Cultura",
+          icon: BookOpen,
+          color: "#8B4513",
+          routeNav: location ? `Quais os pontos culturais para visitar em ${locationUser} e passar um bom tempo?` : "Pontos culturais para visitar"
+        },
+        {
+          id: 7,
+          title: "Transporte",
+          icon: Bus,
+          color: "#4682B4",
+          routeNav: location ? `Como posso me locomover em ${locationUser}?` : "Quais são os melhores métodos de locomoção em grandes cidades?"
+        },
+        {
+          id: 8,
+          title: "Previsão",
+          icon: CloudSun,
+          color: "#87CEEB",
+          routeNav: location ? `Como é o clima em ${locationUser} em cada época do ano?` : "Como está o clima"
+        },
+      ];
+
+      setTopics(topicsData);
+    };
+
+    loadTopics();
+  }, [location]);
 
   const clearHistory = async () => {
     try {
@@ -289,10 +323,10 @@ export function AIChatMenu(){
                 keyExtractor={ (item) => item.id.toString() }
                 renderItem={({ item }) => (
                   <TopicItem 
-                    id={ item.id }
                     title={ item.title } 
                     icon={ item.icon } 
-                    color={ item.color } 
+                    color={ item.color }
+                    onPress={ () => navigation.navigate("AIChat", { topic: item.routeNav }) }
                   />
                 )}
               />

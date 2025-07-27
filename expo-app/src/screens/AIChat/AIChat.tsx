@@ -36,13 +36,15 @@ type Weather = {
 
 type AIChatRouteParams = {
   AIChat: {
-    chatId?: string;
+    chatId?: string,
+    topic?: string
   };
 };
 
 export function AIChat() {
   const route = useRoute<RouteProp<AIChatRouteParams, 'AIChat'>>();
   const receivedChatId = route.params?.chatId;
+  const receivedChatTopic = route.params?.topic;
   
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
@@ -53,22 +55,24 @@ export function AIChat() {
   const [lastModifiedDate, setLastModifiedDate] = useState<string>("Data indisponível");
   const [chatId] = useState<string>(() => receivedChatId || generateUniqueId());
 
-  const { location, errorMsg } = useContext(LocationContext);
+  const { location } = useContext(LocationContext);
   const addNotification = useNotificationStore(state => state.addNotification);
 
   const navigation = useNavigation<AuthNavigationProp>();
 
-  const handleChatRequest = async () => {
+  const handleChatRequest = async (topicMessage?: string) => {
     try {
       setIsLoading(true);
 
-      if (currentMessage.length < 10) {
+      const messageToSend = topicMessage || currentMessage;
+
+      if (messageToSend.length < 10) {
         throw new Error("Sua mensagem é curta demais. Requisição para a IA cancelada!");
       }
 
       const newUserMessage: MessageTypes = {
         sender: "user",
-        text: currentMessage,
+        text: messageToSend,
         name: "Nome do Usuário",
         avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg"
       }
@@ -158,6 +162,12 @@ export function AIChat() {
       storeChatHistory({ messages, lastModified: currentDate }, chatId);
     }
   }, [messages, chatId]);
+
+  useEffect(() => {
+    if(receivedChatTopic != undefined){
+      handleChatRequest(receivedChatTopic);
+    }
+  }, [receivedChatTopic]);
 
   useEffect(() => {
     if (location) {
@@ -290,7 +300,7 @@ export function AIChat() {
                   <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} />
                 </InputSlot>
               </Input>
-              <Pressable onPress={ handleChatRequest } alignSelf="center" bgColor="#2752B7" p={10} borderRadius={10} disabled={ isLoading || currentCharactersQuantity < 10 }>
+              <Pressable onPress={() => handleChatRequest(currentMessage)} alignSelf="center" bgColor="#2752B7" p={10} borderRadius={10} disabled={isLoading || currentCharactersQuantity < 10}>
                 <InputIcon as={ isLoading ? Loader : Send } color="$white" size="xl" />
               </Pressable>
             </View>
