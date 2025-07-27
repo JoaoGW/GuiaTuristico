@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "formidable": "^3.5.4",
     "lightningcss": "^1.30.1",
     "next": "^15.3.2",
     "openai": "^4.98.0",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

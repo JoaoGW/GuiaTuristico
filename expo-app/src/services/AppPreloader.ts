@@ -91,7 +91,7 @@ class AppPreloader implements PreloadService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          prompt: 'Ping para verificar conectividade' 
+          prompt: 'Verificar conectividade'
         }),
       });
       

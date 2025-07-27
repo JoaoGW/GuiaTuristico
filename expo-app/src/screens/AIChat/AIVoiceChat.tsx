@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { SafeAreaView, StatusBar } from "react-native";
 import Animated, { 
   useSharedValue, 
@@ -11,12 +11,23 @@ import Animated, {
 
 import { Text, View, Pressable } from "@gluestack-ui/themed";
 import { TitleAndBack } from "@components/TitleBack";
-import { Mic, MicOff } from "lucide-react-native";
+import { Mic, MicOff, Volume2, VolumeX } from "lucide-react-native";
+import { useVoiceChat } from "../../hooks/useVoiceChat";
 
 export function AIVoiceChat(){
-  const [isRecording, setIsRecording] = useState(false);
+  // Usar o hook personalizado de voz
+  const {
+    voiceState,
+    messages,
+    toggleRecording,
+    stopSpeaking,
+    repeatMessage,
+    respondWithAI,
+    clearMessages,
+    canRecord,
+  } = useVoiceChat();
 
-  // Claude Sonnet 3.5: Animated values for pulsation effect
+  // Animações das bolhas (mantidas do código original)
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
   const innerScale = useSharedValue(0.8);
@@ -28,9 +39,29 @@ export function AIVoiceChat(){
   const bubbleFloat5 = useSharedValue(0);
   const buttonScale = useSharedValue(1);
 
+  // Gerar resposta do Felipe (placeholder - integre com sua IA)
+  const handleUserMessage = async (userText: string) => {
+    try {
+      // Simular resposta do Felipe - substitua pela sua integração de IA
+      const felipeResponse = `Entendi que você disse: "${userText}". Como posso ajudar você com informações turísticas?`;
+      await respondWithAI(felipeResponse);
+    } catch (error) {
+      console.error('Erro ao gerar resposta:', error);
+    }
+  };
+
+  // Lidar com toggle de gravação e resposta automática
+  const handleToggleRecording = async () => {
+    const transcribedText = await toggleRecording();
+    if (transcribedText && typeof transcribedText === 'string') {
+      await handleUserMessage(transcribedText);
+    }
+  };
+
+  // Animações das bolhas (mantidas do código original)
   useEffect(() => {
-    if (isRecording) {
-      // Claude Sonnet 3.5: Main pulsation animation
+    if (voiceState.isRecording) {
+      // Animações principais quando gravando
       scale.value = withRepeat(
         withTiming(1.08, {
           duration: 1800,
@@ -40,7 +71,6 @@ export function AIVoiceChat(){
         true
       );
 
-      // Claude Sonnet 3.5: Smooth rotation animation
       rotation.value = withRepeat(
         withTiming(360, {
           duration: 12000,
@@ -50,7 +80,6 @@ export function AIVoiceChat(){
         false
       );
 
-      // Claude Sonnet 3.5: Inner bubble animation
       innerScale.value = withRepeat(
         withTiming(1.15, {
           duration: 2200,
@@ -60,7 +89,6 @@ export function AIVoiceChat(){
         true
       );
 
-      // Claude Sonnet 3.5: Glow/brightness animation
       glowScale.value = withRepeat(
         withTiming(1.3, {
           duration: 2500,
@@ -70,7 +98,7 @@ export function AIVoiceChat(){
         true
       );
 
-      // Claude Sonnet 3.5: Float animations for small bubbles
+      // Animações das bolhas flutuantes
       bubbleFloat1.value = withRepeat(
         withTiming(1, {
           duration: 3000,
@@ -116,7 +144,6 @@ export function AIVoiceChat(){
         true
       );
 
-      // Claude Sonnet 3.5: Button pulsation when recording
       buttonScale.value = withRepeat(
         withTiming(1.1, {
           duration: 1000,
@@ -126,7 +153,7 @@ export function AIVoiceChat(){
         true
       );
     } else {
-      // Claude Sonnet 3.5: Stop all animations when not recording
+      // Parar todas as animações quando não estiver gravando
       scale.value = withTiming(1);
       rotation.value = withTiming(0);
       innerScale.value = withTiming(0.8);
@@ -138,7 +165,7 @@ export function AIVoiceChat(){
       bubbleFloat5.value = withTiming(0);
       buttonScale.value = withTiming(1);
     }
-  }, [isRecording]);
+  }, [voiceState.isRecording]);
 
   // Claude Sonnet 3.5: Animated style for outer bubble
   const animatedOuterStyle = useAnimatedStyle(() => {
@@ -267,15 +294,13 @@ export function AIVoiceChat(){
     };
   });
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
-
   return(
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content"/>
       <View flexDirection="column" alignContent="center">
         <TitleAndBack pageTitle="Fale com Felipe" />
+        
+        {/* Status da conversa */}
         <Text 
           textAlign="center" 
           fontSize="$lg" 
@@ -283,8 +308,115 @@ export function AIVoiceChat(){
           maxWidth="85%"
           margin="auto"
         > 
-        { isRecording ? "Pode falar, estou escutando..." : "Vá para um lugar com pouco barulho e toque no botão para começar a falar"}
+        { voiceState.isRecording 
+          ? "Pode falar, estou escutando... (máx. 15 segundos)" 
+          : voiceState.isTranscribing 
+          ? "Processando sua mensagem..."
+          : voiceState.isSpeaking
+          ? "Felipe está falando..."
+          : "Toque no botão para conversar com Felipe (até 15s por mensagem)"
+        }
         </Text>
+        
+        {/* Exibir texto transcrito */}
+        { voiceState.transcribedText && (
+          <View 
+            backgroundColor="$blue50" 
+            padding="$4" 
+            margin="$4" 
+            borderRadius="$lg"
+            borderWidth={1}
+            borderColor="$blue200"
+          >
+            <Text fontSize="$sm" color="$blue800" fontWeight="$medium" mb="$1">
+              Você disse:
+            </Text>
+            <Text fontSize="$md" color="$blue900">
+              {voiceState.transcribedText}
+            </Text>
+          </View>
+        )}
+        
+        {/* Exibir mensagens da conversa */}
+        {messages.map((message, index) => (
+          <View 
+            key={message.id}
+            backgroundColor={message.type === 'user' ? "$blue50" : "$green50"} 
+            padding="$4" 
+            margin="$2" 
+            marginHorizontal="$4"
+            borderRadius="$lg"
+            borderWidth={1}
+            borderColor={message.type === 'user' ? "$blue200" : "$green200"}
+          >
+            <Text fontSize="$sm" color={message.type === 'user' ? "$blue800" : "$green800"} fontWeight="$medium" mb="$1">
+              {message.type === 'user' ? "Você" : "Felipe"}
+            </Text>
+            <Text fontSize="$md" color={message.type === 'user' ? "$blue900" : "$green900"}>
+              {message.text}
+            </Text>
+            {message.type === 'assistant' && !voiceState.isSpeaking && (
+              <Pressable
+                onPress={() => repeatMessage(message.text)}
+                mt="$2"
+                alignSelf="flex-end"
+                flexDirection="row"
+                alignItems="center"
+                gap="$1"
+              >
+                <Volume2 size={16} color="#059669" />
+                <Text fontSize="$sm" color="$green600" textDecorationLine="underline">
+                  Ouvir novamente
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        ))}
+        
+        {/* Exibir erros */}
+        {voiceState.error && (
+          <View 
+            backgroundColor="$red50" 
+            padding="$4" 
+            margin="$4" 
+            borderRadius="$lg"
+            borderWidth={1}
+            borderColor="$red200"
+          >
+            <Text fontSize="$sm" color="$red800">
+              {voiceState.error}
+            </Text>
+          </View>
+        )}
+
+        {/* Controles adicionais */}
+        <View flexDirection="row" justifyContent="center" gap="$4" padding="$4">
+          {voiceState.isSpeaking && (
+            <Pressable
+              onPress={stopSpeaking}
+              backgroundColor="$orange500"
+              padding="$3"
+              borderRadius="$md"
+              flexDirection="row"
+              alignItems="center"
+              gap="$2"
+            >
+              <VolumeX size={16} color="white" />
+              <Text color="white" fontSize="$sm">Parar</Text>
+            </Pressable>
+          )}
+          
+          {messages.length > 0 && (
+            <Pressable
+              onPress={clearMessages}
+              backgroundColor="$gray500"
+              padding="$3"
+              borderRadius="$md"
+            >
+              <Text color="white" fontSize="$sm">Limpar</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
       
       <View flex={1} justifyContent="center" alignItems="center" position="relative">
@@ -535,24 +667,38 @@ export function AIVoiceChat(){
         </Animated.View>
       </View>
 
-      {/* Claude Sonnet 3.5: Recording control button */}
+      {/* Botão de controle de gravação */}
       <View paddingBottom={40} paddingHorizontal={20} alignItems="center">
         <Animated.View style={animatedButtonStyle}>
           <Pressable
-            onPress={toggleRecording}
+            onPress={handleToggleRecording}
+            disabled={!canRecord}
             width={80}
             height={80}
             borderRadius={40}
-            backgroundColor={isRecording ? "#FF4444" : "#888888"}
+            backgroundColor={
+              !canRecord 
+                ? "#CCCCCC" 
+                : voiceState.isRecording 
+                ? "#FF4444" 
+                : "#888888"
+            }
             justifyContent="center"
             alignItems="center"
-            shadowColor={isRecording ? "#FF4444" : "#888888"}
+            shadowColor={
+              !canRecord 
+                ? "#CCCCCC" 
+                : voiceState.isRecording 
+                ? "#FF4444" 
+                : "#888888"
+            }
             shadowOffset={{ width: 0, height: 4 }}
             shadowOpacity={0.3}
             shadowRadius={10}
             elevation={8}
+            opacity={!canRecord ? 0.5 : 1}
           >
-            { isRecording ? (
+            { voiceState.isRecording ? (
               <Mic color="white" size={35} />
             ) : (
               <MicOff color="white" size={35} />
@@ -565,7 +711,12 @@ export function AIVoiceChat(){
           color="$gray600"
           mt={10}
         >
-          { isRecording ? "Toque para parar" : "Toque para começar a falar" }
+          { !canRecord 
+            ? "Aguarde..."
+            : voiceState.isRecording 
+            ? "Toque para parar" 
+            : "Toque para começar a falar"
+          }
         </Text>
       </View>
     </SafeAreaView>

@@ -27,6 +27,45 @@ export default function SwaggerAccordion() {
   const apiEndpoints: ApiEndpoint[] = [
     {
       method: "POST",
+      path: "/api/transcribeAudio",
+      summary: "Transcrever áudio para texto",
+      description: "Transcreve arquivos de áudio para texto usando OpenAI Whisper API. Otimizado para português brasileiro com limite de 15 segundos (2MB) para menor custo financeiro.",
+      parameters: [
+        { name: "audio", type: "file", required: true, description: "Arquivo de áudio (máx. 2MB, ~15 segundos). Formatos: WAV, MP3, M4A, etc." }
+      ],
+      responses: {
+        "200": {
+          description: "Transcrição realizada com sucesso",
+          example: {
+            success: true,
+            text: "Olá, como você está hoje?",
+            audioInfo: {
+              originalName: "audio.wav",
+              size: 1024000,
+              duration: "Estimado: ~15 segundos máximo"
+            }
+          }
+        },
+        "400": { 
+          description: "Arquivo inválido ou muito grande",
+          example: {
+            error: "Arquivo de áudio é obrigatório",
+            details: "Envie o arquivo com o campo 'audio'"
+          }
+        },
+        "413": { 
+          description: "Arquivo muito grande (>2MB)",
+          example: {
+            error: "Arquivo muito grande",
+            details: "O arquivo deve ter no máximo 2MB (equivale a ~15 segundos)",
+            maxSize: "2MB"
+          }
+        },
+        "500": { description: "Erro interno ou falha na API da OpenAI" }
+      }
+    },
+    {
+      method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
       description: "Gera um itinerário personalizado usando OpenAI GPT-3.5-turbo baseado nas preferências pessoais setadas pelo usuário, localização desejada e budget máximo estipulado.",
