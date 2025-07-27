@@ -20,21 +20,38 @@ import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
 import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 import { MessageTypes } from '../../../@types/MessagesTypes';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AuthNavigationProp } from "@routes/auth.routes";
+import { RouteProp } from "@react-navigation/native";
+
+// Gera o ID da conversa com base na data e hora
+const generateUniqueId = (): string => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 type Weather = {
   temperature: number | string,
   condition: string
 }
 
+type AIChatRouteParams = {
+  AIChat: {
+    chatId?: string;
+  };
+};
+
 export function AIChat() {
+  const route = useRoute<RouteProp<AIChatRouteParams, 'AIChat'>>();
+  const receivedChatId = route.params?.chatId;
+  
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageTypes[]>([]);
   const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "--", condition: "--" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [lastModifiedDate, setLastModifiedDate] = useState<string>("Data indisponível");
+  const [chatId] = useState<string>(() => receivedChatId || generateUniqueId());
 
   const { location, errorMsg } = useContext(LocationContext);
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -63,7 +80,7 @@ export function AIChat() {
       const newAIMessage: MessageTypes = {
         sender: "ai",
         text: aiText,
-        name: "Seu Guia Turístico - IA",
+        name: "Felipe - Seu Guia Turístico",
         avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
       }
 
@@ -81,7 +98,7 @@ export function AIChat() {
         {
           sender: "ai",
           text: "Ocorreu algum erro e não conseguirei te ajudar agora! Desculpa...",
-          name: "Seu Guia Turístico - IA",
+          name: "Felipe - Seu Guia Turístico",
           avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
         }
       ]);
@@ -130,8 +147,17 @@ export function AIChat() {
   }, [location]);
 
   useEffect(() => {
-    storeChatHistory(messages);
-  }, [messages]);
+    loadChatHistory(chatId, setMessages, setLastModifiedDate);
+  }, [chatId]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const currentDate = "Data: " + new Date().toLocaleString().split(" ").slice(0, 5).join(" ");
+      setLastModifiedDate(currentDate);
+
+      storeChatHistory({ messages, lastModified: currentDate }, chatId);
+    }
+  }, [messages, chatId]);
 
   useEffect(() => {
     if (location) {

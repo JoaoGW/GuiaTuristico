@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, FlatList, ScrollView } from "react-native";
+import { SafeAreaView, StatusBar, FlatList, ScrollView, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Button, ButtonGroup, ButtonText, Pressable, Text, View } from "@gluestack-ui/themed";
 
-import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun, ClockFading } from "lucide-react-native";
+import { ChooseDialog } from "@components/ChooseDialog";
+
+import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun, ClockFading, RefreshCcw, Trash } from "lucide-react-native";
 
 import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
 
-import { loadAllChatsHistory } from '@services/storageManager'
+import { clearAllChatsHistory, loadAllChatsHistory } from '@services/storageManager'
 
 import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
 
@@ -133,20 +135,37 @@ const HistoryItem = ({ title, date, icon: Icon, navigate, route, chatId }: ChatH
 
 export function AIChatMenu(){
   const [chatsHistory, setChatsHistory] = useState<ChatHistoryTypes[]>([]);
+  const [showAlertDialog, setShowAlertDialog] = useState<boolean>(false);
+
   const navigation = useNavigation<AuthNavigationProp>();
 
-  useEffect(() => {
-    const loadAllChats = async () => {
-      try {
-        const history = await loadAllChatsHistory();
-        if (history) {
-          setChatsHistory(history);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar histórico de chats:', error);
-      }
-    };
+  const clearHistory = async () => {
+    try {
+      await clearAllChatsHistory();
+      setChatsHistory([]);
+      setShowAlertDialog(false);
+    } catch (error) {
+      Alert.alert("Erro ao limpar histórico de chats");
+    }
+  };
 
+  const loadAllChats = async () => {
+    try {
+      const history = await loadAllChatsHistory();
+      if (history) {
+        const updatedHistory = history.map(chat => ({
+          ...chat,
+          date: chat.date || "Data indisponível",
+          navigate: (routeName: string, chatId: string) => navigation.navigate(routeName as any, { chatId })
+        }));
+        setChatsHistory(updatedHistory);
+      }
+    } catch (error) {
+      Alert.alert('Erro ao carregar histórico de chats');
+    }
+  };
+
+  useEffect(() => {
     loadAllChats();
   }, []);
 
@@ -154,7 +173,7 @@ export function AIChatMenu(){
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <ScrollView 
-        style={{ flex: 1 }} 
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
@@ -280,21 +299,23 @@ export function AIChatMenu(){
             </View>
           </View>
           <View mt={30}>
-            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>Histórico</Text>
+            <View flexDirection="row" justifyContent="space-between" alignItems="center" mb={15}>
+              <Text fontSize="$2xl" fontWeight="$bold" color="$black">Histórico</Text>
+              <View flexDirection="row">
+                <Pressable onPress={ loadAllChats } mr={10}>
+                  <RefreshCcw style={{ marginRight: 15 }} />
+                </Pressable>
+                <Pressable onPress={ () => setShowAlertDialog(true) }>
+                  <Trash style={{ marginRight: 15 }} />
+                </Pressable>
+              </View>
+            </View>
             <View>
               <FlatList<ChatHistoryTypes>
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                data={ chatsHistory.map((topic) => ({
-                  id: topic.id,
-                  title: topic.title,
-                  date: new Date().toUTCString().split(" ").slice(0, 5).join(" "),
-                  icon: topic.icon,
-                  chatId: topic.chatId,
-                  route: topic.route,
-                  navigate: topic.navigate
-                }))}
-                keyExtractor={(item) => item.id.toString()}
+                data={ chatsHistory }
+                keyExtractor={ (item) => item.id.toString() }
                 renderItem={({ item }) => (
                   <HistoryItem 
                     id={ item.id }
@@ -317,6 +338,16 @@ export function AIChatMenu(){
           </View>
         </View>
         </View>
+        {
+          showAlertDialog &&
+            <ChooseDialog
+              title="Excluir Histórico"
+              message="Você tem certeza que deseja excluir o histórico de conversas com Felipe?"
+              isOpen={ showAlertDialog }
+              setShowAlertDialog={ setShowAlertDialog }
+              performAction={ clearHistory }
+            />
+        }
       </ScrollView>
     </SafeAreaView>
   )

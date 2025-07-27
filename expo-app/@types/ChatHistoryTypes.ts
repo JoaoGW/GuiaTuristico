@@ -1,5 +1,3 @@
-import { AuthNavigationProp } from "@routes/auth.routes";
-
 import { LucideIcon } from "lucide-react-native";
 
 export interface ChatHistoryTypes {
@@ -7,7 +5,7 @@ export interface ChatHistoryTypes {
   title: string,
   date: string,
   icon: LucideIcon,
-  navigate: (route: AuthNavigationProp, chatId: string) => void,
-  route: AuthNavigationProp,
+  navigate: (routeName: string, chatId: string) => void,
+  route: string,
   chatId: string
 }
