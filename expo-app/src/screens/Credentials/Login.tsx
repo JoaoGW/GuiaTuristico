@@ -192,7 +192,8 @@ export function LoginScreen() {
                   buttonSize='xl'
                   action={ login }
                   iconStyles={{
-                    marginRight: 15
+                    marginRight: 15,
+                    marginLeft: 17
                   }}
                   styles={{ 
                     borderWidth: .6,

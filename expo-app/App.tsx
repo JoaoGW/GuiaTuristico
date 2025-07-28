@@ -18,6 +18,7 @@ import { AuthProvider } from '@contexts/AuthContext';
 
 import { Routes } from '@routes/index';
 import { appPreloader } from '@services/AppPreloader';
+import { ProvideUserNetInfo } from '@contexts/NetInfo';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -96,7 +97,7 @@ export default function App() {
           flex: 1,
           backgroundColor: viewMode.background
         }}
-        onLayout={onLayoutRootView}
+        onLayout={ onLayoutRootView }
       >
         <GluestackUIProvider config={config}>
           <StatusBar
@@ -107,7 +108,9 @@ export default function App() {
 
           <AuthProvider>
             <ProvideUserLocation>
-              <Routes />
+              <ProvideUserNetInfo>
+                <Routes />
+              </ProvideUserNetInfo>
             </ProvideUserLocation>
           </AuthProvider>
         </GluestackUIProvider>

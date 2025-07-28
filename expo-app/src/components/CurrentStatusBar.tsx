@@ -40,11 +40,11 @@ export function CurrentStatusBar() {
           <View flexDirection="row" alignItems="center">
             <LocateFixed size={28} color="#535353" />
             { errorMsg ? (
-              <Text color="red.500" ml={7}>{errorMsg}</Text>
+              <Text color="red.500" ml={7}>{ errorMsg }</Text>
             ) : location ? (
               address ? (
                 <Text color="green.500" ml={7} fontWeight="$bold" >
-                  {address.neighborhood}, {address.city}
+                  { address.neighborhood }, { address.city }
                 </Text>
               ) : (
                 <Text ml={7}>Obtendo endereço...</Text>

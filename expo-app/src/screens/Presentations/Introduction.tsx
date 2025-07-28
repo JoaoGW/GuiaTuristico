@@ -10,8 +10,8 @@ import WelcomeGuideData from '@data/welcome.json';
 
 import Search from '@assets/Illustrations/Welcome/Search.svg';
 import Preferences from '@assets/Illustrations/Welcome/Preferences.svg';
-import AI from '@assets/Illustrations/Welcome/Ai.svg';
-import AIChat from '@assets/Illustrations/Welcome/AiChat.svg';
+import AI from '@assets/Mascot/Felipe_Mascot_Hello.svg';
+import AIChat from '@assets/Mascot/Felipe_Mascot.svg';
 import Attractions from '@assets/Illustrations/Welcome/Attractions.svg';
 import Navigation from '@assets/Illustrations/Welcome/Navigation.svg';
 import Expenses from '@assets/Illustrations/Welcome/Expenses.svg';

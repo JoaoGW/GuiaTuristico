@@ -28,7 +28,7 @@ import DestinationData from '@data/destinations.json';
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
-import { GlobalPlaces } from "../../@types/GlobalPlacesTypes";
+import { GlobalPlaces } from "../../../@types/GlobalPlacesTypes";
 
 type DestinationRouteProp = RouteProp<{ params: { destinationId: number } }, 'params'>;
 

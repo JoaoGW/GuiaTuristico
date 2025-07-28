@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -7,7 +7,7 @@ import Reanimated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { View, Text, Pressable } from "@gluestack-ui/themed";
+import { Pressable } from "@gluestack-ui/themed";
 
 import { NotificationCard } from "@components/Cards/NotificationCard";
 import { ChooseDialog } from "@components/ChooseDialog";

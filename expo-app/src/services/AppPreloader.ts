@@ -29,7 +29,7 @@ class AppPreloader implements PreloadService {
 
   async preloadCriticalResources(): Promise<void> {
     const preloadTasks = [
-      this.warmUpApis(),
+      //this.warmUpApis(),
       this.preloadCriticalData(),
     ];
 
@@ -91,7 +91,7 @@ class AppPreloader implements PreloadService {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          prompt: 'Ping para verificar conectividade' 
+          prompt: 'Verificar conectividade'
         }),
       });
       

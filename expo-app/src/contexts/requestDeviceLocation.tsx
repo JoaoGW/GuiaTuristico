@@ -35,15 +35,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
       }
 
       try {
-        let location;
-        if (Platform.OS === 'android') {
-          // Localização para dispositivos Android
-          location = await Location.getCurrentPositionAsync({});
-        } else {
-          // Localização para dispositivos iOS
-          location = await Location.getCurrentPositionAsync({});
-        }
-        setLocation(location);
+        setLocation(await Location.getCurrentPositionAsync({}));
       } catch (error) {
         setErrorMsg(`Erro ao obter localização: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
       }
@@ -63,7 +55,7 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
   return(
     <LocationContext.Provider value={{ location, errorMsg }}>
       <AlertToast>
-        {children}
+        { children }
       </AlertToast>
     </LocationContext.Provider>
   )

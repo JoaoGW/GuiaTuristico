@@ -1,56 +1,84 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext, useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
-import { Text, View, Input, InputField, InputSlot, InputIcon, Pressable, ScrollView } from "@gluestack-ui/themed";
+import { Text, View, Input, InputField, InputIcon, Pressable, ScrollView, Button, ButtonIcon, AvatarBadge, InputSlot } from "@gluestack-ui/themed";
 
 import { CharacterLimiter } from "@components/InputItems/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
+import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
+
+import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
+
+import { AuthNavigationProp } from "@routes/auth.routes";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { generateChatAnswers } from "@utils/gptRequests"
 import { useNotificationStore } from "@utils/notificationStore";
 
+import { loadChatHistory, storeChatHistory } from '@services/storageManager'
+
 import { LocationContext } from "@contexts/requestDeviceLocation";
+import { NetInfoContext } from "@contexts/NetInfo";
 
-import { MapPinned, Cloud, MessageCircle, Bot } from 'lucide-react-native';
+import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
-type Message = {
-  sender: "ai" | "user",
-  text: string,
-  name: string,
-  avatarUrl: string
-}
+import { MessageTypes } from '../../../@types/MessagesTypes';
+
+
+// Gera o ID da conversa com base na data e hora
+const generateUniqueId = (): string => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 type Weather = {
   temperature: number | string,
   condition: string
 }
 
+type AIChatRouteParams = {
+  AIChat: {
+    chatId?: string,
+    topic?: string
+  };
+};
+
 export function AIChat() {
+  const route = useRoute<RouteProp<AIChatRouteParams, 'AIChat'>>();
+  const receivedChatId = route.params?.chatId;
+  const receivedChatTopic = route.params?.topic;
+  
   const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
   const [currentMessage, setCurrentMessage] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "Indisponível", condition: "Indisponível" });
+  const [messages, setMessages] = useState<MessageTypes[]>([]);
+  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "--", condition: "--" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [lastModifiedDate, setLastModifiedDate] = useState<string>("Data indisponível");
+  const [chatId] = useState<string>(() => receivedChatId || generateUniqueId());
+  const [showModal, setShowModal] = useState<boolean>(true);
 
-  const { location, errorMsg } = useContext(LocationContext);
-  const scrollViewRef = useRef(null);
+  const { location } = useContext(LocationContext);
+  const { isConnected } = useContext(NetInfoContext);
+
   const addNotification = useNotificationStore(state => state.addNotification);
 
-  const handleChatRequest = async () => {
+  const navigation = useNavigation<AuthNavigationProp>();
+
+  const handleChatRequest = async (topicMessage?: string) => {
     try {
       setIsLoading(true);
 
-      if (currentMessage.length < 10) {
+      const messageToSend = topicMessage || currentMessage;
+
+      if (messageToSend.length < 10) {
         throw new Error("Sua mensagem é curta demais. Requisição para a IA cancelada!");
       }
 
-      const newUserMessage: Message = {
+      const newUserMessage: MessageTypes = {
         sender: "user",
-        text: currentMessage,
+        text: messageToSend,
         name: "Nome do Usuário",
         avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg"
       }
@@ -59,10 +87,10 @@ export function AIChat() {
 
       const aiText = await generateChatAnswers(newUserMessage.text);
 
-      const newAIMessage: Message = {
+      const newAIMessage: MessageTypes = {
         sender: "ai",
         text: aiText,
-        name: "Seu Guia Turístico - IA",
+        name: "Felipe - Seu Guia Turístico",
         avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
       }
 
@@ -80,7 +108,7 @@ export function AIChat() {
         {
           sender: "ai",
           text: "Ocorreu algum erro e não conseguirei te ajudar agora! Desculpa...",
-          name: "Seu Guia Turístico - IA",
+          name: "Felipe - Seu Guia Turístico",
           avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
         }
       ]);
@@ -95,13 +123,13 @@ export function AIChat() {
     try {
       if (!location) {
         console.log("Localização não disponível.");
-        return { temperature: "Indisponível", condition: "Indisponível" };
+        return { temperature: "--", condition: "--" };
       }
       const { latitude, longitude } = location.coords;
-      const response = await fetch(`https://guia-turistico-alpha.vercel.app/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`http://SEU-IP-AQUI:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
-        return { temperature: "Indisponível", condition: "Indisponível" };
+        return { temperature: "--", condition: "--" };
       }
       const result = await response.json();
 
@@ -111,16 +139,7 @@ export function AIChat() {
       return { temperature, condition };
     } catch (error) {
       console.log(error);
-      return { temperature: "Indisponível", condition: "Indisponível" };
-    }
-  }
-
-  const storeChatHistory = async (messages: Message[]) => {
-    try {
-      const jsonValue = JSON.stringify(messages);
-      await AsyncStorage.setItem('@eztripai_chatHistory', jsonValue);
-    } catch (e) {
-      Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
+      return { temperature: "--", condition: "--" };
     }
   }
 
@@ -138,23 +157,23 @@ export function AIChat() {
   }, [location]);
 
   useEffect(() => {
-    storeChatHistory(messages);
-  }, [messages]);
+    loadChatHistory(chatId, setMessages, setLastModifiedDate);
+  }, [chatId]);
 
   useEffect(() => {
-    const loadChatHistory = async () => {
-      try {
-        const jsonValue = await AsyncStorage.getItem('@eztripai_chatHistory');
-        if (jsonValue != null) {
-          setMessages(JSON.parse(jsonValue));
-        }
-      } catch (error) {
-        console.error('Erro ao carregar histórico de mensagens:', error);
-      }
-    };
+    if (messages.length > 0) {
+      const currentDate = "Data: " + new Date().toLocaleString().split(" ").slice(0, 5).join(" ");
+      setLastModifiedDate(currentDate);
 
-    loadChatHistory();
-  }, []);
+      storeChatHistory({ messages, lastModified: currentDate }, chatId);
+    }
+  }, [messages, chatId]);
+
+  useEffect(() => {
+    if(receivedChatTopic != undefined){
+      handleChatRequest(receivedChatTopic);
+    }
+  }, [receivedChatTopic]);
 
   useEffect(() => {
     if (location) {
@@ -175,38 +194,42 @@ export function AIChat() {
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={ Platform.OS === "ios" ? "padding" : "height" }
           keyboardVerticalOffset={0}
         >
           <View flex={1} px={30} py={20} style={{ paddingBottom: 65 }}>
-            <View flexDirection="column">
-              <Text fontWeight="$bold" fontSize="$2xl" mb={15}>O que você procura hoje?</Text>
-              <View gap={10}>
-                <View flexDirection="row" alignItems="center">
-                  <MapPinned size={50} color="#2752B7" />
-                  {errorMsg ? (
-                    <Text color="red.500" ml={7} fontSize="$md">{errorMsg}</Text>
-                  ) : location ? (
-                    address ? (
-                      <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                        {address.neighborhood}, {address.city}
-                      </Text>
-                    ) : (
-                      <Text ml={7} fontSize="$md">Obtendo endereço...</Text>
-                    )
-                  ) : (
-                    <Text ml={7} fontSize="$md">Obtendo localização...</Text>
-                  )}
-                </View>
-                <View flexDirection="row" alignItems="center">
-                  <Cloud size={50} color="#2752B7" />
-                  <Text color="green.500" ml={7} fontWeight="$bold" fontSize="$md">
-                    {weatherInfo && weatherInfo.temperature + "°C, " + weatherInfo.condition}
-                  </Text>
+            <View flexDirection="row" justifyContent="space-between" w="100%" alignItems="center" mt={-15} mr={15}>
+              <Button bgColor="transparent" onPress={ () => navigation.goBack() }>
+                <ButtonIcon as={ ArrowLeft } color="$black" size="xl" ml={-20} />
+              </Button>
+              <View flexDirection="column" alignItems="center" ml={8}>
+                <Text fontSize="$lg" fontWeight="$bold">Felipe</Text>
+                <View flexDirection="row">
+                  <Text pr={25}>Online</Text>
+                  <AvatarBadge />
                 </View>
               </View>
+                <View
+                position="relative"
+                justifyContent="center"
+                alignItems="center"
+                >
+                <View
+                  position="absolute"
+                  width={55}
+                  height={55}
+                  borderRadius={27.5}
+                  borderWidth={2}
+                  borderColor="#2752B7"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  margin="auto"
+                />
+                  <FelipeProfilePicture height={55} width={55} style={{ marginRight: -10 }} />
+                </View>
             </View>
-
             <View flex={1} mt={20}>
               <ScrollView showsVerticalScrollIndicator={false}>
                 { messages.length === 0 ? (
@@ -253,16 +276,16 @@ export function AIChat() {
                   messages.map((message, index) =>
                     message.sender === "user" ? (
                       <UserBalloon
-                        key={index}
-                        message={message.text}
-                        avatarUrl={message.avatarUrl}
-                        senderName={message.name}
+                        key={ index }
+                        message={ message.text }
+                        avatarUrl={ message.avatarUrl }
+                        senderName={ message.name }
                       />
                     ) : (
                       <AiBalloon
-                        key={index}
-                        message={message.text}
-                        senderName={message.name}
+                        key={ index }
+                        message={ message.text }
+                        senderName={ message.name }
                       />
                     )
                   )
@@ -270,35 +293,29 @@ export function AIChat() {
               </ScrollView>
             </View>
 
-            <View>
-              <View alignItems="flex-end" mr={15}>
-                <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} style={{ marginBottom: 6 }} />
-              </View>
-              <Input
-                variant="outline"
-                size="lg"
-                isDisabled={false}
-                isInvalid={false}
-                isReadOnly={false}
-                borderRadius={30}
-                borderColor="#2752B7"
-                borderWidth={2}
-              >
+            <View flexDirection="row" mb={-10} w="110%" justifyContent="center" alignItems="center" alignSelf="center">
+              <Input variant="outline" size="lg" borderRadius={10} borderColor="#2752B7" borderWidth={2} w="85%" mr={7}>
                 <InputField
-                  placeholder={isLoading ? "Aguarde..." : "Conversar com o seu Guia"}
-                  value={currentMessage}
+                  placeholder={ isLoading ? "Aguarde..." : "Converse com Felipe..." }
+                  value={ currentMessage }
                   maxLength={200}
-                  onChangeText={(text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
+                  onChangeText={ (text) => { setCurrentCharactersQuantity(text.length); setCurrentMessage(text); }}
+                  flex={1}
                 />
-                <InputSlot pr={10}>
-                  <Pressable onPress={handleChatRequest} alignSelf="center" disabled={isLoading ? true : false}>
-                    <InputIcon as={MessageCircle} color="#2752B7" size="xl" />
-                  </Pressable>
+                <InputSlot justifyContent="center" alignItems="center" mt={2} mr={6}>
+                  <CharacterLimiter currentCharactersQuantity={currentCharactersQuantity} characterLimitQuantity={200} />
                 </InputSlot>
               </Input>
+              <Pressable onPress={() => handleChatRequest(currentMessage)} alignSelf="center" bgColor="#2752B7" p={10} borderRadius={10} disabled={isLoading || currentCharactersQuantity < 10}>
+                <InputIcon as={ isLoading ? Loader : Send } color="$white" size="xl" />
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>
+        {
+          !isConnected &&
+          <ConnectionErrorAlerter showModal={showModal} setShowModal={setShowModal} />
+        }
       </SafeAreaView>
     </View>
   )

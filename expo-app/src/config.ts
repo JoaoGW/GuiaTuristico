@@ -1,1 +1,1 @@
-export const API_URL = "https://guia-turistico-alpha.vercel.app/api";
+export const API_URL = "http://SEU-IP-AQUI:3000/api";

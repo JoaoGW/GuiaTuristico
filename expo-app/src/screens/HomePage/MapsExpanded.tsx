@@ -13,7 +13,7 @@ import { RecenterButton } from "@components/Maps/RecenterButton";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
-import { Place } from "../../@types/PlacesTypes";
+import { Place } from "../../../@types/PlacesTypes";
 
 type SlideUpPlacesRouteProp = RouteProp<{ params: { places: Place[], isLoading: boolean } }, 'params'>;
 
