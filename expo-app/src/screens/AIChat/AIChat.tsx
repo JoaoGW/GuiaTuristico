@@ -1,11 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar } from 'react-native';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import { Text, View, Input, InputField, InputIcon, Pressable, ScrollView, Button, ButtonIcon, AvatarBadge, InputSlot } from "@gluestack-ui/themed";
 
 import { CharacterLimiter } from "@components/InputItems/CharacterLimiter";
 import { UserBalloon } from "@components/Chat/UserBalloon";
 import { AiBalloon } from "@components/Chat/AiBalloon";
+import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
+
+import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
+
+import { AuthNavigationProp } from "@routes/auth.routes";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 import { generateChatAnswers } from "@utils/gptRequests"
@@ -14,15 +20,12 @@ import { useNotificationStore } from "@utils/notificationStore";
 import { loadChatHistory, storeChatHistory } from '@services/storageManager'
 
 import { LocationContext } from "@contexts/requestDeviceLocation";
-
-import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
+import { NetInfoContext } from "@contexts/NetInfo";
 
 import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 import { MessageTypes } from '../../../@types/MessagesTypes';
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { AuthNavigationProp } from "@routes/auth.routes";
-import { RouteProp } from "@react-navigation/native";
+
 
 // Gera o ID da conversa com base na data e hora
 const generateUniqueId = (): string => {
@@ -54,8 +57,11 @@ export function AIChat() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lastModifiedDate, setLastModifiedDate] = useState<string>("Data indisponível");
   const [chatId] = useState<string>(() => receivedChatId || generateUniqueId());
+  const [showModal, setShowModal] = useState<boolean>(true);
 
   const { location } = useContext(LocationContext);
+  const { isConnected } = useContext(NetInfoContext);
+
   const addNotification = useNotificationStore(state => state.addNotification);
 
   const navigation = useNavigation<AuthNavigationProp>();
@@ -120,7 +126,7 @@ export function AIChat() {
         return { temperature: "--", condition: "--" };
       }
       const { latitude, longitude } = location.coords;
-      const response = await fetch(`http://192.168.1.156:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`http://SEU-IP-AQUI:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
         return { temperature: "--", condition: "--" };
@@ -306,6 +312,10 @@ export function AIChat() {
             </View>
           </View>
         </KeyboardAvoidingView>
+        {
+          !isConnected &&
+          <ConnectionErrorAlerter showModal={showModal} setShowModal={setShowModal} />
+        }
       </SafeAreaView>
     </View>
   )

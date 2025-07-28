@@ -36,6 +36,9 @@
       ],
       "@config": [
         "./src/config"
+      ],
+      "@hooks": [
+        "./src/hooks"
       ]
     }
   }

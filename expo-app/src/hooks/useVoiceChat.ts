@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { voiceService } from '../services/voiceService';
-import { VoiceConfig } from '../config/voiceConfig';
 import type { VoiceState, VoiceMessage } from '../../@types/VoiceTypes';
 
 export const useVoiceChat = () => {

@@ -15,12 +15,14 @@ import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
 import { clearAllChatsHistory, loadAllChatsHistory } from '@services/storageManager'
 
 import { LocationContext } from "@contexts/requestDeviceLocation";
+import { NetInfoContext } from "@contexts/NetInfo";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 
 import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
+import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
 
 type TopicsAttributes = {
   id: number,
@@ -91,9 +93,12 @@ export function AIChatMenu(){
   const [chatsHistory, setChatsHistory] = useState<ChatHistoryTypes[]>([]);
   const [showAlertDialog, setShowAlertDialog] = useState<boolean>(false);
   const [topics, setTopics] = useState<TopicsAttributes[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(true);
 
   const navigation = useNavigation<AuthNavigationProp>();
+
   const { location } = useContext(LocationContext);
+  const { isConnected } = useContext(NetInfoContext);
 
   useEffect(() => {
     const loadTopics = async () => {
@@ -381,6 +386,10 @@ export function AIChatMenu(){
               setShowAlertDialog={ setShowAlertDialog }
               performAction={ clearHistory }
             />
+        }
+        {
+          !isConnected &&
+            <ConnectionErrorAlerter showModal={ showModal } setShowModal={ setShowModal } />
         }
       </ScrollView>
     </SafeAreaView>

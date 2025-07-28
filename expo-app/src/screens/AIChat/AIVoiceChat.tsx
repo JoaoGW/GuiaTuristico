@@ -1,5 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
+
 import { SafeAreaView, StatusBar, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -11,14 +14,23 @@ import Animated, {
 
 import { Text, View, Pressable, Button, ButtonIcon, AvatarBadge } from "@gluestack-ui/themed";
 
+import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
+
 import { ArrowLeft, Mic, MicOff, Volume2, VolumeX } from "lucide-react-native";
+
 import { useVoiceChat } from "../../hooks/useVoiceChat";
-import { useNavigation } from "@react-navigation/native";
+
+import { NetInfoContext } from "@contexts/NetInfo";
+
 import { AuthNavigationProp } from "@routes/auth.routes";
 
 import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 export function AIVoiceChat(){
+  const [showModal, setShowModal] = useState<boolean>(true);
+  
+  const { isConnected } = useContext(NetInfoContext);
+  
   // Usar o hook personalizado de voz
   const {
     voiceState,
@@ -828,6 +840,11 @@ export function AIVoiceChat(){
           }
         </Text>
       </View>
+
+      {
+        !isConnected &&
+        <ConnectionErrorAlerter showModal={showModal} setShowModal={setShowModal} />
+      }
     </SafeAreaView>
   )
 }
