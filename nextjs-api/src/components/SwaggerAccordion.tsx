@@ -232,8 +232,8 @@ export default function SwaggerAccordion() {
     return "text-gray-600 bg-gray-50";
   };
   return (
-    <div className="w-full max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="w-full max-w-5xl">
+      <div className="space-y-4">
         {apiEndpoints.map((endpoint, index) => {
           const accordionId = `accordion-${index}`;
           const isOpen = openAccordions.has(accordionId);

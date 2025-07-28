@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaView, StatusBar, ScrollView } from "react-native";
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -51,8 +51,11 @@ export function AIVoiceChat(){
 
   // Animações das bolhas (mantidas do código original)
   useEffect(() => {
-    // Só animar quando estiver gravando OU se for a primeira interação (sem mensagens)
-    if (voiceState.isRecording || (messages.length === 0 && !voiceState.transcribedText)) {
+    // Animar quando:
+    // 1. Estiver gravando OU
+    // 2. For a primeira interação (sem mensagens) OU
+    // 3. Não houver transcrição ainda
+    if (voiceState.isRecording || messages.length === 0) {
       // Animações principais quando gravando ou primeira interação
       scale.value = withRepeat(
         withTiming(1.08, {
@@ -157,7 +160,7 @@ export function AIVoiceChat(){
       bubbleFloat5.value = withTiming(0);
       buttonScale.value = withTiming(1);
     }
-  }, [voiceState.isRecording, messages.length, voiceState.transcribedText]);
+  }, [voiceState.isRecording, messages.length]);
 
   // Claude Sonnet 3.5: Animated style for outer bubble
   const animatedOuterStyle = useAnimatedStyle(() => {
@@ -343,6 +346,120 @@ export function AIVoiceChat(){
         }
         </Text>
         
+        {/* Exibir mensagens da conversa quando não estiver gravando e houver mensagens */}
+        {!voiceState.isRecording && messages.length > 0 && (
+          <ScrollView 
+            style={{ maxHeight: 400, marginTop: 20 }} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 16 }}
+          >
+            {messages.map((message, index) => (
+              <View 
+                key={message.id}
+                margin="$2" 
+                marginHorizontal="$2"
+                width="100%"
+                maxWidth="100%"
+                alignSelf={message.type === 'user' ? 'flex-end' : 'flex-start'}
+              >
+                {/* Layout para mensagens do Felipe com foto */}
+                {message.type === 'assistant' && (
+                  <View flexDirection="row" alignItems="flex-start" gap="$2" mb="$2" width="100%">
+                    <View
+                      width={35}
+                      height={35}
+                      borderRadius={17.5}
+                      borderWidth={1.5}
+                      borderColor="#2752B7"
+                      justifyContent="center"
+                      alignItems="center"
+                      backgroundColor="white"
+                      mt="$1"
+                      flexShrink={0}
+                    >
+                      <FelipeProfilePicture height={30} width={30} />
+                    </View>
+                    <View flex={1} minWidth={0}>
+                      <View
+                        backgroundColor="#FFFFFF" 
+                        padding="$4" 
+                        borderRadius="$2xl"
+                        borderWidth={1}
+                        borderColor="$gray200"
+                        shadowColor="$black"
+                        shadowOffset={{ width: 0, height: 2 }}
+                        shadowOpacity={0.1}
+                        shadowRadius={4}
+                        elevation={3}
+                        width="100%"
+                      >
+                        <Text 
+                          fontSize="$md" 
+                          color="$gray900"
+                          lineHeight="$lg"
+                          flexWrap="wrap"
+                        >
+                          {message.text}
+                        </Text>
+                      </View>
+                      
+                      {!voiceState.isSpeaking && (
+                        <View flexDirection="row" justifyContent="flex-start" mt="$2" width="100%">
+                          <Pressable
+                            onPress={() => repeatMessage(message.text)}
+                            backgroundColor="#F3F4F6"
+                            paddingHorizontal="$3"
+                            paddingVertical="$2"
+                            borderRadius="$full"
+                            flexDirection="row"
+                            alignItems="center"
+                            gap="$2"
+                            shadowColor="$black"
+                            shadowOffset={{ width: 0, height: 1 }}
+                            shadowOpacity={0.1}
+                            shadowRadius={2}
+                            elevation={2}
+                            flexShrink={0}
+                          >
+                            <Volume2 size={14} color="#2752B7" />
+                            <Text fontSize="$sm" color="$gray700" fontWeight="$medium">
+                              Ouvir novamente
+                            </Text>
+                          </Pressable>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
+
+                {/* Layout para mensagens do usuário */}
+                {message.type === 'user' && (
+                  <View
+                    backgroundColor="#2752B7" 
+                    padding="$4" 
+                    borderRadius="$2xl"
+                    shadowColor="$black"
+                    shadowOffset={{ width: 0, height: 2 }}
+                    shadowOpacity={0.1}
+                    shadowRadius={4}
+                    elevation={3}
+                    maxWidth="85%"
+                    alignSelf="flex-end"
+                  >
+                    <Text 
+                      fontSize="$md" 
+                      color="$white"
+                      lineHeight="$lg"
+                    >
+                      {message.text}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </ScrollView>
+        )}
+        
         {/* Exibir erros */}
         {voiceState.error && (
           <View 
@@ -405,8 +522,8 @@ export function AIVoiceChat(){
       </View>
       
       <View flex={1} justifyContent="center" alignItems="center" position="relative">
-        {/* Mostrar bolhas só quando gravando ou primeira interação */}
-        {(voiceState.isRecording || (messages.length === 0 && !voiceState.transcribedText)) && (
+        {/* Mostrar bolhas quando gravando ou primeira interação */}
+        {(voiceState.isRecording || messages.length === 0) && (
           <>
             {/* Claude Sonnet 3.5: Small colored decorative bubbles */}
             <Animated.View
@@ -565,96 +682,98 @@ export function AIVoiceChat(){
           </>
         )}
 
-        {/* Claude Sonnet 3.5: Main bubble with glass effect */}
-        <Animated.View
-          style={[
-            {
-              width: 180,
-              height: 180,
-              borderRadius: 90,
-              backgroundColor: '#E9AD2D',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: '#E9AD2D',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.4,
-              shadowRadius: 25,
-              elevation: 15,
-              borderWidth: 2,
-              borderColor: '#F2D16E',
-            },
-            animatedOuterStyle,
-          ]}
-        >
-          {/* Claude Sonnet 3.5: Top glass reflection */}
-          <View
-            position="absolute"
-            top={12}
-            left={12}
-            width={60}
-            height={30}
-            backgroundColor="#ffffff"
-            opacity={0.4}
-            borderRadius={30}
-            transform={[{ rotate: '-30deg' }]}
-          />
-          
-          {/* Claude Sonnet 3.5: Smaller glass reflection */}
-          <View
-            position="absolute"
-            top={28}
-            right={20}
-            width={25}
-            height={12}
-            backgroundColor="#ffffff"
-            opacity={0.3}
-            borderRadius={12}
-            transform={[{ rotate: '45deg' }]}
-          />
-
-          {/* Claude Sonnet 3.5: Inner bubble with simulated gradient */}
+        {/* Mostrar a bolha principal sempre que necessário */}
+        {(voiceState.isRecording || messages.length === 0) && (
           <Animated.View
             style={[
               {
-                width: 130,
-                height: 130,
-                borderRadius: 65,
-                backgroundColor: '#F2D16E',
-                opacity: 0.7,
+                width: 180,
+                height: 180,
+                borderRadius: 90,
+                backgroundColor: '#E9AD2D',
+                justifyContent: 'center',
+                alignItems: 'center',
+                shadowColor: '#E9AD2D',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 25,
+                elevation: 15,
+                borderWidth: 2,
+                borderColor: '#F2D16E',
               },
-              animatedInnerStyle,
+              animatedOuterStyle,
             ]}
-          />
-          
-          {/* Claude Sonnet 3.5: Center of the bubble */}
-          <View
-            position="absolute"
-            width={70}
-            height={70}
-            borderRadius={35}
-            backgroundColor="#FFEAA7"
-            justifyContent="center"
-            alignItems="center"
-            shadowColor="#E9AD2D"
-            shadowOffset={{ width: 0, height: 4 }}
-            shadowOpacity={0.3}
-            shadowRadius={10}
-            elevation={8}
           >
+            {/* Claude Sonnet 3.5: Top glass reflection */}
             <View
-              width={40}
-              height={40}
-              borderRadius={20}
+              position="absolute"
+              top={12}
+              left={12}
+              width={60}
+              height={30}
               backgroundColor="#ffffff"
-              opacity={0.9}
-              shadowColor="#ffffff"
-              shadowOffset={{ width: 0, height: 0 }}
-              shadowOpacity={0.8}
-              shadowRadius={15}
-              elevation={5}
+              opacity={0.4}
+              borderRadius={30}
+              transform={[{ rotate: '-30deg' }]}
             />
-          </View>
-        </Animated.View>
+            
+            {/* Claude Sonnet 3.5: Smaller glass reflection */}
+            <View
+              position="absolute"
+              top={28}
+              right={20}
+              width={25}
+              height={12}
+              backgroundColor="#ffffff"
+              opacity={0.3}
+              borderRadius={12}
+              transform={[{ rotate: '45deg' }]}
+            />
+
+            {/* Claude Sonnet 3.5: Inner bubble with simulated gradient */}
+            <Animated.View
+              style={[
+                {
+                  width: 130,
+                  height: 130,
+                  borderRadius: 65,
+                  backgroundColor: '#F2D16E',
+                  opacity: 0.7,
+                },
+                animatedInnerStyle,
+              ]}
+            />
+            
+            {/* Claude Sonnet 3.5: Center of the bubble */}
+            <View
+              position="absolute"
+              width={70}
+              height={70}
+              borderRadius={35}
+              backgroundColor="#FFEAA7"
+              justifyContent="center"
+              alignItems="center"
+              shadowColor="#E9AD2D"
+              shadowOffset={{ width: 0, height: 4 }}
+              shadowOpacity={0.3}
+              shadowRadius={10}
+              elevation={8}
+            >
+              <View
+                width={40}
+                height={40}
+                borderRadius={20}
+                backgroundColor="#ffffff"
+                opacity={0.9}
+                shadowColor="#ffffff"
+                shadowOffset={{ width: 0, height: 0 }}
+                shadowOpacity={0.8}
+                shadowRadius={15}
+                elevation={5}
+              />
+            </View>
+          </Animated.View>
+        )}
       </View>
 
       {/* Botão de controle de gravação */}
