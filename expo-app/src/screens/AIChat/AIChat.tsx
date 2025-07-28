@@ -23,6 +23,7 @@ import { LocationContext } from "@contexts/requestDeviceLocation";
 import { NetInfoContext } from "@contexts/NetInfo";
 
 import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
+import FelipeNewChat from '@assets/Mascot/Felipe_Mascot_NewChat.svg';
 
 import { MessageTypes } from '../../../@types/MessagesTypes';
 
@@ -234,43 +235,15 @@ export function AIChat() {
               <ScrollView showsVerticalScrollIndicator={false}>
                 { messages.length === 0 ? (
                   <View
-                    position="relative"
-                    alignItems="flex-end"
-                    mt={50}
+                    flex={1}
+                    justifyContent="center"
+                    alignItems="center"
                     mx={10}
-                    minHeight={250}
                   >
-                    <View
-                      bg="#2252fea9"
-                      borderRadius={20}
-                      p={30}
-                      alignItems="center"
-                      justifyContent="center"
-                      minHeight={250}
-                      width="100%"
-                    >
-                      <Text fontWeight="$bold" fontSize="$xl" color="#fff" mb={10}>
-                        Conversar com a IA
-                      </Text>
-                      <Text fontSize="$md" color="#e0e0ff" textAlign="center">
-                        Aqui você pode pedir algumas solicitações para a Inteligência Artificial do que fazer agora! Ela irá tomar como base a sua localização atual e o clima atual.
-                      </Text>
+                    <View flexDirection="column" justifyContent="center" alignItems="center" mt={20}>
+                      <FelipeNewChat style={{ maxWidth: 360, maxHeight: 360 }} />
+                      <Text fontWeight="$semibold" fontSize="$xl" color="$black">Como posso te ajudar hoje?</Text>
                     </View>
-                    <View
-                      style={{
-                        position: 'absolute',
-                        bottom: -18,
-                        right: 25,
-                        width: 0,
-                        height: 0,
-                        borderLeftWidth: 18,
-                        borderLeftColor: 'transparent',
-                        borderRightWidth: 0,
-                        borderRightColor: 'transparent',
-                        borderTopWidth: 18,
-                        borderTopColor: '#2252fea9',
-                      }}
-                    />
                   </View>
                 ) : (
                   messages.map((message, index) =>
