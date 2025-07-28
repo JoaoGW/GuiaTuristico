@@ -86,14 +86,15 @@ export const useVoiceChat = () => {
           recordingDuration: result.duration 
         });
 
-        // Transcrever o áudio
-        const transcription = await voiceService.transcribeAudio(result.uri);
+        // Usar nova função unificada: transcrever + gerar resposta em uma única chamada
+        const voiceResult = await voiceService.processVoiceMessage(result.uri);
         
-        if (transcription.success && transcription.text) {
+        if (voiceResult.success && voiceResult.transcription) {
+          // Adicionar mensagem do usuário
           const userMessage: VoiceMessage = {
             id: Date.now().toString(),
             type: 'user',
-            text: transcription.text,
+            text: voiceResult.transcription,
             timestamp: new Date(),
             audioUri: result.uri,
             duration: result.duration,
@@ -101,14 +102,31 @@ export const useVoiceChat = () => {
 
           addMessage(userMessage);
           updateVoiceState({ 
-            transcribedText: transcription.text,
+            transcribedText: voiceResult.transcription,
             isTranscribing: false 
           });
 
-          return transcription.text;
+          // Adicionar resposta do Felipe automaticamente
+          if (voiceResult.response) {
+            const assistantMessage: VoiceMessage = {
+              id: (Date.now() + 1).toString(),
+              type: 'assistant',
+              text: voiceResult.response,
+              timestamp: new Date(),
+            };
+
+            addMessage(assistantMessage);
+
+            // Falar a resposta
+            updateVoiceState({ isSpeaking: true });
+            await voiceService.speakText(voiceResult.response);
+            updateVoiceState({ isSpeaking: false });
+          }
+
+          return voiceResult.transcription;
         } else {
           updateVoiceState({ 
-            error: transcription.error || 'Erro na transcrição',
+            error: voiceResult.error || 'Erro no processamento de voz',
             isTranscribing: false 
           });
           return null;

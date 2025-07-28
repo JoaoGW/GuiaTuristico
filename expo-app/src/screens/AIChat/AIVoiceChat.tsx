@@ -9,10 +9,14 @@ import Animated, {
   Easing 
 } from 'react-native-reanimated';
 
-import { Text, View, Pressable } from "@gluestack-ui/themed";
-import { TitleAndBack } from "@components/TitleBack";
-import { Mic, MicOff, Volume2, VolumeX } from "lucide-react-native";
+import { Text, View, Pressable, Button, ButtonIcon, AvatarBadge } from "@gluestack-ui/themed";
+
+import { ArrowLeft, Mic, MicOff, Volume2, VolumeX } from "lucide-react-native";
 import { useVoiceChat } from "../../hooks/useVoiceChat";
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigationProp } from "@routes/auth.routes";
+
+import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 export function AIVoiceChat(){
   // Usar o hook personalizado de voz
@@ -39,29 +43,17 @@ export function AIVoiceChat(){
   const bubbleFloat5 = useSharedValue(0);
   const buttonScale = useSharedValue(1);
 
-  // Gerar resposta do Felipe (placeholder - integre com sua IA)
-  const handleUserMessage = async (userText: string) => {
-    try {
-      // Simular resposta do Felipe - substitua pela sua integração de IA
-      const felipeResponse = `Entendi que você disse: "${userText}". Como posso ajudar você com informações turísticas?`;
-      await respondWithAI(felipeResponse);
-    } catch (error) {
-      console.error('Erro ao gerar resposta:', error);
-    }
-  };
-
-  // Lidar com toggle de gravação e resposta automática
+  // Lidar com toggle de gravação (agora com resposta automática integrada)
   const handleToggleRecording = async () => {
-    const transcribedText = await toggleRecording();
-    if (transcribedText && typeof transcribedText === 'string') {
-      await handleUserMessage(transcribedText);
-    }
+    await toggleRecording();
+    // A resposta agora é gerada automaticamente no hook
   };
 
   // Animações das bolhas (mantidas do código original)
   useEffect(() => {
-    if (voiceState.isRecording) {
-      // Animações principais quando gravando
+    // Só animar quando estiver gravando OU se for a primeira interação (sem mensagens)
+    if (voiceState.isRecording || (messages.length === 0 && !voiceState.transcribedText)) {
+      // Animações principais quando gravando ou primeira interação
       scale.value = withRepeat(
         withTiming(1.08, {
           duration: 1800,
@@ -153,7 +145,7 @@ export function AIVoiceChat(){
         true
       );
     } else {
-      // Parar todas as animações quando não estiver gravando
+      // Parar todas as animações quando não estiver gravando E já houve interação
       scale.value = withTiming(1);
       rotation.value = withTiming(0);
       innerScale.value = withTiming(0.8);
@@ -165,7 +157,7 @@ export function AIVoiceChat(){
       bubbleFloat5.value = withTiming(0);
       buttonScale.value = withTiming(1);
     }
-  }, [voiceState.isRecording]);
+  }, [voiceState.isRecording, messages.length, voiceState.transcribedText]);
 
   // Claude Sonnet 3.5: Animated style for outer bubble
   const animatedOuterStyle = useAnimatedStyle(() => {
@@ -294,11 +286,44 @@ export function AIVoiceChat(){
     };
   });
 
+  const navigation = useNavigation<AuthNavigationProp>();
+
   return(
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content"/>
       <View flexDirection="column" alignContent="center">
-        <TitleAndBack pageTitle="Fale com Felipe" />
+        <View flexDirection="row" justifyContent="space-between" w="100%" alignItems="center" mr={15} px={20} mb={15}>
+          <Button bgColor="transparent" onPress={ () => navigation.goBack() }>
+            <ButtonIcon as={ArrowLeft} color="$black" size="xl" ml={-20} />
+          </Button>
+          <View flexDirection="column" alignItems="center" ml={8}>
+            <Text fontSize="$lg" fontWeight="$bold">Felipe</Text>
+            <View flexDirection="row">
+              <Text pr={25}>Online</Text>
+              <AvatarBadge />
+            </View>
+          </View>
+          <View
+            position="relative"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <View
+              position="absolute"
+              width={55}
+              height={55}
+              borderRadius={27.5}
+              borderWidth={2}
+              borderColor="#2752B7"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              margin="auto"
+            />
+            <FelipeProfilePicture height={55} width={55} style={{ marginRight: -10 }} />
+          </View>
+        </View>
         
         {/* Status da conversa */}
         <Text 
@@ -318,61 +343,6 @@ export function AIVoiceChat(){
         }
         </Text>
         
-        {/* Exibir texto transcrito */}
-        { voiceState.transcribedText && (
-          <View 
-            backgroundColor="$blue50" 
-            padding="$4" 
-            margin="$4" 
-            borderRadius="$lg"
-            borderWidth={1}
-            borderColor="$blue200"
-          >
-            <Text fontSize="$sm" color="$blue800" fontWeight="$medium" mb="$1">
-              Você disse:
-            </Text>
-            <Text fontSize="$md" color="$blue900">
-              {voiceState.transcribedText}
-            </Text>
-          </View>
-        )}
-        
-        {/* Exibir mensagens da conversa */}
-        {messages.map((message, index) => (
-          <View 
-            key={message.id}
-            backgroundColor={message.type === 'user' ? "$blue50" : "$green50"} 
-            padding="$4" 
-            margin="$2" 
-            marginHorizontal="$4"
-            borderRadius="$lg"
-            borderWidth={1}
-            borderColor={message.type === 'user' ? "$blue200" : "$green200"}
-          >
-            <Text fontSize="$sm" color={message.type === 'user' ? "$blue800" : "$green800"} fontWeight="$medium" mb="$1">
-              {message.type === 'user' ? "Você" : "Felipe"}
-            </Text>
-            <Text fontSize="$md" color={message.type === 'user' ? "$blue900" : "$green900"}>
-              {message.text}
-            </Text>
-            {message.type === 'assistant' && !voiceState.isSpeaking && (
-              <Pressable
-                onPress={() => repeatMessage(message.text)}
-                mt="$2"
-                alignSelf="flex-end"
-                flexDirection="row"
-                alignItems="center"
-                gap="$1"
-              >
-                <Volume2 size={16} color="#059669" />
-                <Text fontSize="$sm" color="$green600" textDecorationLine="underline">
-                  Ouvir novamente
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        ))}
-        
         {/* Exibir erros */}
         {voiceState.error && (
           <View 
@@ -390,190 +360,210 @@ export function AIVoiceChat(){
         )}
 
         {/* Controles adicionais */}
-        <View flexDirection="row" justifyContent="center" gap="$4" padding="$4">
+        <View flexDirection="row" justifyContent="center" gap="$3" padding="$4">
           {voiceState.isSpeaking && (
             <Pressable
               onPress={stopSpeaking}
-              backgroundColor="$orange500"
-              padding="$3"
-              borderRadius="$md"
+              backgroundColor="#FF6B47"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              borderRadius="$full"
               flexDirection="row"
               alignItems="center"
               gap="$2"
+              shadowColor="$black"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.15}
+              shadowRadius={4}
+              elevation={4}
             >
               <VolumeX size={16} color="white" />
-              <Text color="white" fontSize="$sm">Parar</Text>
+              <Text color="white" fontSize="$sm" fontWeight="$medium">Parar áudio</Text>
             </Pressable>
           )}
           
           {messages.length > 0 && (
             <Pressable
               onPress={clearMessages}
-              backgroundColor="$gray500"
-              padding="$3"
-              borderRadius="$md"
+              backgroundColor="#64748B"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              borderRadius="$full"
+              flexDirection="row"
+              alignItems="center"
+              gap="$2"
+              shadowColor="$black"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.15}
+              shadowRadius={4}
+              elevation={4}
             >
-              <Text color="white" fontSize="$sm">Limpar</Text>
+              <Text color="white" fontSize="$sm" fontWeight="$medium">Limpar conversa</Text>
             </Pressable>
           )}
         </View>
       </View>
       
       <View flex={1} justifyContent="center" alignItems="center" position="relative">
-        {/* Claude Sonnet 3.5: Small colored decorative bubbles */}
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 28,
-              height: 28,
-              borderRadius: 14,
-              backgroundColor: '#4AA9FF',
-              top: '20%',
-              left: '20%',
-              shadowColor: '#4AA9FF',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 8,
-              elevation: 5,
-            },
-            animatedSmallBubble1,
-          ]}
-        />
-        
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 35,
-              height: 35,
-              borderRadius: 17.5,
-              backgroundColor: '#FF6B6B',
-              top: '25%',
-              right: '15%',
-              shadowColor: '#FF6B6B',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 8,
-              elevation: 5,
-            },
-            animatedSmallBubble2,
-          ]}
-        />
-        
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: '#4ECDC4',
-              bottom: '30%',
-              left: '25%',
-              shadowColor: '#4ECDC4',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 8,
-              elevation: 5,
-            },
-            animatedSmallBubble3,
-          ]}
-        />
+        {/* Mostrar bolhas só quando gravando ou primeira interação */}
+        {(voiceState.isRecording || (messages.length === 0 && !voiceState.transcribedText)) && (
+          <>
+            {/* Claude Sonnet 3.5: Small colored decorative bubbles */}
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: '#4AA9FF',
+                  top: '20%',
+                  left: '20%',
+                  shadowColor: '#4AA9FF',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: 5,
+                },
+                animatedSmallBubble1,
+              ]}
+            />
+            
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 35,
+                  height: 35,
+                  borderRadius: 17.5,
+                  backgroundColor: '#FF6B6B',
+                  top: '25%',
+                  right: '15%',
+                  shadowColor: '#FF6B6B',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: 5,
+                },
+                animatedSmallBubble2,
+              ]}
+            />
+            
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: '#4ECDC4',
+                  bottom: '30%',
+                  left: '25%',
+                  shadowColor: '#4ECDC4',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: 5,
+                },
+                animatedSmallBubble3,
+              ]}
+            />
 
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 22,
-              height: 22,
-              borderRadius: 11,
-              backgroundColor: '#A8E6CF',
-              top: '18%',
-              left: '15%',
-              shadowColor: '#A8E6CF',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 6,
-              elevation: 4,
-            },
-            animatedSmallBubble4,
-          ]}
-        />
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 22,
+                  height: 22,
+                  borderRadius: 11,
+                  backgroundColor: '#A8E6CF',
+                  top: '18%',
+                  left: '15%',
+                  shadowColor: '#A8E6CF',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 6,
+                  elevation: 4,
+                },
+                animatedSmallBubble4,
+              ]}
+            />
 
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 30,
-              height: 30,
-              borderRadius: 15,
-              backgroundColor: '#FFB347',
-              top: '30%',
-              right: '25%',
-              shadowColor: '#FFB347',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 8,
-              elevation: 5,
-            },
-            animatedSmallBubble5,
-          ]}
-        />
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  backgroundColor: '#FFB347',
+                  top: '30%',
+                  right: '25%',
+                  shadowColor: '#FFB347',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 8,
+                  elevation: 5,
+                },
+                animatedSmallBubble5,
+              ]}
+            />
 
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 20,
-              height: 20,
-              borderRadius: 10,
-              backgroundColor: '#DDA0DD',
-              top: '12%',
-              left: '35%',
-              shadowColor: '#DDA0DD',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 6,
-              elevation: 4,
-            },
-            animatedSmallBubble6,
-          ]}
-        />
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: '#DDA0DD',
+                  top: '12%',
+                  left: '35%',
+                  shadowColor: '#DDA0DD',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 6,
+                  elevation: 4,
+                },
+                animatedSmallBubble6,
+              ]}
+            />
 
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 18,
-              height: 18,
-              borderRadius: 9,
-              backgroundColor: '#87CEEB',
-              top: '10%',
-              right: '30%',
-              shadowColor: '#87CEEB',
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 6,
-              elevation: 4,
-            },
-            animatedSmallBubble7,
-          ]}
-        />
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 18,
+                  height: 18,
+                  borderRadius: 9,
+                  backgroundColor: '#87CEEB',
+                  top: '10%',
+                  right: '30%',
+                  shadowColor: '#87CEEB',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 6,
+                  elevation: 4,
+                },
+                animatedSmallBubble7,
+              ]}
+            />
 
-        {/* Claude Sonnet 3.5: Glow/brightness around main bubble */}
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              width: 240,
-              height: 240,
-              borderRadius: 120,
-              backgroundColor: '#E9AD2D',
-            },
-            animatedGlowStyle,
-          ]}
-        />
+            {/* Claude Sonnet 3.5: Glow/brightness around main bubble */}
+            <Animated.View
+              style={[
+                {
+                  position: 'absolute',
+                  width: 240,
+                  height: 240,
+                  borderRadius: 120,
+                  backgroundColor: '#E9AD2D',
+                },
+                animatedGlowStyle,
+              ]}
+            />
+          </>
+        )}
 
         {/* Claude Sonnet 3.5: Main bubble with glass effect */}
         <Animated.View

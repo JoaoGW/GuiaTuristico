@@ -21,8 +21,9 @@ export const VoiceConfig = {
   speech: {
     language: 'pt-BR',
     rate: 1.0, // Velocidade normal
-    pitch: 1.0, // Tom normal
-    volume: 1.0, // Volume máximo
+    pitch: 0.9, // Tom ligeiramente mais grave (era 1.0) - voz mais masculina
+    volume: 80.0, // Volume
+    voice: 'pt-br-x-ptd-network', // Voz masculina brasileira (Google TTS)
   },
 
   // Configurações da interface

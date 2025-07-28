@@ -20,6 +20,45 @@ export class VoiceService {
   private recordingTimer: NodeJS.Timeout | null = null;
 
   /**
+   * Obtém a melhor voz masculina disponível na plataforma
+   */
+  private async getBestMaleVoice(): Promise<string | undefined> {
+    try {
+      const availableVoices = await Speech.getAvailableVoicesAsync();
+      
+      // Lista de identificadores de vozes masculinas em português (ordem de preferência)
+      const maleVoiceIdentifiers = [
+        'pt-br-x-ptd-network', // Google TTS masculina brasileira
+        'pt-BR-language', // iOS masculina brasileira
+        'com.apple.ttsbundle.Luciana-compact', // iOS alternativa
+        'pt-br-x-ptd-local', // Google TTS local
+        'Portuguese (Brazil)', // Identificador genérico
+        'male', // Fallback genérico
+      ];
+
+      // Procurar por vozes masculinas em português
+      for (const identifier of maleVoiceIdentifiers) {
+        const voice = availableVoices.find(v => 
+          v.identifier.toLowerCase().includes(identifier.toLowerCase()) ||
+          (v.name && v.name.toLowerCase().includes('male')) ||
+          (v.language && v.language.toLowerCase().includes('pt'))
+        );
+        
+        if (voice) {
+          console.log(`🎤 Voz masculina encontrada: ${voice.name || voice.identifier}`);
+          return voice.identifier;
+        }
+      }
+
+      console.log('⚠️ Nenhuma voz masculina específica encontrada, usando padrão');
+      return undefined;
+    } catch (error) {
+      console.error('Erro ao obter vozes disponíveis:', error);
+      return undefined;
+    }
+  }
+
+  /**
    * Solicita permissões necessárias para gravação de áudio
    */
   async requestPermissions(): Promise<boolean> {
@@ -46,6 +85,23 @@ export class VoiceService {
       });
     } catch (error) {
       console.error('Erro ao configurar modo de áudio:', error);
+    }
+  }
+
+  /**
+   * Configura o modo de áudio para reprodução (volume alto)
+   */
+  async setupPlaybackMode(): Promise<void> {
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: false,
+        playThroughEarpieceAndroid: false,
+        staysActiveInBackground: false,
+      });
+    } catch (error) {
+      console.error('Erro ao configurar modo de reprodução:', error);
     }
   }
 
@@ -176,9 +232,9 @@ export class VoiceService {
   }
 
   /**
-   * Transcreve o áudio usando a API do Next.js que usa OpenAI Whisper
+   * Processa áudio completo: transcreve e gera resposta do Felipe em uma única chamada
    */
-  async transcribeAudio(audioUri: string): Promise<TranscriptionResult> {
+  async processVoiceMessage(audioUri: string): Promise<{ transcription: string; response: string; success: boolean; error?: string }> {
     try {
       // Prepara o FormData para envio
       const formData = new FormData();
@@ -201,11 +257,11 @@ export class VoiceService {
         type: mimeType,
       } as any);
 
-      console.log('Enviando áudio para transcrição:', `${API_URL}/transcribeAudio`);
+      console.log('Enviando áudio para processamento completo:', `${API_URL}/voiceChat`);
       console.log('Formato configurado:', VoiceConfig.recording.format);
       console.log('MIME type:', mimeType);
 
-      const response = await fetch(`${API_URL}/transcribeAudio`, {
+      const response = await fetch(`${API_URL}/voiceChat`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -243,15 +299,17 @@ export class VoiceService {
       }
       
       return {
-        text: data.text?.trim() || '',
+        transcription: data.transcription?.trim() || '',
+        response: data.response?.trim() || '',
         success: true,
       };
     } catch (error) {
-      console.error('Erro na transcrição:', error);
+      console.error('Erro no processamento de voz:', error);
       return {
-        text: '',
+        transcription: '',
+        response: '',
         success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido na transcrição',
+        error: error instanceof Error ? error.message : 'Erro desconhecido no processamento de voz',
       };
     }
   }
@@ -264,15 +322,24 @@ export class VoiceService {
     rate?: number;
     pitch?: number;
     voice?: string;
+    volume?: number;
   }): Promise<void> {
     try {
+      // Configurar modo de reprodução para garantir volume alto
+      await this.setupPlaybackMode();
+      
+      // Obter a melhor voz masculina disponível se não foi especificada
+      const bestMaleVoice = options?.voice || await this.getBestMaleVoice() || VoiceConfig.speech.voice;
+      
       const speechOptions = {
         language: options?.language || VoiceConfig.speech.language,
         rate: options?.rate || VoiceConfig.speech.rate,
         pitch: options?.pitch || VoiceConfig.speech.pitch,
-        voice: options?.voice,
+        voice: bestMaleVoice,
+        volume: VoiceConfig.speech.volume,
       };
 
+      console.log(`🔊 Falando com volume ${speechOptions.volume}x e voz: ${speechOptions.voice}`);
       await Speech.speak(text, speechOptions);
     } catch (error) {
       console.error('Erro ao falar texto:', error);

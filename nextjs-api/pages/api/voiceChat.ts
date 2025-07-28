@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import formidable from 'formidable';
 import fs from 'fs';
-import path from 'path';
+import { responseCache } from '../../utils/responseCache';
 
 // Configurar o OpenAI
 const openai = new OpenAI({
@@ -34,10 +34,10 @@ function validateAndFixWavFile(inputPath: string, outputPath: string): boolean {
   }
 }
 
-// Função para tentar diferentes extensões
+// Função para tentar diferentes extensões na transcrição
 async function tryTranscriptionWithDifferentFormats(tempPath: string, originalName: string): Promise<string> {
   const formats = [
-    { ext: 'm4a', mime: 'audio/m4a' }, // Priorizar M4A (mais compatível)
+    { ext: 'm4a', mime: 'audio/m4a' },
     { ext: 'mp3', mime: 'audio/mp3' },
     { ext: 'wav', mime: 'audio/wav' },
     { ext: 'mp4', mime: 'audio/mp4' }
@@ -50,10 +50,9 @@ async function tryTranscriptionWithDifferentFormats(tempPath: string, originalNa
       // Para WAV, tentar validar primeiro
       if (format.ext === 'wav') {
         if (!validateAndFixWavFile(tempPath, testPath)) {
-          continue; // Pular para próximo formato
+          continue;
         }
       } else {
-        // Para outros formatos, apenas copiar
         fs.copyFileSync(tempPath, testPath);
       }
       
@@ -99,12 +98,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Parse do form-data
     const form = formidable({
-      maxFileSize: 2 * 1024 * 1024, // 2MB máximo (equivale a ~15 segundos de áudio em alta qualidade)
+      maxFileSize: 2 * 1024 * 1024,
       filter: ({ mimetype, name }: { mimetype?: string | null, name?: string | null }) => {
-        // Aceitar arquivos de áudio e também arquivos sem MIME type definido (React Native)
         const isAudio = mimetype?.startsWith('audio/') || false;
         const hasAudioExtension = name ? /\.(wav|mp3|m4a|flac|ogg|webm)$/i.test(name) : false;
-        return isAudio || hasAudioExtension || !mimetype; // Aceitar quando MIME type não está definido
+        return isAudio || hasAudioExtension || !mimetype;
       },
       allowEmptyFiles: false,
     });
@@ -132,19 +130,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Verificar o arquivo recebido
-    const originalFilename = audioFile.originalFilename || 'recording.wav';
+    console.log('=== INICIANDO PROCESSAMENTO DE VOZ ===');
     
-    console.log('Arquivo recebido:', {
-      originalFilename,
-      mimetype: audioFile.mimetype,
-      size: audioFile.size,
-      filepath: audioFile.filepath
-    });
-
-    // Verificar se o arquivo existe e tem tamanho válido
+    // ETAPA 1: TRANSCRIÇÃO DO ÁUDIO
+    console.log('Etapa 1: Transcrevendo áudio...');
     const tempPath = audioFile.filepath;
     const stats = fs.statSync(tempPath);
+    
     if (stats.size === 0) {
       return res.status(400).json({
         error: 'Arquivo de áudio vazio',
@@ -152,13 +144,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    console.log(`Processando arquivo: ${originalFilename} (${stats.size} bytes)`);
-
     let transcription: string;
     try {
-      // Tentar transcrição com diferentes formatos
-      transcription = await tryTranscriptionWithDifferentFormats(tempPath, originalFilename);
-      console.log('Transcrição realizada com sucesso');
+      transcription = await tryTranscriptionWithDifferentFormats(tempPath, audioFile.originalFilename || 'recording');
+      console.log('✅ Transcrição realizada:', transcription);
       
     } finally {
       // Limpar arquivo temporário original
@@ -169,19 +158,81 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // Retornar resultado
+    // ETAPA 2: GERAR RESPOSTA DO FELIPE
+    console.log('Etapa 2: Gerando resposta do Felipe...');
+    
+    // Verificar cache primeiro
+    let felipeResponse = responseCache.getCachedResponse(transcription);
+    let usedCache = !!felipeResponse;
+    let completion;
+    
+    if (!felipeResponse) {
+      // Cache miss - gerar nova resposta com OpenAI
+      console.log('Cache miss - consultando OpenAI...');
+      
+      const systemPrompt = `Você é Felipe, um guia turístico virtual brasileiro especializado e experiente. Suas características:
+
+- Você é simpático, prestativo e conhece muito sobre turismo no Brasil e no mundo
+- Você fala de forma natural e amigável, como um guia humano
+- Você fornece informações práticas e úteis sobre destinos, atrações, hospedagem, transporte, gastronomia
+- Você sugere roteiros personalizados baseados nos interesses do turista
+- Você conhece dicas locais, preços aproximados e melhores épocas para visitar lugares
+- Você responde em português brasileiro
+- Mantenha suas respostas concisas (máximo 2-3 frases para conversas por voz)
+- Seja sempre positivo e entusiasmado sobre viagens
+
+Responda à pergunta do turista de forma útil e prática:`;
+
+      completion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: transcription
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.7,
+      });
+
+      felipeResponse = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
+      
+      // Armazenar no cache para futuras consultas similares
+      responseCache.storeResponse(transcription, felipeResponse);
+      console.log('✅ Nova resposta gerada e armazenada no cache');
+    } else {
+      console.log('✅ Resposta obtida do cache - economia de tokens!');
+    }
+    
+    console.log('✅ Resposta do Felipe:', felipeResponse);
+
+    console.log('=== PROCESSAMENTO CONCLUÍDO ===');
+
+    // Retornar ambos os resultados
     return res.status(200).json({
       success: true,
-      text: transcription.trim(),
+      transcription: transcription.trim(),
+      response: felipeResponse,
       audioInfo: {
         originalName: audioFile.originalFilename,
         size: audioFile.size,
         duration: 'Estimado: ~15 segundos máximo'
+      },
+      usage: {
+        transcriptionModel: 'whisper-1',
+        chatModel: 'gpt-3.5-turbo',
+        totalTokens: completion?.usage?.total_tokens || 0,
+        usedCache: usedCache,
+        cacheStats: responseCache.getStats()
       }
     });
 
   } catch (error: any) {
-    console.error('Erro na transcrição de áudio:', error);
+    console.error('Erro no processamento de voz:', error);
 
     // Tratar diferentes tipos de erro
     if (error.code === 'LIMIT_FILE_SIZE') {
@@ -192,22 +243,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Erro de formato de arquivo não suportado
     if (error.message && (error.message.includes('Unrecognized file format') || error.message.includes('unsupported file format'))) {
       return res.status(400).json({
         error: 'Formato de arquivo não reconhecido pela OpenAI',
         details: 'O arquivo pode estar corrompido, ter formato inválido ou a extensão não corresponde ao conteúdo real',
-        supportedFormats: ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm'],
-        suggestion: 'Verifique se o arquivo de áudio foi gravado corretamente e não está corrompido'
-      });
-    }
-
-    if (error.status === 400 || (error.response && error.response.status === 400)) {
-      return res.status(400).json({
-        error: 'Erro na API da OpenAI',
-        details: error.message || 'Formato de áudio inválido ou corrompido',
-        suggestion: 'Verifique se o arquivo de áudio não está corrompido e está em um formato suportado',
-        openaiError: error.response?.data || 'Sem detalhes adicionais'
+        supportedFormats: ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
       });
     }
 
@@ -218,17 +258,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Erro de arquivo vazio
-    if (error.message && error.message.includes('vazio')) {
-      return res.status(400).json({
-        error: 'Arquivo de áudio vazio',
-        details: 'O arquivo de áudio não contém dados válidos'
+    if (error.status === 429) {
+      return res.status(429).json({
+        error: 'Limite de taxa excedido',
+        details: 'Muitas requisições. Tente novamente em alguns segundos.'
       });
     }
 
     return res.status(500).json({
       error: 'Erro interno do servidor',
-      details: 'Falha ao processar transcrição de áudio',
+      details: 'Falha ao processar áudio e gerar resposta',
       message: error.message || 'Erro desconhecido'
     });
   }

@@ -27,22 +27,22 @@ export default function SwaggerAccordion() {
   const apiEndpoints: ApiEndpoint[] = [
     {
       method: "POST",
-      path: "/api/transcribeAudio",
-      summary: "Transcrever áudio para texto",
-      description: "Transcreve arquivos de áudio para texto usando OpenAI Whisper API. Otimizado para português brasileiro com limite de 15 segundos (2MB) para menor custo financeiro.",
+      path: "/api/voiceChat",
+      summary: "Chat por voz unificado",
+      description: "Endpoint unificado que combina transcrição de áudio (Whisper) + resposta da IA (GPT-3.5-turbo) em uma única chamada. Inclui sistema de cache inteligente para reduzir custos com a OpenAI.",
       parameters: [
         { name: "audio", type: "file", required: true, description: "Arquivo de áudio (máx. 2MB, ~15 segundos). Formatos: WAV, MP3, M4A, etc." }
       ],
       responses: {
         "200": {
-          description: "Transcrição realizada com sucesso",
+          description: "Processamento completo realizado com sucesso",
           example: {
-            success: true,
-            text: "Olá, como você está hoje?",
+            transcribedText: "Quais são as melhores atrações do Rio de Janeiro?",
+            response: "O Rio de Janeiro oferece diversas atrações incríveis como Cristo Redentor, Pão de Açúcar...",
+            fromCache: false,
             audioInfo: {
-              originalName: "audio.wav",
-              size: 1024000,
-              duration: "Estimado: ~15 segundos máximo"
+              originalName: "audio.m4a",
+              size: 1024000
             }
           }
         },
@@ -62,6 +62,55 @@ export default function SwaggerAccordion() {
           }
         },
         "500": { description: "Erro interno ou falha na API da OpenAI" }
+      }
+    },
+    {
+      method: "POST", 
+      path: "/api/chat",
+      summary: "Chat com IA (texto)",
+      description: "Endpoint de chat baseado em texto usando OpenAI GPT-3.5-turbo. Integrado com sistema de cache inteligente para otimizar custos e performance.",
+      parameters: [
+        { name: "message", type: "string", required: true, description: "Mensagem ou pergunta para a IA sobre turismo" }
+      ],
+      responses: {
+        "200": {
+          description: "Resposta da IA gerada com sucesso",
+          example: {
+            response: "Baseado na sua localização, recomendo visitar o museu histórico local...",
+            fromCache: true
+          }
+        },
+        "400": { 
+          description: "Mensagem não fornecida",
+          example: {
+            error: "Mensagem é obrigatória"
+          }
+        },
+        "405": { description: "Método não permitido (apenas POST)" },
+        "500": { description: "Falha ao gerar resposta da IA" }
+      }
+    },
+    {
+      method: "GET",
+      path: "/api/cacheStats",
+      summary: "Estatísticas do cache",
+      description: "Retorna estatísticas detalhadas do sistema de cache, incluindo taxa de acertos, economia de custos e total de requisições processadas.",
+      responses: {
+        "200": {
+          description: "Estatísticas do cache retornadas com sucesso",
+          example: {
+            totalRequests: 150,
+            cacheHits: 45,
+            cacheMisses: 105,
+            hitRate: "30.00%",
+            estimatedSavings: "$2.25",
+            cacheSize: 12,
+            oldestEntry: "2025-01-20T10:30:00.000Z",
+            newestEntry: "2025-01-20T14:45:00.000Z"
+          }
+        },
+        "405": { description: "Método não permitido (apenas GET)" },
+        "500": { description: "Erro ao obter estatísticas do cache" }
       }
     },
     {
@@ -183,8 +232,8 @@ export default function SwaggerAccordion() {
     return "text-gray-600 bg-gray-50";
   };
   return (
-    <div className="w-full max-w-5xl">
-      <div className="space-y-4">
+    <div className="w-full max-w-7xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {apiEndpoints.map((endpoint, index) => {
           const accordionId = `accordion-${index}`;
           const isOpen = openAccordions.has(accordionId);
