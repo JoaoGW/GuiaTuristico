@@ -29,7 +29,7 @@ class AppPreloader implements PreloadService {
 
   async preloadCriticalResources(): Promise<void> {
     const preloadTasks = [
-      this.warmUpApis(),
+      //this.warmUpApis(),
       this.preloadCriticalData(),
     ];
 

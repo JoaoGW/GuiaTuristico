@@ -21,8 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    console.log('Gerando resposta para:', message);
-
     // Criar prompt contextualizado para Felipe, o guia turístico
     const systemPrompt = context || `Você é Felipe, um guia turístico virtual brasileiro especializado e experiente. Suas características:
 
@@ -55,8 +53,6 @@ Responda à pergunta do turista de forma útil e prática:`;
     });
 
     const response = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
-
-    console.log('Resposta gerada:', response);
 
     return res.status(200).json({
       success: true,

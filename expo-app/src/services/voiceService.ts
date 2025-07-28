@@ -45,12 +45,10 @@ export class VoiceService {
         );
         
         if (voice) {
-          console.log(`🎤 Voz masculina encontrada: ${voice.name || voice.identifier}`);
           return voice.identifier;
         }
       }
 
-      console.log('⚠️ Nenhuma voz masculina específica encontrada, usando padrão');
       return undefined;
     } catch (error) {
       console.error('Erro ao obter vozes disponíveis:', error);
@@ -155,11 +153,9 @@ export class VoiceService {
       this.recordingTimer = setTimeout(() => {
         if (this.isRecording) {
           this.stopRecording();
-          console.log('Gravação parada automaticamente após 15 segundos');
         }
       }, VoiceConfig.recording.maxDuration);
       
-      console.log('Gravação iniciada');
       return true;
     } catch (error) {
       console.error('Erro ao iniciar gravação:', error);
@@ -195,7 +191,6 @@ export class VoiceService {
         throw new Error('URI do arquivo de áudio não disponível');
       }
 
-      console.log('Gravação finalizada:', uri);
       return {
         uri,
         duration: status.durationMillis || 0,
@@ -224,7 +219,6 @@ export class VoiceService {
         
         this.recording = null;
         this.isRecording = false;
-        console.log('Gravação cancelada');
       }
     } catch (error) {
       console.error('Erro ao cancelar gravação:', error);
@@ -245,21 +239,11 @@ export class VoiceService {
                        VoiceConfig.recording.format === 'wav' ? 'audio/wav' : 
                        `audio/${VoiceConfig.recording.format}`;
       
-      console.log('Dados do arquivo:', {
-        uri: audioUri,
-        name: `recording.${VoiceConfig.recording.format}`,
-        type: mimeType
-      });
-      
       formData.append('audio', {
         uri: audioUri,
         name: `recording.${VoiceConfig.recording.format}`,
         type: mimeType,
       } as any);
-
-      console.log('Enviando áudio para processamento completo:', `${API_URL}/voiceChat`);
-      console.log('Formato configurado:', VoiceConfig.recording.format);
-      console.log('MIME type:', mimeType);
 
       const response = await fetch(`${API_URL}/voiceChat`, {
         method: 'POST',
@@ -269,9 +253,6 @@ export class VoiceService {
         }
         // Não definir Content-Type para permitir que o FormData defina automaticamente com boundary
       });
-
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         const responseText = await response.text();
@@ -287,7 +268,6 @@ export class VoiceService {
       }
 
       const responseText = await response.text();
-      console.log('Response text:', responseText);
       
       let data;
       try {
@@ -339,7 +319,6 @@ export class VoiceService {
         volume: VoiceConfig.speech.volume,
       };
 
-      console.log(`🔊 Falando com volume ${speechOptions.volume}x e voz: ${speechOptions.voice}`);
       await Speech.speak(text, speechOptions);
     } catch (error) {
       console.error('Erro ao falar texto:', error);
