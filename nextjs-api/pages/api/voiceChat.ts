@@ -147,7 +147,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let transcription: string;
     try {
       transcription = await tryTranscriptionWithDifferentFormats(tempPath, audioFile.originalFilename || 'recording');
-      console.log('✅ Transcrição realizada:', transcription);
       
     } finally {
       // Limpar arquivo temporário original
@@ -203,14 +202,9 @@ Responda à pergunta do turista de forma útil e prática:`;
       
       // Armazenar no cache para futuras consultas similares
       responseCache.storeResponse(transcription, felipeResponse);
-      console.log('✅ Nova resposta gerada e armazenada no cache');
     } else {
-      console.log('✅ Resposta obtida do cache - economia de tokens!');
+      console.log('Cache detectado');
     }
-    
-    console.log('✅ Resposta do Felipe:', felipeResponse);
-
-    console.log('=== PROCESSAMENTO CONCLUÍDO ===');
 
     // Retornar ambos os resultados
     return res.status(200).json({
