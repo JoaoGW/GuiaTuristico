@@ -17,6 +17,7 @@ import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
 import { NavigationBar } from "@components/NavigationBar";
 
 import { Place } from '../../@types/PlacesTypes';
+import { PremiumPlans } from "@screens/Premium/PremiumPlans";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,8 @@ type AuthStackParamList = {
   AIChatMenu: undefined;
   MapsExpanded: { places: Place[], loading: boolean };
   Notifications: undefined;
-  DestinationDetail: { destinationId: number }
+  DestinationDetail: { destinationId: number };
+  PremiumPlans: undefined
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -155,6 +157,11 @@ export function AuthRoute() {
       <Stack.Screen 
         name="DestinationDetail" 
         component={ DestinationDetails }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="PremiumPlans" 
+        component={ PremiumPlans }
         options={{ animation: 'none' }}
       />
     </Stack.Navigator>

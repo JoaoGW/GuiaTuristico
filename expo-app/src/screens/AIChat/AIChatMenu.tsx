@@ -240,7 +240,7 @@ export function AIChatMenu(){
                     elevation: 5,
                   }}
                 >
-                  <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' onPress={ () => navigation.navigate("AIChatMenu") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
+                  <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' onPress={ () => navigation.navigate("PremiumPlans") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
                     <ButtonText textAlign="center" fontSize="$xl">Upgrade</ButtonText>
                   </Button>
                 </LinearGradient>
