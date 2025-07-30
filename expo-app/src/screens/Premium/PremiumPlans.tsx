@@ -202,6 +202,7 @@ export function PremiumPlans(){
                 h={60}
                 justifyContent="center"
                 alignItems="center"
+                onPress={ () => { navigation.navigate("WelcomePremium"); } }
               >
                 <ButtonText 
                   color="#000000" 

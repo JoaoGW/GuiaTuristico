@@ -13,11 +13,12 @@ import { AIChatMenu } from "@screens/AIChat/AIChatMenu";
 import { MapsExpanded } from "@screens/HomePage/MapsExpanded";
 import { Notifications } from "@screens/HomePage/Notifications";
 import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
+import { PremiumPlans } from "@screens/Premium/PremiumPlans";
+import { WelcomePremiumPlan } from "@screens/Premium/WelcomePremiumPlan";
 
 import { NavigationBar } from "@components/NavigationBar";
 
 import { Place } from '../../@types/PlacesTypes';
-import { PremiumPlans } from "@screens/Premium/PremiumPlans";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +35,8 @@ type AuthStackParamList = {
   MapsExpanded: { places: Place[], loading: boolean };
   Notifications: undefined;
   DestinationDetail: { destinationId: number };
-  PremiumPlans: undefined
+  PremiumPlans: undefined;
+  WelcomePremium: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -163,6 +165,11 @@ export function AuthRoute() {
         name="PremiumPlans" 
         component={ PremiumPlans }
         options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="WelcomePremium" 
+        component={ WelcomePremiumPlan }
+        options={{ animation: 'flip' }}
       />
     </Stack.Navigator>
   );
