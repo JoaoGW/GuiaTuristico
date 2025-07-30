@@ -16,6 +16,7 @@ import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
 import { PremiumPlans } from "@screens/Premium/PremiumPlans";
 import { WelcomePremiumPlan } from "@screens/Premium/WelcomePremiumPlan";
 import { ManagePremiumPlan } from "@screens/Premium/ManagePremiumPlan";
+import { OptionsManagePremiumPlan } from "@screens/Premium/OptionsManagePremiumPlan";
 
 import { NavigationBar } from "@components/NavigationBar";
 
@@ -39,6 +40,7 @@ type AuthStackParamList = {
   PremiumPlans: undefined;
   WelcomePremium: undefined;
   ManagePremiumPlan: undefined;
+  OptionsManagePremiumPlan: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -184,6 +186,11 @@ export function AuthRoute() {
       <Stack.Screen 
         name="ManagePremiumPlan" 
         component={ ManagePremiumPlanWithNavBar }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="OptionsManagePremiumPlan" 
+        component={ OptionsManagePremiumPlan }
         options={{ animation: 'none' }}
       />
     </Stack.Navigator>

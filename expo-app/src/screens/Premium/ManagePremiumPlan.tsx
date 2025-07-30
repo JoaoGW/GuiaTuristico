@@ -1,4 +1,5 @@
 import { SafeAreaView, ScrollView, StatusBar } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -8,7 +9,11 @@ import { BadgeCheck, ChevronRight, CircleFadingArrowUp, HandCoins, ListTodo, Mon
 
 import CoinIllustration from '@assets/Illustrations/Extras/Coin.svg';
 
+import { AuthNavigationProp } from "@routes/auth.routes";
+
 export function ManagePremiumPlan(){
+  const navigation = useNavigation<AuthNavigationProp>();
+
   return(
     <SafeAreaView>
       <StatusBar barStyle='dark-content' />
@@ -29,7 +34,7 @@ export function ManagePremiumPlan(){
               </View>
             </View>
               <View flexDirection="row" justifyContent="space-between" alignItems="center" mt={20}>
-                <Text fontSize="$md" color="$white" fontWeight="$medium">Como posso ganhar mais moedas?</Text>
+                <Text fontSize="$md" color="$white" fontWeight="$medium">Opções de resgate das moedas</Text>
                 <ChevronRight color="white" />
               </View>
           </LinearGradient>
@@ -72,10 +77,10 @@ export function ManagePremiumPlan(){
                   <Text fontSize="$sm" color="$black">Descontos incríveis para quem já assina continuar conosco</Text>
                 </View>
               </View>
-              <View flexDirection="row" justifyContent="space-between" alignItems="center" mt={20}>
+              <Button flexDirection="row" justifyContent="space-between" alignItems="center" bgColor="trasparent" w="100%" mt={20} onPress={ () => navigation.navigate("OptionsManagePremiumPlan") }>
                 <Text fontSize="$md" color="$black" fontWeight="$medium">Gerenciar minha assinatura</Text>
                 <ChevronRight color="black" />
-              </View>
+              </Button>
             </View>
           </View>
           <View
