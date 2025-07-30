@@ -57,7 +57,7 @@ export function WelcomePremiumPlan(){
                 h={40}
                 justifyContent="center"
                 alignItems="center"
-                onPress={ () => { navigation.navigate("WelcomePremium"); } }
+                onPress={ () => { navigation.navigate("Home"); } }
               >
                 <ButtonText 
                   color="#000000" 
