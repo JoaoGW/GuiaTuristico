@@ -12,7 +12,8 @@ import { Check, CircleCheckBig, X } from "lucide-react-native";
 import { AuthNavigationProp } from "@routes/auth.routes";
 
 type SelectedPlanTypes = {
-  selected: "Premium" | "Deluxe"
+  selectedPlan?: "Premium" | "Deluxe",
+  selectedPeriod?: "Monthly" | "Yearly"
 }
 
 const benefits = {
@@ -22,7 +23,7 @@ const benefits = {
     "Customização total dos seus roteiros gerados",
     "Salve até 10 interações com o Felipe no Histórico",
     "Veja eventos próximos a você em tempo real",
-    "Converse por voz com o Felipe"
+    "Conversas (limitadas) por voz com o Felipe"
   ],
   deluxe: [
     "Converse por voz com o Felipe",
@@ -38,7 +39,8 @@ const benefits = {
 };
 
 export function PremiumPlans(){
-  const [selectedPlan, setSelectedPlan] = useState<SelectedPlanTypes>({ selected: "Premium" });
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlanTypes>({ selectedPlan: "Premium" });
+  const [selectedPeriod, setSelectedPeriod] = useState<SelectedPlanTypes>({ selectedPeriod: "Monthly" })
 
   const navigation = useNavigation<AuthNavigationProp>();
 
@@ -58,15 +60,15 @@ export function PremiumPlans(){
           <StatusBar barStyle="light-content" />
           <View flexDirection="column" mt={25} alignItems="center">
             <Text color="$white" fontSize="$2xl" fontWeight="$bold">Faça upgrade para o Premium</Text>
-            <View>
-              <RadioGroup flexDirection="row" gap={15} mt={15}>
-                <Radio value="change" size="lg" isInvalid={ false } isDisabled={ false }>
+            <View flexDirection="row">
+              <RadioGroup flexDirection="row" gap={15} mt={15} value={ selectedPeriod.selectedPeriod } onChange={ (value) => setSelectedPeriod({ selectedPeriod: value as "Monthly" | "Yearly" }) }>
+                <Radio value="Monthly" size="lg" isInvalid={ false } isDisabled={ false }>
                   <RadioIndicator>
                     <RadioIcon as={ CircleIcon } />
                   </RadioIndicator>
                   <RadioLabel color="$white" ml={5}>Mensal</RadioLabel>
                 </Radio>
-                <Radio value="change" size="lg" isInvalid={ false } isDisabled={ false }>
+                <Radio value="Yearly" size="lg" isInvalid={ false } isDisabled={ false }>
                   <RadioIndicator>
                     <RadioIcon as={ CircleIcon } />
                   </RadioIndicator>
@@ -82,9 +84,9 @@ export function PremiumPlans(){
               mx="$3"
               mt="$8"
               p="$5"
-              bg={ selectedPlan.selected === "Premium" ? "$white" : "transparent" }
-              borderWidth={ selectedPlan.selected === "Premium" ? 0 : 3 }
-              borderColor={ selectedPlan.selected === "Premium" ? "transparent" : "$white" }
+              bg={ selectedPlan.selectedPlan === "Premium" ? "$white" : "transparent" }
+              borderWidth={ selectedPlan.selectedPlan === "Premium" ? 0 : 3 }
+              borderColor={ selectedPlan.selectedPlan === "Premium" ? "transparent" : "$white" }
               borderRadius="$xl"
               shadowColor="$black"
               shadowOffset={{ width: 0, height: 8 }}
@@ -96,18 +98,18 @@ export function PremiumPlans(){
               style={{
                 aspectRatio: 1,
               }}
-              onPress={ () => setSelectedPlan({ selected: "Premium" }) }
+              onPress={ () => setSelectedPlan({ selectedPlan: "Premium" }) }
             >
-              <Text fontSize="$xl" fontWeight="$bold" color={ selectedPlan.selected === "Premium" ? '$warmGray600' : '$white' }>Premium</Text>
-              <Text fontSize="$3xl" fontWeight="$bold"  color={ selectedPlan.selected === "Premium" ? '$black' : '$white' } mt={10}>$9.99</Text>
+              <Text fontSize="$xl" fontWeight="$bold" color={ selectedPlan.selectedPlan === "Premium" ? '$warmGray600' : '$white' }>Premium</Text>
+              <Text fontSize="$3xl" fontWeight="$bold"  color={ selectedPlan.selectedPlan === "Premium" ? '$black' : '$white' } mt={10}>{ selectedPeriod.selectedPeriod === "Monthly" ? "$5.99" : "$60" }</Text>
               <View bgColor="#fae050" borderRadius={20} mt={5} alignSelf="center" w="100%">
-                <Text textAlign="center" color={ selectedPlan.selected === "Premium" ? '$warmGray600' : '$black' }>Salve 34%</Text>
+                <Text textAlign="center" color={ selectedPlan.selectedPlan === "Premium" ? '$warmGray600' : '$black' }>{ selectedPeriod.selectedPeriod === "Monthly" ? "Salve 40%" : "Salve 60%" }</Text>
               </View>
               {
-                selectedPlan.selected === "Premium"
+                selectedPlan.selectedPlan === "Premium"
                   ?
                   <View mt={15} flexDirection="row" justifyContent="space-between" w="100%">
-                    <Text>Mensal</Text>
+                    <Text>{ selectedPeriod.selectedPeriod === "Monthly" ? "Mensal" : "Anual" }</Text>
                     <CircleCheckBig color="darkgreen" />
                   </View>
                   :
@@ -119,10 +121,10 @@ export function PremiumPlans(){
               alignItems="flex-start"
               mx="$3"
               mt="$8"
-              p={ selectedPlan.selected === "Deluxe" ? "$2" : "$5" }
-              bg={ selectedPlan.selected === "Deluxe" ? "$white" : "transparent" }
-              borderWidth={ selectedPlan.selected === "Deluxe" ? 0 : 3 }
-              borderColor={ selectedPlan.selected === "Deluxe" ? "transparent" : "$white" }
+              p={ selectedPlan.selectedPlan === "Deluxe" ? "$2" : "$5" }
+              bg={ selectedPlan.selectedPlan === "Deluxe" ? "$white" : "transparent" }
+              borderWidth={ selectedPlan.selectedPlan === "Deluxe" ? 0 : 3 }
+              borderColor={ selectedPlan.selectedPlan === "Deluxe" ? "transparent" : "$white" }
               borderRadius="$xl"
               shadowColor="$black"
               shadowOffset={{ width: 0, height: 8 }}
@@ -134,18 +136,18 @@ export function PremiumPlans(){
               style={{
                 aspectRatio: 1,
               }}
-              onPress={ () => setSelectedPlan({ selected: "Deluxe" }) }
+              onPress={ () => setSelectedPlan({ selectedPlan: "Deluxe" }) }
             >
-              <Text fontSize="$xl" fontWeight="$bold" color={ selectedPlan.selected === "Deluxe" ? '$warmGray600' : '$white' }>Premium Deluxe</Text>
-              <Text fontSize="$3xl" fontWeight="$bold" color={ selectedPlan.selected === "Deluxe" ? '$black' : '$white' } mt={10}>$14.99</Text>
+              <Text fontSize="$xl" fontWeight="$bold" color={ selectedPlan.selectedPlan === "Deluxe" ? '$warmGray600' : '$white' }>Premium Deluxe</Text>
+              <Text fontSize="$3xl" fontWeight="$bold" color={ selectedPlan.selectedPlan === "Deluxe" ? '$black' : '$white' } mt={10}>{ selectedPeriod.selectedPeriod === "Monthly" ? "$14.99" : "$150" }</Text>
               <View bgColor="#fae050" borderRadius={20} mt={5} w="100%">
-                <Text textAlign="center" color={ selectedPlan.selected === "Deluxe" ? '$warmGray600' : '$black' }>Salve 67%</Text>
+                <Text textAlign="center" color={ selectedPlan.selectedPlan === "Deluxe" ? '$warmGray600' : '$black' }>{ selectedPeriod.selectedPeriod === "Monthly" ? "Salve 67%" : "Salve 86%" }</Text>
               </View>
               {
-                selectedPlan.selected === "Deluxe"
+                selectedPlan.selectedPlan === "Deluxe"
                   ?
                   <View mt={10} flexDirection="row" justifyContent="space-between" w="100%">
-                    <Text>Mensal</Text>
+                    <Text>{ selectedPeriod.selectedPeriod === "Monthly" ? "Mensal" : "Anual" }</Text>
                     <CircleCheckBig color="darkgreen" />
                   </View>
                   :
@@ -154,7 +156,7 @@ export function PremiumPlans(){
             </Button>
           </View>
           { 
-            selectedPlan.selected === "Premium"
+            selectedPlan.selectedPlan === "Premium"
             ?
               <View px={20} mt={25} w="90%">
                 { 
