@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View, VStack } from "@gluestack-ui/themed"
 import { TitleAndBack } from '@components/TitleBack';
 import { SettingsOption } from "@components/Settings/SettingsOption";
 
-import { User, Lock, Languages, CircleDollarSign, Moon, Bell, WifiOff, LogOut, University, ChevronRight} from 'lucide-react-native';
+import { User, Lock, Languages, CircleDollarSign, Moon, Bell, WifiOff, LogOut, University, ChevronRight, Crown} from 'lucide-react-native';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
@@ -28,7 +28,7 @@ export function Settings(){
               </View>
               <ChevronRight style={{ marginRight: 10 }}/>
             </Pressable>
-            <SettingsOption optionText="Change Password" icon={Lock} />
+            <SettingsOption optionText="Change Password" icon={ Lock } route={ () => {} } />
             <Pressable onPress={() => navigation.navigate('UserPreferences')} bg="$f0f0f0" p={10} borderRadius={5} mb={10} ml={10} flexDirection="row" alignItems="center" justifyContent="space-between" >
               <View flexDirection="row" alignItems="center">
                 <University size={30} color="#535353" style={{ marginRight: 10 }} />
@@ -36,15 +36,16 @@ export function Settings(){
               </View>
               <ChevronRight style={{ marginRight: 10 }}/>
             </Pressable>
+            <SettingsOption optionText="Manage Subscription" icon={ Crown } route={ () => navigation.navigate("ManagePremiumPlan") } />
           </View>
 
           <View flexDirection="column" mx={20} mt={25} mb={20}>
             <Text color="$blue500" fontSize="$xl" fontWeight="$bold" my={20}>General Settings</Text>
-            <SettingsOption optionText="Change Language" icon={Languages} />
-            <SettingsOption optionText="Change Currency" icon={CircleDollarSign} />
-            <SettingsOption optionText="Dark/Light Mode" icon={Moon} />
-            <SettingsOption optionText="Notifications" icon={Bell} />
-            <SettingsOption optionText="Offline Mode" icon={WifiOff} />
+            <SettingsOption optionText="Change Language" icon={ Languages } route={ () => {} }  />
+            <SettingsOption optionText="Change Currency" icon={ CircleDollarSign } route={ () => {} }  />
+            <SettingsOption optionText="Dark/Light Mode" icon={ Moon } route={ () => {} }  />
+            <SettingsOption optionText="Notifications" icon={ Bell } route={ () => {} }  />
+            <SettingsOption optionText="Offline Mode" icon={ WifiOff } route={ () => {} }  />
           </View>
 
           <View flexDirection="column" mt={10} style={{ marginBottom: 60 }}>

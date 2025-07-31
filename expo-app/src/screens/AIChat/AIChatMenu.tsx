@@ -8,7 +8,25 @@ import { Button, ButtonGroup, ButtonText, Pressable, Text, View } from "@gluesta
 
 import { ChooseDialog } from "@components/ChooseDialog";
 
-import { ArrowRight, LucideIcon, MessageCirclePlus, Mic, MapPin, Lightbulb, Utensils, Bed, Activity, BookOpen, Bus, CloudSun, ClockFading, RefreshCcw, Trash } from "lucide-react-native";
+import { 
+  ArrowRight, 
+  LucideIcon, 
+  MessageCirclePlus, 
+  Mic, MapPin, 
+  Lightbulb, 
+  Utensils, 
+  Bed, 
+  Activity, 
+  BookOpen, 
+  Bus, 
+  CloudSun, 
+  ClockFading, 
+  RefreshCcw, 
+  Trash, 
+  Crown 
+} from "lucide-react-native";
+
+import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
 
 import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
 
@@ -22,7 +40,6 @@ import { AuthNavigationProp } from "@routes/auth.routes";
 import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
 
 import { ChatHistoryTypes } from '../../../@types/ChatHistoryTypes';
-import { ConnectionErrorAlerter } from "@components/Errors/ConnectionErrorAlerter";
 
 type TopicsAttributes = {
   id: number,
@@ -240,7 +257,7 @@ export function AIChatMenu(){
                     elevation: 5,
                   }}
                 >
-                  <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' onPress={ () => navigation.navigate("AIChatMenu") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
+                  <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' onPress={ () => navigation.navigate("PremiumPlans") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
                     <ButtonText textAlign="center" fontSize="$xl">Upgrade</ButtonText>
                   </Button>
                 </LinearGradient>
@@ -316,10 +333,14 @@ export function AIChatMenu(){
                 <Text fontSize="$md" fontWeight="$semibold" mt={15} color="$black" maxWidth="60%">Falar com Felipe</Text>
                 <ArrowRight style={{ marginTop: 15, marginLeft: 10 }} />
               </Pressable>
+              <Crown color="#FFD700" size={30} style={{ position: 'absolute', top: 20, right: 20 }} />
             </View>
           </View>
           <View mt={30}>
-            <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>Tópicos</Text>
+            <View flexDirection="row" justifyContent="space-between">
+              <Text fontSize="$2xl" fontWeight="$bold" color="$black" mb={15}>Tópicos</Text>
+              <Crown color="#FFD700" size={30} />
+            </View>
             <View>
               <FlatList<TopicsAttributes>
                 horizontal={true}

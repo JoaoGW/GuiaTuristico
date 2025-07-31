@@ -13,6 +13,11 @@ import { AIChatMenu } from "@screens/AIChat/AIChatMenu";
 import { MapsExpanded } from "@screens/HomePage/MapsExpanded";
 import { Notifications } from "@screens/HomePage/Notifications";
 import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
+import { PremiumPlans } from "@screens/Premium/PremiumPlans";
+import { WelcomePremiumPlan } from "@screens/Premium/WelcomePremiumPlan";
+import { ManagePremiumPlan } from "@screens/Premium/ManagePremiumPlan";
+import { OptionsManagePremiumPlan } from "@screens/Premium/OptionsManagePremiumPlan";
+import { CancelPremiumPlan } from "@screens/Premium/CancelPremiumPlan";
 
 import { NavigationBar } from "@components/NavigationBar";
 
@@ -32,7 +37,12 @@ type AuthStackParamList = {
   AIChatMenu: undefined;
   MapsExpanded: { places: Place[], loading: boolean };
   Notifications: undefined;
-  DestinationDetail: { destinationId: number }
+  DestinationDetail: { destinationId: number };
+  PremiumPlans: undefined;
+  WelcomePremium: undefined;
+  ManagePremiumPlan: undefined;
+  OptionsManagePremiumPlan: undefined;
+  CancelPremiumPlan: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -92,6 +102,14 @@ function AIChatMenuWithNavBar() {
       <AIChatMenu />
     </ScreenWrapper>
   );
+}
+
+function ManagePremiumPlanWithNavBar(){
+  return (
+    <ScreenWrapper>
+      <ManagePremiumPlan />
+    </ScreenWrapper>
+  )
 }
 
 export function AuthRoute() {
@@ -155,6 +173,31 @@ export function AuthRoute() {
       <Stack.Screen 
         name="DestinationDetail" 
         component={ DestinationDetails }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="PremiumPlans" 
+        component={ PremiumPlans }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="WelcomePremium" 
+        component={ WelcomePremiumPlan }
+        options={{ animation: 'flip' }}
+      />
+      <Stack.Screen 
+        name="ManagePremiumPlan" 
+        component={ ManagePremiumPlanWithNavBar }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="OptionsManagePremiumPlan" 
+        component={ OptionsManagePremiumPlan }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="CancelPremiumPlan" 
+        component={ CancelPremiumPlan }
         options={{ animation: 'none' }}
       />
     </Stack.Navigator>
