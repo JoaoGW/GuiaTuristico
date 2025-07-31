@@ -17,7 +17,7 @@ export function OptionsManagePremiumPlan(){
       <TitleAndBack pageTitle="Gerenciar Assinatura" />
       <View>
         <SettingsOption icon={ CircleDollarSign } optionText="Contratar um novo plano" route={ () => navigation.navigate("PremiumPlans") } />
-        <SettingsOption icon={ Ban } optionText="Cancelar plano atual" route={ () => {} } />
+        <SettingsOption icon={ Ban } optionText="Cancelar plano atual" route={ () => navigation.navigate("CancelPremiumPlan") } />
       </View>
     </View>
   )

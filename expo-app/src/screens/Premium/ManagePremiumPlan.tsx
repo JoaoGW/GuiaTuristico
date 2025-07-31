@@ -123,6 +123,7 @@ export function ManagePremiumPlan(){
             py={5}
             px={20}
             mt={15}
+            mb={50}
             flexDirection="row"
             justifyContent="space-between"
             size="lg"
