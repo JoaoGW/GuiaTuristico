@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { SafeAreaView, StatusBar, FlatList, ScrollView, Alert } from "react-native";
+import { StatusBar, FlatList, ScrollView, Alert, View as RNView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -226,7 +226,7 @@ export function AIChatMenu(){
   }, []);
 
   return(
-    <SafeAreaView style={{ flex: 1 }}>
+    <RNView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <ScrollView 
         style={{ flex: 1 }}
@@ -413,6 +413,6 @@ export function AIChatMenu(){
             <ConnectionErrorAlerter showModal={ showModal } setShowModal={ setShowModal } />
         }
       </ScrollView>
-    </SafeAreaView>
+    </RNView>
   )
 }

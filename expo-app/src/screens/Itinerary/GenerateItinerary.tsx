@@ -18,7 +18,7 @@ import { useNotificationStore } from '@utils/notificationStore';
 import { Globe } from 'lucide-react-native';
 
 import OpenAILogo from '@assets/Enterprises/OpenAI/OpenAI-black-wordmark.svg';
-import { SafeAreaView } from 'react-native';
+import { View as RNView } from 'react-native';
 
 const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
 
@@ -100,7 +100,7 @@ export function GenerateItinerary() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <RNView style={{ flex: 1 }}>
       <View flex={1}>
         <View pt={35} px={20}>
           <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>
@@ -161,6 +161,6 @@ export function GenerateItinerary() {
           </AlertDialogContent>
         </AlertDialog>
       </View>
-    </SafeAreaView>
+    </RNView>
   );
 }

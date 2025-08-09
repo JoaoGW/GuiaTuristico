@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { FlatList, SafeAreaView, StatusBar } from 'react-native';
+import { FlatList, StatusBar, View as RNView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Box, Spinner, Text, VStack, View, Button, Badge, BadgeText, BadgeIcon } from '@gluestack-ui/themed';
@@ -124,17 +124,17 @@ export function Home() {
         </View>
         <View flexDirection="row" mb={10} justifyContent='center'>
           <ButtonSelect
-            isSelected={isSelected === "Global"}
-            objective={() => setIsSelected("Global")}
+            isSelected={ isSelected === "Global" }
+            objective={ () => setIsSelected("Global") }
             text="Seleção Global"
-            icon={LandPlot}
+            icon={ LandPlot }
             style={{ marginRight: 8 }}
           />
           <ButtonSelect
             isSelected={isSelected === "Proximos"}
             objective={() => setIsSelected("Proximos")}
             text="Próximos a Mim"
-            icon={MapPinHouse}
+            icon={ MapPinHouse }
           />
         </View>
       </View>
@@ -142,14 +142,14 @@ export function Home() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FDFDFD' }}>
+    <RNView style={{ flex: 1, backgroundColor: '#FDFDFD', paddingTop: 50 }}>
       <StatusBar barStyle="dark-content" backgroundColor="#FDFDFD" />
-      <Box flex={1} bg="#FDFDFD" mt={-75}>
+      <Box flex={1} bg="#FDFDFD">
         {
           isSelected === "Global"
             ?
             <FlatList
-              data={GlobalDestinationsData}
+              data={ GlobalDestinationsData }
               numColumns={2}
               keyExtractor={(item) => String(item.id)}
               ListHeaderComponent={ renderHeader }
@@ -157,32 +157,32 @@ export function Home() {
                 <Box flex={1} px={4} py={2}>
                   { location && (
                     <GlobalDestinations
-                      id={Number(item.id)}
-                      imageUrl={item.image || ''}
-                      imagesUrlCarousel={item.imagesUrlCarousel || []}
-                      title={item.title || ''}
-                      description={item.description || ''}
-                      country={item.country || ''}
-                      countryCode={item.countryCode || ''}
-                      continent={item.continent || ''}
-                      rating={item.rating || 0}
-                      averageCost={item.averageCost || ''}
-                      currency={item.currency || ''}
-                      language={item.language || ''}
-                      timeZone={item.timeZone || ''}
-                      climate={item.climate || ''}
-                      temperature={item.temperature || { min: 0, max: 0 }}
-                      coordinates={item.coordinates || { latitude: 0, longitude: 0 }}
-                      attractions={item.attractions || []}
-                      activities={item.activities || []}
-                      transportation={item.transportation || []}
-                      accommodation={item.accommodation || { simples: '', semiLuxo: '', luxo: '', airbnb: '' }}
-                      foodSpecialties={item.foodSpecialties || []}
-                      tips={item.tips || []}
-                      safety={item.safety || 0}
-                      familyFriendly={item.familyFriendly ?? false}
-                      bestTimeToVisit={item.bestTimeToVisit || ''}
-                      tags={item.tags || []}
+                      id={ Number(item.id) }
+                      imageUrl={ item.image || '' }
+                      imagesUrlCarousel={ item.imagesUrlCarousel || [] }
+                      title={ item.title || '' }
+                      description={ item.description || '' }
+                      country={ item.country || '' }
+                      countryCode={ item.countryCode || '' }
+                      continent={ item.continent || '' }
+                      rating={ item.rating || 0 }
+                      averageCost={ item.averageCost || '' }
+                      currency={ item.currency || '' }
+                      language={ item.language || '' }
+                      timeZone={ item.timeZone || '' }
+                      climate={ item.climate || '' }
+                      temperature={ item.temperature || { min: 0, max: 0 } }
+                      coordinates={ item.coordinates || { latitude: 0, longitude: 0 } }
+                      attractions={ item.attractions || [] }
+                      activities={ item.activities || [] }
+                      transportation={ item.transportation || [] }
+                      accommodation={ item.accommodation || { simples: '', semiLuxo: '', luxo: '', airbnb: '' } }
+                      foodSpecialties={ item.foodSpecialties || [] }
+                      tips={ item.tips || [] }
+                      safety={ item.safety || 0 }
+                      familyFriendly={ item.familyFriendly ?? false }
+                      bestTimeToVisit={ item.bestTimeToVisit || '' }
+                      tags={ item.tags || [] }
                     />
                   )}
                 </Box>
@@ -198,11 +198,10 @@ export function Home() {
                 </Box>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 45 }}
             />
             :
             <FlatList
-              data={places}
+              data={ places }
               numColumns={2}
               keyExtractor={(item) => item.id}
               ListHeaderComponent={renderHeader}
@@ -220,7 +219,7 @@ export function Home() {
               )}
               ListEmptyComponent={
                 <Box>
-                  {!loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} />}
+                  { !loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} /> }
                 </Box>
               }
               ListFooterComponent={
@@ -229,10 +228,9 @@ export function Home() {
                 </Box>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 85 }}
             />
         }
       </Box>
-    </SafeAreaView>
+    </RNView>
   );
 }

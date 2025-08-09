@@ -1,4 +1,4 @@
-import { SafeAreaView, Image } from "react-native";
+import { Image, View as RNView } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
 import { Pressable, ScrollView, Text, View, VStack } from "@gluestack-ui/themed"
@@ -14,7 +14,7 @@ export function Settings(){
   const navigation = useNavigation<AuthNavigationProp>();
 
   return(
-    <SafeAreaView style={{ flex: 1, paddingTop: 60 }}>
+    <RNView style={{ flex: 1, paddingTop: 60 }}>
       <ScrollView>
         <View style={{ flex: 1 }}>
           <TitleAndBack pageTitle="Settings" />
@@ -57,6 +57,6 @@ export function Settings(){
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </RNView>
   )
 }

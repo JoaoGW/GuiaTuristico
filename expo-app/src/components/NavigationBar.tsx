@@ -142,7 +142,7 @@ export function NavigationBar() {
   return (
     <View
       position="absolute"
-      bottom={ Math.max(insets.bottom, 10) + 5 }
+      bottom={ Math.max(insets.bottom, 10) - 5 }
       left={16}
       right={16}
       bgColor='rgba(255, 255, 255, 0.925)'
