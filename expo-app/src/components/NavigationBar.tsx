@@ -53,6 +53,7 @@ export function NavigationBar() {
   ];
   
   const [currentActive, setCurrentActive] = useState<NavbarContextType["currentActive"]>('Home');
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
   const navigation = useNavigation<AuthNavigationProp>();
   const navigationState = useNavigationState((state) => state);
   const insets = useSafeAreaInsets();
@@ -100,10 +101,16 @@ export function NavigationBar() {
         }
       }
     }
+
+    const loadTimeout = setTimeout(() => {
+      setIsPageLoaded(true);
+    }, 300);
+
+    return () => clearTimeout(loadTimeout);
   }, [navigationState]);
 
   useEffect(() => {
-    if (activeIndex !== -1) {
+    if (activeIndex !== -1 && isPageLoaded) {
       const targetPosition = getItemPosition(activeIndex);
       Animated.spring(slideAnimation, {
         toValue: targetPosition,
@@ -112,7 +119,7 @@ export function NavigationBar() {
         friction: 8,
       }).start();
     }
-  }, [activeIndex, availableWidth]);
+  }, [activeIndex, availableWidth, isPageLoaded]);
 
   const handleItemPress = (item: typeof navItems[0]) => {
     Animated.sequence([
@@ -157,6 +164,7 @@ export function NavigationBar() {
           backgroundColor: '#2752B7',
           borderRadius: 16,
           transform: [{ translateX: slideAnimation }],
+          opacity: isPageLoaded ? 1 : 1
         }}
       />
       
