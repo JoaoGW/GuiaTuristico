@@ -198,7 +198,7 @@ export function Home() {
                 </Box>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 35 }}
+              contentContainerStyle={{ paddingBottom: 85 }}
             />
             :
             <FlatList
@@ -229,7 +229,7 @@ export function Home() {
                 </Box>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 35 }}
+              contentContainerStyle={{ paddingBottom: 85 }}
             />
         }
       </Box>
