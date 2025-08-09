@@ -164,7 +164,7 @@ export function NavigationBar() {
           backgroundColor: '#2752B7',
           borderRadius: 16,
           transform: [{ translateX: slideAnimation }],
-          opacity: isPageLoaded ? 1 : 1
+          opacity: isPageLoaded ? 1 : 0
         }}
       />
       
