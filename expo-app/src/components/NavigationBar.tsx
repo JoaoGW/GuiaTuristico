@@ -78,11 +78,26 @@ export function NavigationBar() {
     }
   };
 
+  const routeMapping: Record<string, string[]> = {
+    Home: ['Home', 'DestinationDetails', 'MapsExpanded', 'Notifications'],
+    GenerateItinerary: ['GenerateItinerary'],
+    AIChat: ['AIChat', 'AIChatMenu', 'AIMascotIntroduction', 'AIVoiceChat'],
+    Games: ['Games'],
+    Settings: ['EditProfile', 'Settings', 'UserPreferences'],
+  };
+
   useEffect(() => {
     if (navigationState && navigationState.routes) {
       const currentRoute = navigationState.routes[navigationState.index]?.name;
-      if (currentRoute && currentRoute !== currentActive) {
-        setCurrentActive(currentRoute);
+
+      if (currentRoute) {
+        const mainRoute = Object.keys(routeMapping).find((key) =>
+          routeMapping[key].includes(currentRoute)
+        );
+
+        if (mainRoute && mainRoute !== currentActive) {
+          setCurrentActive(mainRoute);
+        }
       }
     }
   }, [navigationState]);
