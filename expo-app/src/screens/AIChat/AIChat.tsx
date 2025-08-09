@@ -198,7 +198,7 @@ export function AIChat() {
           behavior={ Platform.OS === "ios" ? "padding" : "height" }
           keyboardVerticalOffset={0}
         >
-          <View flex={1} px={30} py={20} style={{ paddingBottom: 65 }}>
+          <View flex={1} px={30} py={20} style={{ paddingBottom: 85 }}>
             <View flexDirection="row" justifyContent="space-between" w="100%" alignItems="center" mt={-15} mr={15}>
               <Button bgColor="transparent" onPress={ () => navigation.goBack() }>
                 <ButtonIcon as={ ArrowLeft } color="$black" size="xl" ml={-20} />
