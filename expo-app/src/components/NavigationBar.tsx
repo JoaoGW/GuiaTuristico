@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { View, Text } from '@gluestack-ui/themed';
 
-import { Globe, MessageCircle, Home, Gamepad2, User } from 'lucide-react-native';
+import { MessageCircle, Home, Gamepad2, User, BookMarked } from 'lucide-react-native';
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
@@ -22,7 +22,7 @@ export function NavigationBar() {
   const navItems = [
     { 
       key: 'GenerateItinerary', 
-      icon: Globe, 
+      icon: BookMarked, 
       label: 'Roteiros',
       action: () => navigation.navigate('GenerateItinerary')
     },

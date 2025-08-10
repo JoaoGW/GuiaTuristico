@@ -233,7 +233,7 @@ export function AIChatMenu(){
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <View p={15}>
+        <View p={15} pt={70}>
         <LinearGradient
           colors={['#b6e0c7', '#93deb4']}
           style={{ padding: 20, borderRadius: 15 }}

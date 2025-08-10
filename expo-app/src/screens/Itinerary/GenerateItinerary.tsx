@@ -101,7 +101,7 @@ export function GenerateItinerary() {
 
   return (
     <RNView style={{ flex: 1 }}>
-      <View flex={1}>
+      <View flex={1} pt={50}>
         <View pt={35} px={20}>
           <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>
             Gere o seu próximo roteiro de viagem utilizando IA!
