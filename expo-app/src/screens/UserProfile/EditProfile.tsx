@@ -31,7 +31,7 @@ import {
 
 import { Edit } from 'lucide-react-native';
 
-export function Profile() {
+export function EditProfile() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -82,8 +82,8 @@ export function Profile() {
             <VStack space="lg" alignItems="center">
               <Heading p="$2" color="#2752B7" size='xl'>Perfil do Usuário</Heading>
               <Box position="relative">
-                <Button onPress={pickImage} style={{ width: 200, height: 160, borderRadius: 75, overflow: 'hidden', padding: 0, backgroundColor: 'transparent' }}>
-                  {avatar ? (
+                <Button onPress={ pickImage } style={{ width: 200, height: 160, borderRadius: 75, overflow: 'hidden', padding: 0, backgroundColor: 'transparent' }}>
+                  { avatar ? (
                     <AvatarImage source={{ uri: avatar }} alt="Avatar do Usuário" style={{ width: '100%', height: '100%', borderRadius: 75 }} />
                   ) : (
                     <AvatarImage source={'https://cdn.pixabay.com/photo/2020/06/30/10/23/icon-5355896_1280.png'} alt="Avatar Padrão" style={{ width: '100%', height: '100%', borderRadius: 75 }} />
@@ -95,12 +95,12 @@ export function Profile() {
               </Box>
               <VStack w="100%" space="3xl">
                 <Input variant="underlined" size="lg" py="$3">
-                  <InputField placeholder="Nome do Usuário" value={name} onChangeText={setName} />
+                  <InputField placeholder="Nome do Usuário" value={ name } onChangeText={ setName } />
                 </Input>
                 <Input variant="underlined" size="lg" py="$3">
-                  <InputField placeholder="Idade" value={age} onChangeText={setAge} />
+                  <InputField placeholder="Idade" value={ age } onChangeText={ setAge } />
                 </Input>
-                <Select selectedValue={gender} onValueChange={setGender} width="100%">
+                <Select selectedValue={ gender } onValueChange={ setGender } width="100%">
                   <SelectTrigger>
                     <SelectInput placeholder="Gênero" />
                     <SelectIcon>

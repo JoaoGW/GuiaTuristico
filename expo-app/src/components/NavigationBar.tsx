@@ -48,7 +48,7 @@ export function NavigationBar() {
       key: 'Settings', 
       icon: User, 
       label: 'Perfil',
-      action: () => navigation.navigate('Settings')
+      action: () => navigation.navigate('Profile')
     }
   ];
   
@@ -84,7 +84,7 @@ export function NavigationBar() {
     GenerateItinerary: ['GenerateItinerary'],
     AIChat: ['AIChat', 'AIChatMenu', 'AIMascotIntroduction', 'AIVoiceChat'],
     Games: ['Games'],
-    Settings: ['EditProfile', 'Settings', 'UserPreferences'],
+    Settings: ['Profile', 'EditProfile', 'Settings', 'UserPreferences'],
   };
 
   useEffect(() => {
