@@ -2,7 +2,7 @@ import { SafeAreaView, ScrollView, StatusBar } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 
-import { AvatarImage, Button, Image, Text, View } from "@gluestack-ui/themed";
+import { AvatarImage, Button, Image, Pressable, Text, View } from "@gluestack-ui/themed";
 
 import { PersonalInfoProfile } from "@components/Profile/PersonalInfoProfile";
 import { PersonalInfoPreferences } from "@components/Profile/PersonalInfoPreferences";
@@ -12,7 +12,28 @@ import { AuthNavigationProp } from "@routes/auth.routes";
 
 import { useAuth } from "@contexts/AuthContext";
 
-import { BookCheck, BriefcaseBusiness, Cake, Globe, Heart, Info, LogOut, Mail, MapPin, MessageCircleHeart, Phone, ScanHeart, ShieldQuestion, VenusAndMars } from "lucide-react-native";
+import { 
+  Bell, 
+  BookCheck, 
+  BriefcaseBusiness, 
+  Cake, 
+  CircleDollarSign, 
+  Crown, 
+  Edit, 
+  Globe, 
+  Heart, 
+  Info, 
+  LogOut, 
+  Mail, 
+  MapPin, 
+  MessageCircleHeart, 
+  Moon, 
+  Phone, 
+  ScanHeart, 
+  ShieldQuestion, 
+  VenusAndMars, 
+  WifiOff 
+} from "lucide-react-native";
 
 export function Profile(){
   const navigation = useNavigation<AuthNavigationProp>();
@@ -20,7 +41,7 @@ export function Profile(){
 
   return(
     <View flex={1}>
-      <Image source={ require('@assets/santiago_farellones.jpg') } w="100%" h={225} />
+      <Image source={ require('@assets/santiago_farellones.jpg') } w="100%" h={225} alt="Background do Fundo de Perfil" />
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" />
         <View bgColor="#FDFDFD" flex={1}>
@@ -46,7 +67,7 @@ export function Profile(){
               <Text fontSize="$sm">Favoritos</Text>
             </View>
           </View>
-          <ScrollView contentContainerStyle={{ paddingBottom: 115 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 165 }}>
             <View 
               bgColor="#ffffff" 
               width={100} 
@@ -63,7 +84,12 @@ export function Profile(){
               pl={20}
             >
               <View flexDirection="column">
-                <Text color="#2752B7" fontWeight="$semibold" fontSize="$lg" mb={15}>Informações Pessoais</Text>
+                <View flexDirection="row" justifyContent="space-between">
+                  <Text color="#2752B7" fontWeight="$semibold" fontSize="$lg" mb={15}>Informações Pessoais</Text>
+                  <Pressable onPress={ () => navigation.navigate("EditProfile") }>
+                    <Edit size={21} color="#2752B7" style={{ marginRight: 20 }} />
+                  </Pressable>
+                </View>
                 <View flexDirection="row" justifyContent="space-between" pr={15}>
                   <PersonalInfoProfile icon={ Cake } topic="Data de Nascimento" information="--/--/----" />
                   <PersonalInfoProfile icon={ VenusAndMars } topic="Gênero" information="Todos" style={{ marginLeft: 10 }} />
@@ -80,10 +106,15 @@ export function Profile(){
             </View>
             <PersonalInfoPreferences icon={ Globe } preferenceTitle="Idiomas" choices="Português, Inglês, Francês" functionality={ () => {} } style={{ marginTop: 10 }} />
             <PersonalInfoPreferences icon={ MapPin } preferenceTitle="Locais" choices="São Paulo, Brasília, Paris" functionality={ () => {} } style={{ marginTop: 10 }} />
-            <PersonalInfoPreferences icon={ MessageCircleHeart } preferenceTitle="Interesses" choices="Comida, Templos, Natureza, Museus" functionality={ () => {} } style={{ marginTop: 10 }} />
+            <PersonalInfoPreferences icon={ MessageCircleHeart } preferenceTitle="Interesses" choices="Comida, Templos, Natureza, Museus" functionality={ () => navigation.navigate('UserPreferences') } style={{ marginTop: 10 }} />
             
             <View flexDirection="column">
               <Text color="#2752B7" fontWeight="$semibold" fontSize="$lg" mt={20} mb={10} px={20}>Configurações</Text>
+              <PersonalInfoSettings icon={ Crown } settingsTitle="Gerenciar Assinatura" functionality={ () => navigation.navigate("ManagePremiumPlan") } />
+              <PersonalInfoSettings icon={ CircleDollarSign } settingsTitle="Cotação" functionality={ () => {} } />
+              <PersonalInfoSettings icon={ Moon } settingsTitle="Modo de Exibição" functionality={ () => {} } />
+              <PersonalInfoSettings icon={ Bell } settingsTitle="Notificações" functionality={ () => {} } />
+              <PersonalInfoSettings icon={ WifiOff } settingsTitle="Modo Offline" functionality={ () => {} } />
               <PersonalInfoSettings icon={ ShieldQuestion } settingsTitle="Privacidade" functionality={ () => {} } />
               <PersonalInfoSettings icon={ Info } settingsTitle="Informações" functionality={ () => {} } />
               <PersonalInfoSettings icon={ LogOut } settingsTitle="Sair" functionality={ logout } />

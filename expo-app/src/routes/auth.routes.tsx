@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from "@screens/HomePage/Home";
-import { Settings } from "@screens/UserProfile/Settings";
 import { Profile } from "@screens/UserProfile/Profile";
 import { EditProfile } from "@screens/UserProfile/EditProfile";
 import { UserPreferences } from "@screens/UserProfile/UserPreferences";
@@ -74,14 +73,6 @@ function ProfileWithNavBar() {
   );
 }
 
-function SettingsWithNavBar() {
-  return (
-    <ScreenWrapper>
-      <Settings />
-    </ScreenWrapper>
-  );
-}
-
 function GenerateItineraryWithNavBar() {
   return (
     <ScreenWrapper>
@@ -126,13 +117,8 @@ export function AuthRoute() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen 
-        name="Home" 
+        name="Home"
         component={ HomeWithNavBar } 
-        options={{ animation: 'none' }}
-      />
-      <Stack.Screen 
-        name="Settings" 
-        component={ SettingsWithNavBar } 
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
