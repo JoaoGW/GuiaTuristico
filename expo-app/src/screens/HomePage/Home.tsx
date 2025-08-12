@@ -131,8 +131,8 @@ export function Home() {
             style={{ marginRight: 8 }}
           />
           <ButtonSelect
-            isSelected={isSelected === "Proximos"}
-            objective={() => setIsSelected("Proximos")}
+            isSelected={ isSelected === "Proximos" }
+            objective={ () => setIsSelected("Proximos") }
             text="Próximos a Mim"
             icon={ MapPinHouse }
           />
@@ -189,11 +189,11 @@ export function Home() {
               )}
               ListEmptyComponent={
                 <Box>
-                  {!loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} />}
+                  { !loading ? <LocalFetchError /> : <Spinner size="large" color="#2752B7" my={25} /> }
                 </Box>
               }
               ListFooterComponent={
-                <Box px={6} my={12}>
+                <Box px={6} my={12} pb={100}>
                   <GoPremium />
                 </Box>
               }
@@ -223,7 +223,7 @@ export function Home() {
                 </Box>
               }
               ListFooterComponent={
-                <Box px={6} my={12}>
+                <Box px={6} mt={15} pb={100}>
                   <GoPremium />
                 </Box>
               }
