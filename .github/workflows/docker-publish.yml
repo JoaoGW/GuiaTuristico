@@ -25,18 +25,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and tag Expo container
-        run: |
-          docker build -t ghcr.io/${{ github.repository }}/expo-app:latest -f ./expo-app/Docker/Dockerfile.dev .
-      
-      - name: Build and tag Next.js API container
-        run: |
-          docker build -t ghcr.io/${{ github.repository }}/nextjs-api:latest -f ./nextjs-api/Docker/Dockerfile .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Push Expo image
-        run: |
-          docker push ghcr.io/${{ github.repository }}/expo-app:latest
+      - name: Build and Push Expo Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./expo-app
+          file: ./expo-app/Docker/Dockerfile.dev
+          push: true
+          tags: ghcr.io/${{ github.repository }}/expo-app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Push Next.js image
-        run: |
-          docker push ghcr.io/${{ github.repository }}/nextjs-api:latest 
+      - name: Build and Push Next.js Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./nextjs-api
+          file: ./nextjs-api/Docker/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/nextjs-api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max 
