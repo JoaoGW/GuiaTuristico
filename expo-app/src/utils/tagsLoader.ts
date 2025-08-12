@@ -1,7 +1,6 @@
 import data from "@data/tags.json";
 
-const imageMap: { [key: string]: any } = {
-    
+const imageMap: { [key: string]: any } = { 
     "museu.png": require("@assets/museu.png"),
     "balada.png": require("@assets/balada.png"),
     "eventos.png": require("@assets/eventos.png"),

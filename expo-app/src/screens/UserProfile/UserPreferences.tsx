@@ -78,7 +78,7 @@ export function UserPreferences() {
               title="Continuar"
               onPress={() => {
                 utilsSetSelectedTags(selectedTags);
-                navigation.navigate('GenerateItinerary');
+                navigation.goBack();
               }}
             />
           </Box>

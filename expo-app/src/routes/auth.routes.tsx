@@ -2,8 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from "@screens/HomePage/Home";
-import { Settings } from "@screens/UserProfile/Settings";
-import { Profile } from "@screens/UserProfile/EditProfile";
+import { Profile } from "@screens/UserProfile/Profile";
+import { EditProfile } from "@screens/UserProfile/EditProfile";
 import { UserPreferences } from "@screens/UserProfile/UserPreferences";
 import { GenerateItinerary } from "@screens/Itinerary/GenerateItinerary";
 import { AIChat } from "@screens/AIChat/AIChat";
@@ -29,6 +29,7 @@ type AuthStackParamList = {
   Home: undefined;
   Settings: undefined;
   Profile: undefined;
+  EditProfile: undefined;
   GenerateItinerary: undefined;
   UserPreferences: undefined;
   AIChat: { chatId?: string, topic?: string } | undefined;
@@ -64,10 +65,10 @@ function HomeWithNavBar() {
   );
 }
 
-function SettingsWithNavBar() {
+function ProfileWithNavBar() {
   return (
     <ScreenWrapper>
-      <Settings />
+      <Profile />
     </ScreenWrapper>
   );
 }
@@ -116,18 +117,18 @@ export function AuthRoute() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen 
-        name="Home" 
+        name="Home"
         component={ HomeWithNavBar } 
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
-        name="Settings" 
-        component={ SettingsWithNavBar } 
+        name="Profile" 
+        component={ ProfileWithNavBar }
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
-        name="Profile" 
-        component={ Profile }
+        name="EditProfile" 
+        component={ EditProfile }
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
