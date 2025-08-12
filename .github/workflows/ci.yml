@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [master, development]
+    paths:
+      - "expo-app/**"
+      - "nextjs-api/**"
+      - ".github/**"
+  pull_request:
+    branches: [master, development]
+    paths:
+      - "expo-app/**"
+      - "nextjs-api/**"
+      - ".github/**"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  expo-app:
+    name: Expo App - Lint, Typecheck e Testes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: expo-app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: expo-app/package-lock.json
+
+      - name: Instalar dependências
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: expo-app
+
+      - name: Expo Doctor (opcional)
+        run: npx expo-doctor || true
+
+      - name: Lint
+        run: npm run -s lint --if-present
+
+      - name: Typecheck
+        run: npm run -s typecheck --if-present
+
+      - name: Testes
+        run: npm run -s test --if-present
+
+      - name: Build (web) - opcional
+        run: npm run -s build --if-present
+
+      - name: Artefatos do build web (se existir)
+        if: success() && hashFiles('expo-app/web-build/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: expo-web-build
+          path: expo-app/web-build
+
+  nextjs-api:
+    name: Next.js API - Lint, Typecheck e Testes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nextjs-api
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: nextjs-api/package.json
+
+      - name: Instalar dependências
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: nextjs-api
+
+      - name: Lint
+        run: npm run -s lint --if-present
+
+      - name: Typecheck
+        run: npm run -s typecheck --if-present
+
+      - name: Testes
+        run: npm run -s test --if-present
+
+      - name: Build Next.js
+        run: npm run -s build --if-present
