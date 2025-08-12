@@ -16,7 +16,7 @@
 
 ---
 
-## 🚀 Tecnologias / Tech Stack
+## Tecnologias / Tech Stack
 
 <p align="center">
   <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native" />
@@ -30,51 +30,53 @@
 
 ---
 
-## 📋 Principais Funcionalidades
+## Principais Funcionalidades
 
-- Busca de pontos turísticos baseados na localização do usuário
-- Visualização de locais em mapas interativos
-- Sugestões personalizadas utilizando Inteligência Artificial (OpenAI)
-- Avaliações e comentários de usuários sobre locais
-- Upload e visualização de fotos dos destinos
-- Aplicativo multiplataforma (Android, iOS e Web via Expo)
+- Busca de pontos turísticos baseada na localização do usuário (requisição de localização do dispositivo)
+- Exibição de locais em mapas interativos
+- Sugestões e itinerários gerados por IA (OpenAI) via backend feito com Next.js
+- Chat de IA com histórico persistente
+- Chat por voz: gravação, transcrição e resposta com síntese de voz
+- Respostas rápidas offline baseadas em palavras‑chave
+- Central de notificações no app com persistência
+- Detecção de conectividade de rede e tratamento de erros amigáveis
+- Fluxo de autenticação completo com Firebase
 
 ---
 
-## 📸 Demonstrações
+## Demonstrações
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/f5ff7915-c5fb-43c3-bae0-19887e8b8161" width="47%" alt="App Screenshot 1" />
-  <img src="https://github.com/user-attachments/assets/4c4e4eba-4d50-452c-8e73-adc6a8ed509d" width="47%" alt="App Screenshot 2" />
+  <img src="https://github.com/user-attachments/assets/0a34c558-13b0-4fe9-8387-9b8214406a68" width="33%" alt="Home Page da Aplicação" />
+  <img src="https://github.com/user-attachments/assets/e4e1f3d1-6526-472f-a86c-1eead05c4526" width="33%" alt="Menu de Chat com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/be3b4a7c-02fa-4225-ab8e-9b5fb2012655" width="33%" alt="Chat por Texto com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/319fc442-665d-48b7-bf62-f28c075bfe87" width="33%" alt="Chat por Voz com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/91bb82d8-a475-4d32-a2e2-62fc7593bc7f" width="33%" alt="Página de Perfil do Usuário" />
+  <img src="https://github.com/user-attachments/assets/a512c2fa-e94a-4fc1-b8eb-edbc744bbf4f" width="33%" alt="Geração de Itinerários por Escrito com IA" />
 </p>
 
 ---
 
-## 🛠 Estrutura do Projeto
+## Estrutura do Projeto
 
 GuiaTuristico/ <br/>
-├── expo-app/ <br/>
-│   ├── assets/ <br/>
-│   ├── components/ <br/>
-│   ├── constants/ <br/>
-│   ├── context/ <br/>
-│   ├── navigation/ <br/>
-│   ├── screens/ <br/>
-│   ├── services/ <br/>
-│   ├── types/ <br/>
-│   ├── utils/ <br/>
-│   ├── App.tsx <br/>
-│   ├── app.config.js <br/>
-│   ├── babel.config.js <br/>
-│   ├── package.json <br/>
-│   ├── tsconfig.json <br/>
-│   └── yarn.lock <br/>
-├── nextjs-api/ <br/>
-├── docker-compose.yml <br/>
+├── expo-app/src/ <br/>
+| ├── assets/ <br/>
+| ├── components/ <br/>
+| ├── config/ <br/>
+| ├── contexts/ <br/>
+| ├── data/ <br/>
+| ├── hooks/ <br/>
+| ├── routes/ <br/>
+| ├── screens/ <br/>
+| ├── services/ <br/>
+| ├── utils/ <br/>
+| ├── config.ts <br/>
+└── (demais arquivos e configs do app) <br/>
 
 ---
 
-## 🧪 Testes
+## Testes
 
 No bash: <br/><br/>
 npm run test <br/>
@@ -83,7 +85,7 @@ yarn test <br/>
 
 ---
 
-## 📦 Instalação
+## Instalação
 
 Siga os passos abaixo para rodar o projeto localmente:
 
@@ -105,7 +107,7 @@ npx expo start
 
 ---
 
-## 💬 Contato
+## Contato
 
 <a href="https://www.linkedin.com/in/jo%C3%A3o-pedro-do-carmo-ribeiro/">LinkedIn: João Pedro do Carmo Ribeiro</a>
 <br/>

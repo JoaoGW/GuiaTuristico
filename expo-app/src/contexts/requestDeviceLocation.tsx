@@ -16,6 +16,29 @@ export const LocationContext = createContext<LocationContextType>({
   errorMsg: null
 });
 
+/**
+ * Provides the user's current location and any associated error messages to the application via context.
+ * 
+ * This component uses the `LocationContext` to share the user's location and error state with its children.
+ * It requests the user's permission to access their location and retrieves the current position if granted.
+ * 
+ * @param {Object} props - The props for the component.
+ * @param {React.ReactNode} props.children - The child components that will consume the location context.
+ * 
+ * @returns {JSX.Element} A context provider wrapping the children components.
+ * 
+ * @remarks
+ * - On Android emulators, this component will not work unless a physical device is used.
+ * - If location permissions are denied, an error message will be set in the context.
+ * - The `AlertToast` component is used to wrap the children, which may display alerts or notifications.
+ * 
+ * @example
+ * ```tsx
+ * <ProvideUserLocation>
+ *   <YourComponent />
+ * </ProvideUserLocation>
+ * ```
+ */
 export const ProvideUserLocation = ({ children }: { children: React.ReactNode }) => {
   const [location, setLocation] = useState<LocationContextType["location"]>(null);
   const [errorMsg, setErrorMsg] = useState<LocationContextType["errorMsg"]>(null);

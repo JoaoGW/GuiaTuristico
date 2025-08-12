@@ -1,0 +1,69 @@
+name: Deploy (Docker → GHCR)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dockerfile:
+        description: Caminho do Dockerfile (ex.: ./expo-app/Docker/Dockerfile.dev)
+        required: false
+        default: ./expo-app/Docker/Dockerfile.dev
+      context:
+        description: Contexto de build (ex.: ./expo-app)
+        required: false
+        default: ./expo-app
+  push:
+    tags:
+      - "V0.[6-9].*"
+    branches:
+      - master
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    name: Build e Push de Imagem
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Metadados da Imagem
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/guiaturistico/expo-app
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build e Push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.event.inputs.context || './expo-app' }}
+          file: ${{ github.event.inputs.dockerfile || './expo-app/Docker/Dockerfile.dev' }}
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production

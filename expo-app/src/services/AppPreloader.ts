@@ -6,6 +6,47 @@ interface PreloadService {
   warmUpApis(): Promise<void>;
 }
 
+/**
+ * The `AppPreloader` class is responsible for managing the preloading of critical resources
+ * and warming up APIs to ensure the application is ready for use. It implements the `PreloadService` interface.
+ *
+ * @remarks
+ * This class includes methods to check API availability, preload critical data, and warm up specific APIs.
+ * It uses asynchronous operations and handles potential errors gracefully to ensure a smooth preloading process.
+ *
+ * @example
+ * ```typescript
+ * const appPreloader = new AppPreloader();
+ * const isApiAvailable = await appPreloader.checkApiAvailability();
+ * if (isApiAvailable) {
+ *   await appPreloader.preloadCriticalResources();
+ * }
+ * ```
+ *
+ * @method checkApiAvailability
+ * Checks the availability of the API by performing a health check request.
+ * Returns a boolean indicating whether the API is reachable.
+ *
+ * @method preloadCriticalResources
+ * Preloads critical resources required for the application. This includes tasks such as warming up APIs
+ * and preloading essential data.
+ *
+ * @method warmUpApis
+ * Warms up multiple APIs to ensure they are ready for use. This includes warming up the Weather API,
+ * Google Places API, and Chat API.
+ *
+ * @method warmUpWeatherApi
+ * Sends a request to the Weather API to ensure it is ready for use.
+ *
+ * @method warmUpGooglePlacesApi
+ * Sends a request to the Google Places API to ensure it is ready for use.
+ *
+ * @method warmUpChatApi
+ * Sends a request to the Chat API to ensure it is ready for use.
+ *
+ * @method preloadCriticalData
+ * Preloads critical data required for the application to function properly.
+ */
 class AppPreloader implements PreloadService {
   private apiBaseUrl = API_URL;
 
