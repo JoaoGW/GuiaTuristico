@@ -43,7 +43,7 @@ export function Profile(){
     <View flex={1}>
       <Image source={ require('@assets/santiago_farellones.jpg') } w="100%" h={225} alt="Background do Fundo de Perfil" />
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="light-content" />
         <View bgColor="#FDFDFD" flex={1}>
           <View flexDirection="row" justifyContent="space-between" px={20}>
             <View justifyContent="center" mt={-30}>
