@@ -32,14 +32,14 @@
 
 ## Principais Funcionalidades
 
-- Busca de pontos turísticos baseada na localização do usuário (requisição de localização do dispositivo)
-- Exibição de locais em mapas interativos
+- Busca de pontos turísticos baseada na localização do usuário (necessário a localização do dispositivo)
+- Exibição de locais em mapas interativos realtime
 - Sugestões e itinerários gerados por IA (OpenAI) via backend feito com Next.js
-- Chat de IA com histórico persistente
+- Chat com a IA com persistência de histórico
 - Chat por voz: gravação, transcrição e resposta com síntese de voz
 - Respostas rápidas offline baseadas em palavras‑chave
-- Central de notificações no app com persistência
-- Detecção de conectividade de rede e tratamento de erros amigáveis
+- Central de notificações no app
+- Detecção de conectividade de rede e tratamento de erros necessários
 - Fluxo de autenticação completo com Firebase
 
 ---
