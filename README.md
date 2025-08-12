@@ -47,8 +47,12 @@
 ## 📸 Demonstrações
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/f5ff7915-c5fb-43c3-bae0-19887e8b8161" width="47%" alt="App Screenshot 1" />
-  <img src="https://github.com/user-attachments/assets/4c4e4eba-4d50-452c-8e73-adc6a8ed509d" width="47%" alt="App Screenshot 2" />
+  <img src="https://github.com/user-attachments/assets/0a34c558-13b0-4fe9-8387-9b8214406a68" width="33%" alt="Home Page da Aplicação" />
+  <img src="https://github.com/user-attachments/assets/e4e1f3d1-6526-472f-a86c-1eead05c4526" width="33%" alt="Menu de Chat com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/be3b4a7c-02fa-4225-ab8e-9b5fb2012655" width="33%" alt="Chat por Texto com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/319fc442-665d-48b7-bf62-f28c075bfe87" width="33%" alt="Chat por Voz com Assistente IA" />
+  <img src="https://github.com/user-attachments/assets/91bb82d8-a475-4d32-a2e2-62fc7593bc7f" width="33%" alt="Página de Perfil do Usuário" />
+  <img src="https://github.com/user-attachments/assets/a512c2fa-e94a-4fc1-b8eb-edbc744bbf4f" width="33%" alt="Geração de Itinerários por Escrito com IA" />
 </p>
 
 ---
