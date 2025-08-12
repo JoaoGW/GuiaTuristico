@@ -16,7 +16,7 @@
 
 ---
 
-## 🚀 Tecnologias / Tech Stack
+## Tecnologias / Tech Stack
 
 <p align="center">
   <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native" />
@@ -30,7 +30,7 @@
 
 ---
 
-## 📋 Principais Funcionalidades
+## Principais Funcionalidades
 
 - Busca de pontos turísticos baseada na localização do usuário (requisição de localização do dispositivo)
 - Exibição de locais em mapas interativos
@@ -44,7 +44,7 @@
 
 ---
 
-## 📸 Demonstrações
+## Demonstrações
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/0a34c558-13b0-4fe9-8387-9b8214406a68" width="33%" alt="Home Page da Aplicação" />
@@ -57,7 +57,7 @@
 
 ---
 
-## 🛠 Estrutura do Projeto
+## Estrutura do Projeto
 
 GuiaTuristico/ <br/>
 ├── expo-app/src/ <br/>
@@ -76,7 +76,7 @@ GuiaTuristico/ <br/>
 
 ---
 
-## 🧪 Testes
+## Testes
 
 No bash: <br/><br/>
 npm run test <br/>
@@ -85,7 +85,7 @@ yarn test <br/>
 
 ---
 
-## 📦 Instalação
+## Instalação
 
 Siga os passos abaixo para rodar o projeto localmente:
 
@@ -107,7 +107,7 @@ npx expo start
 
 ---
 
-## 💬 Contato
+## Contato
 
 <a href="https://www.linkedin.com/in/jo%C3%A3o-pedro-do-carmo-ribeiro/">LinkedIn: João Pedro do Carmo Ribeiro</a>
 <br/>
