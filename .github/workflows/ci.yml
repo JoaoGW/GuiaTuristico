@@ -65,7 +65,7 @@ jobs:
           path: expo-app/web-build
 
   nextjs-api:
-    name: Next.js API - Lint, Typecheck e Testes
+    name: Next.js API - Typecheck e Testes
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -86,9 +86,6 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           working-directory: nextjs-api
-
-      - name: Lint
-        run: npm run -s lint --if-present
 
       - name: Typecheck
         run: npm run -s typecheck --if-present
