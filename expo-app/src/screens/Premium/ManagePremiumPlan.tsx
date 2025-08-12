@@ -77,7 +77,7 @@ export function ManagePremiumPlan(){
                   <Text fontSize="$sm" color="$black">Descontos incríveis para quem já assina continuar conosco</Text>
                 </View>
               </View>
-              <Button variant="link" flexDirection="row" justifyContent="space-between" alignItems="center" bgColor="trasparent" w="100%" mt={20} onPress={ () => navigation.navigate("OptionsManagePremiumPlan") }>
+              <Button variant="link" flexDirection="row" justifyContent="space-between" alignItems="center" bgColor="transparent" w="100%" mt={20} onPress={ () => navigation.navigate("OptionsManagePremiumPlan") }>
                 <Text fontSize="$md" color="$black" fontWeight="$medium">Gerenciar minha assinatura</Text>
                 <ChevronRight color="black" />
               </Button>
