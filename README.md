@@ -32,12 +32,15 @@
 
 ## 📋 Principais Funcionalidades
 
-- Busca de pontos turísticos baseados na localização do usuário
-- Visualização de locais em mapas interativos
-- Sugestões personalizadas utilizando Inteligência Artificial (OpenAI)
-- Avaliações e comentários de usuários sobre locais
-- Upload e visualização de fotos dos destinos
-- Aplicativo multiplataforma (Android, iOS e Web via Expo)
+- Busca de pontos turísticos baseada na localização do usuário (requisição de localização do dispositivo)
+- Exibição de locais em mapas interativos
+- Sugestões e itinerários gerados por IA (OpenAI) via backend feito com Next.js
+- Chat de IA com histórico persistente
+- Chat por voz: gravação, transcrição e resposta com síntese de voz
+- Respostas rápidas offline baseadas em palavras‑chave
+- Central de notificações no app com persistência
+- Detecção de conectividade de rede e tratamento de erros amigáveis
+- Fluxo de autenticação completo com Firebase
 
 ---
 
@@ -53,24 +56,19 @@
 ## 🛠 Estrutura do Projeto
 
 GuiaTuristico/ <br/>
-├── expo-app/ <br/>
-│   ├── assets/ <br/>
-│   ├── components/ <br/>
-│   ├── constants/ <br/>
-│   ├── context/ <br/>
-│   ├── navigation/ <br/>
-│   ├── screens/ <br/>
-│   ├── services/ <br/>
-│   ├── types/ <br/>
-│   ├── utils/ <br/>
-│   ├── App.tsx <br/>
-│   ├── app.config.js <br/>
-│   ├── babel.config.js <br/>
-│   ├── package.json <br/>
-│   ├── tsconfig.json <br/>
-│   └── yarn.lock <br/>
-├── nextjs-api/ <br/>
-├── docker-compose.yml <br/>
+├── expo-app/src/ <br/>
+| ├── assets/ <br/>
+| ├── components/ <br/>
+| ├── config/ <br/>
+| ├── contexts/ <br/>
+| ├── data/ <br/>
+| ├── hooks/ <br/>
+| ├── routes/ <br/>
+| ├── screens/ <br/>
+| ├── services/ <br/>
+| ├── utils/ <br/>
+| ├── config.ts <br/>
+└── (demais arquivos e configs do app) <br/>
 
 ---
 
