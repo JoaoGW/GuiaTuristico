@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       dockerfile:
-        description: Caminho do Dockerfile (ex.: ./expo-app/Docker/Dockerfile.dev)
+            description: Caminho do Dockerfile padrão (./expo-app/Docker/Dockerfile.dev). Alternativa: ./expo-app/Docker/Dockerfile.eas
         required: false
         default: ./expo-app/Docker/Dockerfile.dev
       context:
-        description: Contexto de build (ex.: ./expo-app)
+            description: Contexto de build padrão (./expo-app)
         required: false
         default: ./expo-app
   push:
