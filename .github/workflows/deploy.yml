@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       dockerfile:
-        description: Caminho do Dockerfile (ex.: ./expo-app/Dockerfile)
+        description: Caminho do Dockerfile (ex.: ./expo-app/Docker/Dockerfile.dev)
         required: false
-        default: ./expo-app/Dockerfile
+        default: ./expo-app/Docker/Dockerfile.dev
       context:
         description: Contexto de build (ex.: ./expo-app)
         required: false
@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ github.event.inputs.context || './expo-app' }}
-          file: ${{ github.event.inputs.dockerfile || './expo-app/Dockerfile' }}
+          file: ${{ github.event.inputs.dockerfile || './expo-app/Docker/Dockerfile.dev' }}
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
