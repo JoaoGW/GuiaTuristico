@@ -1,4 +1,26 @@
-// Sistema de respostas inteligentes do Felipe baseado em palavras-chave
+/**
+ * The `FelipeResponseSystem` class is a virtual tour guide system that generates
+ * responses based on user input. It provides recommendations and tips for travel,
+ * including destinations, activities, and general advice.
+ *
+ * @class
+ *
+ * @property {Object} responses - A collection of predefined responses categorized
+ * into various topics such as greetings, destinations, beaches, adventure, culture,
+ * food, tips, and fallback responses.
+ *
+ * @property {Object} keywords - A mapping of categories to arrays of keywords used
+ * to identify the user's intent from their input message.
+ *
+ * @method generateResponse
+ * @description Generates a response based on the user's input message by matching
+ * keywords to predefined categories. If no keywords match, a fallback response is
+ * returned.
+ * 
+ * @param {string} userMessage - The input message from the user.
+ * @returns {string} A response string selected from the appropriate category or
+ * a fallback response if no category matches.
+ */
 export class FelipeResponseSystem {
   private responses = {
     // Saudações

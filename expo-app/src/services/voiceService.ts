@@ -20,7 +20,15 @@ export class VoiceService {
   private recordingTimer: NodeJS.Timeout | null = null;
 
   /**
-   * Obtém a melhor voz masculina disponível na plataforma
+   * Retrieves the identifier of the best available male voice in Portuguese (Brazilian).
+   * 
+   * This method searches through a predefined list of male voice identifiers in order of preference.
+   * It attempts to match the identifiers with the available voices provided by the `Speech.getAvailableVoicesAsync` method.
+   * If a match is found, the corresponding voice identifier is returned.
+   * 
+   * @returns A promise that resolves to the identifier of the best matching male voice, or `undefined` if no suitable voice is found.
+   * 
+   * @throws Will log an error to the console if there is an issue retrieving the available voices.
    */
   private async getBestMaleVoice(): Promise<string | undefined> {
     try {
@@ -57,7 +65,13 @@ export class VoiceService {
   }
 
   /**
-   * Solicita permissões necessárias para gravação de áudio
+   * Requests audio permissions from the user.
+   *
+   * @returns A promise that resolves to a boolean indicating whether the permissions were granted.
+   *          - `true`: Permissions were granted.
+   *          - `false`: Permissions were denied or an error occurred.
+   *
+   * @throws Logs an error to the console if the permission request fails.
    */
   async requestPermissions(): Promise<boolean> {
     try {
@@ -70,7 +84,15 @@ export class VoiceService {
   }
 
   /**
-   * Configura o modo de áudio para gravação
+   * Configures the audio mode for the application.
+   *
+   * This method sets up the audio mode with specific configurations for both iOS and Android platforms.
+   * It ensures that the app can record audio, play audio in silent mode on iOS, and handle audio focus
+   * appropriately on Android. Additionally, it prevents audio playback through the earpiece on Android
+   * and disables background audio activity.
+   *
+   * @returns {Promise<void>} A promise that resolves when the audio mode is successfully configured.
+   * @throws Will log an error to the console if the audio mode configuration fails.
    */
   async setupAudioMode(): Promise<void> {
     try {
@@ -87,7 +109,19 @@ export class VoiceService {
   }
 
   /**
-   * Configura o modo de áudio para reprodução (volume alto)
+   * Configures the audio playback mode for the application.
+   * 
+   * This method sets the audio mode using `Audio.setAudioModeAsync` with the following configurations:
+   * - Disables recording on iOS (`allowsRecordingIOS: false`).
+   * - Allows playback in silent mode on iOS (`playsInSilentModeIOS: true`).
+   * - Disables audio ducking on Android (`shouldDuckAndroid: false`).
+   * - Prevents playback through the earpiece on Android (`playThroughEarpieceAndroid: false`).
+   * - Ensures the audio does not stay active in the background (`staysActiveInBackground: false`).
+   * 
+   * If an error occurs during the configuration, it logs the error to the console.
+   * 
+   * @returns A promise that resolves when the audio mode is successfully configured.
+   * @throws Logs an error to the console if the configuration fails.
    */
   async setupPlaybackMode(): Promise<void> {
     try {
@@ -104,7 +138,28 @@ export class VoiceService {
   }
 
   /**
-   * Inicia a gravação de áudio
+   * Starts an audio recording session.
+   * 
+   * @returns A promise that resolves to `true` if the recording starts successfully, 
+   *          or `false` if the recording could not be started.
+   * 
+   * @throws Will throw an error if recording permissions are not granted.
+   * 
+   * @remarks
+   * - Ensures that only one recording session is active at a time.
+   * - Requests necessary permissions before starting the recording.
+   * - Configures audio settings for Android, iOS, and web platforms.
+   * - Automatically stops the recording after a maximum duration defined in `VoiceConfig.recording.maxDuration`.
+   * 
+   * @example
+   * ```typescript
+   * const success = await voiceService.startRecording();
+   * if (success) {
+   *   console.log('Recording started successfully');
+   * } else {
+   *   console.log('Failed to start recording');
+   * }
+   * ```
    */
   async startRecording(): Promise<boolean> {
     try {
@@ -165,7 +220,22 @@ export class VoiceService {
   }
 
   /**
-   * Para a gravação e retorna o arquivo de áudio
+   * Stops the current audio recording and unloads the recording instance.
+   * 
+   * @returns A promise that resolves to a `VoiceRecordingResult` object containing the URI of the audio file
+   *          and its duration in milliseconds, or `null` if no active recording exists or an error occurs.
+   * 
+   * @throws An error if the URI of the audio file is not available after stopping the recording.
+   * 
+   * @example
+   * ```typescript
+   * const result = await voiceService.stopRecording();
+   * if (result) {
+   *   console.log(`Recording saved at: ${result.uri}, Duration: ${result.duration}ms`);
+   * } else {
+   *   console.warn('No recording was active or an error occurred.');
+   * }
+   * ```
    */
   async stopRecording(): Promise<VoiceRecordingResult | null> {
     try {
@@ -204,7 +274,15 @@ export class VoiceService {
   }
 
   /**
-   * Cancela a gravação atual
+   * Cancels an ongoing audio recording if one is active.
+   * 
+   * This method stops and unloads the current recording, clears any active timers,
+   * and resets the recording state. If an error occurs during the process, it logs
+   * the error to the console.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the recording is successfully canceled.
+   * 
+   * @throws Logs an error to the console if the cancellation process fails.
    */
   async cancelRecording(): Promise<void> {
     try {
@@ -226,7 +304,16 @@ export class VoiceService {
   }
 
   /**
-   * Processa áudio completo: transcreve e gera resposta do Felipe em uma única chamada
+   * Processes a voice message by sending the audio file to a remote API for transcription and response generation.
+   *
+   * @param audioUri - The URI of the audio file to be processed.
+   * @returns A promise that resolves to an object containing:
+   * - `transcription`: The transcribed text from the audio.
+   * - `response`: The response generated by the API based on the transcription.
+   * - `success`: A boolean indicating whether the operation was successful.
+   * - `error` (optional): An error message if the operation failed.
+   *
+   * @throws Will throw an error if the API response is invalid or if there is an issue with the request.
    */
   async processVoiceMessage(audioUri: string): Promise<{ transcription: string; response: string; success: boolean; error?: string }> {
     try {
@@ -295,7 +382,17 @@ export class VoiceService {
   }
 
   /**
-   * Fala o texto usando síntese de voz
+   * Speaks the provided text using text-to-speech functionality with customizable options.
+   *
+   * @param text - The text to be spoken.
+   * @param options - Optional configuration for speech synthesis.
+   * @param options.language - The language to use for speech synthesis (e.g., "en-US").
+   * @param options.rate - The speed at which the text is spoken (default is 1.0).
+   * @param options.pitch - The pitch of the spoken voice (default is 1.0).
+   * @param options.voice - The specific voice to use for speech synthesis. If not provided, the best male voice is selected.
+   * @param options.volume - The volume level for speech synthesis (default is configured in `VoiceConfig`).
+   * @returns A promise that resolves when the text has been spoken.
+   * @throws Will log an error to the console if speech synthesis fails.
    */
   async speakText(text: string, options?: {
     language?: string;
@@ -326,7 +423,14 @@ export class VoiceService {
   }
 
   /**
-   * Para a síntese de voz
+   * Stops the ongoing speech synthesis process.
+   * 
+   * This method attempts to stop any currently active speech synthesis
+   * using the `Speech.stop()` function. If an error occurs during the
+   * process, it logs the error to the console with a descriptive message.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the speech synthesis is stopped.
+   * @throws Logs an error to the console if stopping the speech synthesis fails.
    */
   async stopSpeaking(): Promise<void> {
     try {
@@ -337,14 +441,19 @@ export class VoiceService {
   }
 
   /**
-   * Verifica se está gravando
+   * Retrieves the current recording state.
+   *
+   * @returns {boolean} - A boolean indicating whether recording is in progress.
    */
   getIsRecording(): boolean {
     return this.isRecording;
   }
 
   /**
-   * Verifica se a síntese de voz está falando
+   * Checks if the speech synthesis engine is currently speaking.
+   *
+   * @returns A promise that resolves to a boolean indicating whether the speech synthesis engine is speaking.
+   * @throws Logs an error to the console if there is an issue checking the speaking status and returns `false`.
    */
   async isSpeaking(): Promise<boolean> {
     try {
@@ -356,7 +465,12 @@ export class VoiceService {
   }
 
   /**
-   * Cleanup - limpa recursos
+   * Cleans up resources used by the voice service.
+   * This method ensures that any ongoing recording is canceled
+   * and any active speech synthesis is stopped.
+   * 
+   * @returns A promise that resolves when the cleanup process is complete.
+   * @throws Logs an error to the console if an issue occurs during cleanup.
    */
   async cleanup(): Promise<void> {
     try {
@@ -368,5 +482,5 @@ export class VoiceService {
   }
 }
 
-// Instância singleton do serviço
+// Singleton instance of the voice service
 export const voiceService = new VoiceService();
