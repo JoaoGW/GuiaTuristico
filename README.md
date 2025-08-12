@@ -32,7 +32,7 @@
 
 ## Principais Funcionalidades
 
-- Busca de pontos turísticos baseada na localização do usuário (necessário a localização do dispositivo)
+- Busca de pontos turísticos baseada na localização do usuário (necessária a localização do dispositivo)
 - Exibição de locais em mapas interativos realtime
 - Sugestões e itinerários gerados por IA (OpenAI) via backend feito com Next.js
 - Chat com a IA com persistência de histórico
