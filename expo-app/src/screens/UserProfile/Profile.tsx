@@ -57,7 +57,7 @@ export function Profile(){
               <Button w={200} h={160} borderRadius={75} overflow="hidden" p={0} bgColor="transparent" onPress={ () => navigation.navigate("EditProfile") }>
                 <AvatarImage source={'https://cdn.pixabay.com/photo/2020/06/30/10/23/icon-5355896_1280.png'} alt="Avatar do Usuário" style={{ width: '100%', height: '100%', borderRadius: 75 }} />
               </Button>
-              <Text fontSize="$xl" fontWeight="$bold" mt={10} mb={25}>Nome do Usuário</Text>
+              <Text fontSize="$xl" fontWeight="$bold" color="$black" mt={10} mb={25}>Nome do Usuário</Text>
             </View>
             <View justifyContent="center" mt={-30}>
               <View flexDirection="row">
