@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { Box, Text, View, HStack, Image } from '@gluestack-ui/themed';
+
+import { AuthNavigationProp } from '@routes/auth.routes';
 
 import { GlobalPlaces } from '../../../@types/GlobalPlacesTypes';
 
 import Default from '@assets/400x300.svg';
 
-export function GlobalDestinations({ title, imageUrl }: GlobalPlaces) {
+export function GlobalDestinations({ id, title, imageUrl }: GlobalPlaces) {
   const [imageError, setImageError] = useState(false);
+  const navigation = useNavigation<AuthNavigationProp>();
 
   return (
-    <Pressable>
+    <Pressable onPress={ () => navigation.navigate("DestinationDetail", { destinationId: id }) }>
       <Box borderRadius={10} padding={4}>
         { imageUrl && !imageError ? (
           <Image
@@ -23,7 +27,7 @@ export function GlobalDestinations({ title, imageUrl }: GlobalPlaces) {
             borderRadius={10}
             marginBottom={10}
             borderWidth={2}
-            borderColor="#E9AD2D"
+            borderColor="#2752B7"
           />
         ) : (
           <Default width="100%" height={120} style={{ borderRadius: 10, marginBottom: 20 }} />

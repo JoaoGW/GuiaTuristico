@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useImperativeHandle, forwardRef, useRe
 import MapView, { Marker } from "react-native-maps";
 import { View, Text } from "@gluestack-ui/themed";
 
-import { Loading } from "@components/Loading";
+import { Loading } from "@components/Loading/Loading";
 import { LocationContext } from "@contexts/requestDeviceLocation";
 
 interface Place {
@@ -40,7 +40,7 @@ export const Maps = forwardRef<MapView, MapsProps>((_, ref) => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `http://SEU-IP-AQUI:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {

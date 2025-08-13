@@ -1,7 +1,10 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { HStack, Pressable, Text } from "@gluestack-ui/themed";
 import { SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+import { MaterialIcons } from '@expo/vector-icons';
+
+import { View, Pressable, Text } from "@gluestack-ui/themed";
+
 import { AuthNavigationProp } from '@routes/auth.routes';
 
 type PropsTitles = {
@@ -13,8 +16,8 @@ export function TitleAndBack(props: PropsTitles) {
 
   return (
     <SafeAreaView style={{ marginBottom: 15 }}>
-      <HStack px={20} py={10} alignItems="center" justifyContent="space-between">
-        <Pressable onPress={() => navigation.goBack()}>
+      <View flexDirection='row' px={20} pt={3} pb={10} alignItems="center" justifyContent="space-between">
+        <Pressable w={50} h={50} justifyContent="center" alignItems="center" onPress={ () => navigation.goBack() }>
           <MaterialIcons name="arrow-back" size={24} color="#535353" />
         </Pressable>
         <Text
@@ -22,11 +25,11 @@ export function TitleAndBack(props: PropsTitles) {
           fontSize="$xl"
           fontWeight="$bold"
           textAlign="center"
-          flex={1}
         >
-          {props.pageTitle}
+          { props.pageTitle }
         </Text>
-      </HStack>
+        <View mr={45}></View>
+      </View>
     </SafeAreaView>
   );
 }

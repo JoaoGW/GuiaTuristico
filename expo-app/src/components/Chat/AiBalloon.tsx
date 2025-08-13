@@ -1,4 +1,6 @@
-import { View, Text, Image } from "@gluestack-ui/themed";
+import { View, Text } from "@gluestack-ui/themed";
+
+import FelipeProfilePicture from '@assets/Mascot/Felipe_Mascot_ProfilePic.svg';
 
 type AiBalloonProps = {
   message: string;
@@ -8,16 +10,7 @@ type AiBalloonProps = {
 export function AiBalloon({ message, senderName }: AiBalloonProps) {
   return (
     <View flexDirection="row" alignItems="flex-end" mb={12}>
-      <Image
-        source={{ uri: "https://cdn-icons-png.flaticon.com/512/4712/4712035.png" }}
-        width={40}
-        height={40}
-        borderRadius={20}
-        mr={8}
-        borderWidth={2}
-        borderColor="$blue500"
-        alt="AI Icon Image"
-      />
+      <FelipeProfilePicture height={40} width={40} />
 
       <View alignItems="flex-start">
         <View

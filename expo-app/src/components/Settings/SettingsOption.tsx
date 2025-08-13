@@ -5,19 +5,12 @@ import { ChevronRight, LucideIcon } from "lucide-react-native";
 type SettingsRules = {
   icon: LucideIcon;
   optionText: string;
+  route: () => void
 };
 
-export function SettingsOption(props: SettingsRules) {
-  const { icon: Icon, optionText } = props;
-
+export function SettingsOption({ icon: Icon, optionText, route }: SettingsRules) {
   return (
-    <Pressable px={20} py={10} my={1}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
+    <Pressable px={20} py={10} my={1} flexDirection="row" alignItems="center" justifyContent="space-between" onPress={ route } >
       <Icon size={30} color="#606060" />
       <Text
         color="$black"
@@ -29,7 +22,7 @@ export function SettingsOption(props: SettingsRules) {
       >
         { optionText }
       </Text>
-      <ChevronRight />
+      <ChevronRight color="black" />
     </Pressable>
   );
 }
