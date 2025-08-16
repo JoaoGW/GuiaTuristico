@@ -24,7 +24,8 @@
           },
           "imageWidth": 300
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "ios": {
       "supportsTablet": true,
