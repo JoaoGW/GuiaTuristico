@@ -40,10 +40,16 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
-      ]
+      ],
+      "package": "com.joaogw.EzTripAI"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "080ff03d-b4c0-4408-9c17-8b2bd0672c24"
+      }
     }
   }
 }

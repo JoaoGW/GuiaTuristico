@@ -7,7 +7,7 @@
     {
         "id": "2",
         "name": "🎉 Festas e Baladas",
-        "image": "balada.png"
+        "image": "nightclub.png"
     },
     {
         "id": "3",
@@ -22,12 +22,12 @@
     {
         "id": "5",
         "name": "🕋 Templos e Igrejas",
-        "image": "igrejas.png"
+        "image": "church.png"
     },
     {
         "id": "6",
         "name": "🌳 Parques",
-        "image": "parques.png"
+        "image": "park.png"
     },
     {
         "id": "7",
