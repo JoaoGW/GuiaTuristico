@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
+
 import {
   HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView, Image,
   AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader,
@@ -18,7 +20,12 @@ import { useNotificationStore } from '@utils/notificationStore';
 import { Globe } from 'lucide-react-native';
 
 import OpenAILogo from '@assets/Enterprises/OpenAI/OpenAI-black-wordmark.svg';
-import { View as RNView } from 'react-native';
+
+import * as FileSystem from "expo-file-system"
+import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
+
+import { useFocusEffect } from '@react-navigation/native';
 
 const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
 
@@ -27,15 +34,14 @@ export function GenerateItinerary() {
   const [preferences, setPreferences] = useState('');
   const [budget, setBudget] = useState('');
   const [itinerary, setItinerary] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [proceedAnyway, setProceedAnyway] = useState(false);
+  const [tags, setTags] = useState('');
 
   const navigation = useNavigation<AuthNavigationProp>();
   const addNotification = useNotificationStore(state => state.addNotification);
-
-  const tagsArray = utilsGetSelectedTags();
-  const tags = tagsArray.join(', ');
 
   useEffect(() =>{
     const loadSavedItinerary = async () => {
@@ -51,6 +57,7 @@ export function GenerateItinerary() {
     loadSavedItinerary();
   }, []);
 
+
   const generate = async () => {
     setLoading(true);
     setItinerary('');
@@ -64,6 +71,7 @@ export function GenerateItinerary() {
 
     try {
       const result = await generateItinerary(prompt);
+      
       setItinerary(result);
 
       addNotification({
@@ -73,6 +81,7 @@ export function GenerateItinerary() {
       });
 
       await AsyncStorage.setItem(ITINERARY_STORAGE_KEY, result);
+
     } catch (error) {
       setItinerary('Erro ao gerar roteiro. Tente novamente.');
     } finally {
@@ -80,8 +89,18 @@ export function GenerateItinerary() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const tagsArray = utilsGetSelectedTags();
+      const newTags = tagsArray.join(', ');
+      setTags(newTags);
+    }, [])
+  );
+
   const handleGenerate = () => {
-    if (!tags) {
+    const trimmedTags = (tags || '').trim();
+
+    if (!trimmedTags) {
       setShowConfirmation(true);
     } else {
       generate();
@@ -90,7 +109,7 @@ export function GenerateItinerary() {
 
   const handleConfirmYes = () => {
     setShowConfirmation(false);
-    
+
     generate();
   };
 
@@ -99,11 +118,133 @@ export function GenerateItinerary() {
     navigation.navigate('UserPreferences');
   };
 
+  async function handleExportPDF() {
+    if(isExporting || !itinerary) {
+      return;
+    }
+    try {
+      setIsExporting(true);
+
+        const createHtmlFromItinerary = (itineraryText: string) => {
+          const days = itineraryText.split(/(Dia \d+:)/).slice(1);
+          let htmlDays = '';
+
+          for (let i = 0; i < days.length; i += 2) {
+            const dayTitle = days[i];
+            const activitiesText = days[i + 1];
+            
+            const activityItems = activitiesText
+              .split('\n') 
+              .map(line => line.trim()) 
+              .map(line => line.startsWith('-') ? line.substring(1).trim() : line) 
+              .filter(line => line.length > 0) 
+              .map(activity => `<li>${activity}</li>`) 
+              .join(''); 
+
+            if (activityItems.length > 0) {
+              htmlDays += `<h2>${dayTitle}</h2><ul>${activityItems}</ul>`;
+            }
+          }
+          return htmlDays;
+      };
+
+      const htmlContent = `
+        <html>
+          <head>
+            <meta charset="utf-g" />
+            <title>Roteiro de Viagem</title>
+            <style>
+              @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+              
+              body { 
+                font-family: 'Poppins', sans-serif; 
+                font-size: 11pt; 
+                line-height: 1.6; 
+                padding: 35px;
+                color: #333;
+              }
+              h1 { 
+                text-align: center; 
+                color: #2752b7; 
+                font-size: 24pt;
+                margin-bottom: 5px;
+              }
+              h2 {
+                font-size: 16pt;
+                color: #333;
+                border-bottom: 2px solid #eeeeee;
+                padding-bottom: 5px;
+                margin-top: 25px;
+              }
+              ul {
+                list-style-type: none;
+                padding-left: 0;
+              }
+              li {
+                padding: 8px 0px 8px 15px;
+                margin-bottom: 5px;
+                position: relative;
+              }
+              li::before {
+                content: '•';
+                color: #2752b7;
+                font-size: 18pt;
+                position: absolute;
+                left: -5px;
+                top: 1px;
+              }
+              .subtitle {
+                text-align: center;
+                font-size: 12pt;
+                color: #777;
+                margin-top: 0;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Roteiro de Viagem</h1>
+            <p class="subtitle">O seu roteiro de viagem personalizado com muito carinho</p>
+            ${createHtmlFromItinerary(itinerary)}
+          </body>
+        </html>
+      `;
+
+      const { uri: tempUri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+      });
+
+      const fileName = `Roteiro_de_Viagem_${new Date().toISOString().slice(0, 10)}.pdf`;
+      const newUri = `${FileSystem.cacheDirectory}${fileName}`;
+
+      await FileSystem.moveAsync({
+        from: tempUri,
+        to: newUri,
+      });
+
+      if (!await Sharing.isAvailableAsync()) {
+        Alert.alert("Exportar PDF", "Compartilhamento não está disponível neste dispositivo.");
+        return;
+      }
+
+      await Sharing.shareAsync(newUri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Salve ou compartilhe seu roteiro',
+        UTI: '.pdf'
+      });
+      
+    } catch (error) {
+      Alert.alert("Exportar", "Não foi possível exportar o roteiro.");
+    }finally{
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <RNView style={{ flex: 1 }}>
-      <View flex={1} pt={50}>
+    <View flex={1}>
+      <View pt={50}>
         <View pt={35} px={20}>
-          <Text fontWeight="$bold" fontSize="$2xl" textAlign='center' mb={15}>
+          <Text fontWeight="$bold" fontSize="$2xl" textAlign='center'>
             Gere o seu próximo roteiro de viagem utilizando IA!
           </Text>
           <View flexDirection='row' justifyContent='center'>
@@ -113,7 +254,7 @@ export function GenerateItinerary() {
         </View>
 
         <View py={16} px={32}>
-          <Button onPress={ handleGenerate } disabled={loading} bgColor='#2752B7'>
+          <Button onPress={ handleGenerate } disabled={loading} borderRadius={50} bgColor='#2752B7'>
             { loading ? <ButtonSpinner color="$white" mr={10} /> : '' }
             <ButtonText>{ loading ? 'Gerando...' : 'Gerar Roteiro com IA' }</ButtonText>
           </Button>
@@ -121,10 +262,18 @@ export function GenerateItinerary() {
           {
             itinerary !== ''
             ?
-              <View style={{ marginTop: 20 }}>
-                <Text fontSize="$xl" mb={10} style={{ fontWeight: 'bold' }}>Roteiro sugerido:</Text>
-                <ScrollView showsVerticalScrollIndicator={ false } style={{ maxHeight: 5000, marginBottom: 400 }}>
-                  <Text>{itinerary}</Text>
+              <View py={16} style={{ marginTop: 0, marginBottom: 0, maxHeight: 400 }}>
+                <Button 
+                    onPress={handleExportPDF} 
+                    variant="solid" action='primary' disabled={loading} 
+                    bgColor='#2752b790' mb={10} borderRadius={50}>
+                    {loading ? <ButtonSpinner color="$white" alignItems='center' /> : '' }
+                    <ButtonText>{isExporting ? 'Exportando Roteiro...' : 'Exportar Roteiro'}</ButtonText>
+                  </Button>
+                          
+                <Text fontSize="$xl" mb={10} textAlign='center'  style={{ fontWeight: 'bold' }}>Roteiro sugerido</Text>
+                <ScrollView showsVerticalScrollIndicator={ false } borderRadius={5} bgColor='#cacaca49'>
+                  <Text style={{lineHeight: 24}} >{itinerary}</Text>
                 </ScrollView>
               </View>
             :
@@ -138,29 +287,33 @@ export function GenerateItinerary() {
               </View>
           }
         </View>
-
-        <AlertDialog isOpen={ showConfirmation } onClose={ handleConfirmNo }>
-          <AlertDialogBackdrop />
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <Text fontSize="$lg" fontWeight="$bold">Nenhuma preferência selecionada</Text>
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              <Text>
-                Tem certeza que deseja continuar? Isso pode gerar roteiros imprecisos para sua viagem, pois não saberemos onde focar.
-              </Text>
-            </AlertDialogBody>
-            <AlertDialogFooter justifyContent="space-between">
-              <Button bg="$red600" onPress={ handleConfirmYes } sx={{ px: 10, py: 6, borderRadius: 6 }}>
-                <ButtonText fontSize="$sm">Continuar mesmo assim</ButtonText>
-              </Button>
-              <Button bg="$green600" onPress={ handleConfirmNo } sx={{ px: 10, py: 6, borderRadius: 6 }}>
-                <ButtonText fontSize="$sm">Configurações</ButtonText>
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </View>
-    </RNView>
+
+    <AlertDialog isOpen={showConfirmation} onClose={handleConfirmNo}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent p="$4" borderRadius="$lg">
+
+          <AlertDialogHeader borderBottomWidth="$0" justifyContent="center">
+            <Text size="2xl" mb={-10} fontWeight="$bold">Atenção</Text>
+          </AlertDialogHeader>
+
+          <AlertDialogBody pt="$1" pb="$2">
+            <Text lineHeight="$md" textAlign="center">
+              Recomendamos que você defina suas preferências de viagem primeiro. Deseja continuar mesmo assim?
+            </Text>
+          </AlertDialogBody>
+
+          <AlertDialogFooter borderTopWidth="$0" flexDirection="column" gap="$3" >
+            <Button backgroundColor='#16b416e8' action="primary" onPress={handleConfirmNo} w="$full">
+              <ButtonText>Ir para Preferências</ButtonText>
+            </Button>
+
+            <Button variant="solid" backgroundColor='#e0064fdd' action="secondary" onPress={handleConfirmYes} w="$full">
+              <ButtonText>Continuar mesmo assim</ButtonText>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </View>
   );
 }

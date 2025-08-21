@@ -9,7 +9,7 @@ import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } fro
 import * as SplashScreen from 'expo-splash-screen';
 
 import { config } from "@gluestack-ui/config";
-import { GluestackUIProvider } from "@gluestack-ui/themed";
+import { GluestackUIProvider, StyledProvider } from "@gluestack-ui/themed";
 
 import { SplashLoading } from "@components/Loading/SplashLoading";
 
@@ -91,30 +91,32 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider 
-        style={{
-          flex: 1,
-          backgroundColor: viewMode.background
-        }}
-        onLayout={ onLayoutRootView }
-      >
-        <GluestackUIProvider config={config}>
-          <StatusBar
-            barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"}
-            backgroundColor="transparent"
-            translucent
-          />
+    <GluestackUIProvider config={config}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider 
+          style={{
+            flex: 1,
+            backgroundColor: viewMode.background
+          }}
+          onLayout={ onLayoutRootView }
+        >
+            <StyledProvider config={config}>
+            <StatusBar
+              barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"}
+              backgroundColor="transparent"
+              translucent
+            />
 
-          <AuthProvider>
-            <ProvideUserLocation>
-              <ProvideUserNetInfo>
-                <Routes />
-              </ProvideUserNetInfo>
-            </ProvideUserLocation>
-          </AuthProvider>
-        </GluestackUIProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+            <AuthProvider>
+              <ProvideUserLocation>
+                <ProvideUserNetInfo>
+                  <Routes />
+                </ProvideUserNetInfo>
+              </ProvideUserLocation>
+            </AuthProvider>
+            </StyledProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </GluestackUIProvider>
   );
 }

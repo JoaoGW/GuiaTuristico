@@ -34,10 +34,10 @@
       "@services/*": [
         "./src/services/*"
       ],
-      "@config": [
+      "@config/*": [
         "./src/config"
       ],
-      "@hooks": [
+      "@hooks/*": [
         "./src/hooks"
       ]
     }
