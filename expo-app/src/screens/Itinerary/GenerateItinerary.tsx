@@ -151,7 +151,7 @@ export function GenerateItinerary() {
       const htmlContent = `
         <html>
           <head>
-            <meta charset="utf-g" />
+            <meta charset="utf-8" />
             <title>Roteiro de Viagem</title>
             <style>
               @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
