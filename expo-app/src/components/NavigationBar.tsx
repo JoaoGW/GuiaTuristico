@@ -24,7 +24,7 @@ export function NavigationBar() {
       key: 'GenerateItinerary', 
       icon: BookMarked, 
       label: 'Roteiros',
-      action: () => navigation.navigate('GenerateItinerary')
+      action: () => navigation.navigate('ItineraryFeaturesIntroduction')
     },
     { 
       key: 'AIChat', 

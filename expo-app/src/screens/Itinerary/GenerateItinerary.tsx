@@ -1,6 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 
+import * as FileSystem from "expo-file-system"
+import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
+
 import {
   HStack, View, Text, Button, ButtonText, ButtonSpinner, ScrollView, Image,
   AlertDialog, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader,
@@ -20,10 +24,6 @@ import { useNotificationStore } from '@utils/notificationStore';
 import { Globe } from 'lucide-react-native';
 
 import OpenAILogo from '@assets/Enterprises/OpenAI/OpenAI-black-wordmark.svg';
-
-import * as FileSystem from "expo-file-system"
-import * as Sharing from 'expo-sharing';
-import * as Print from 'expo-print';
 
 import { useFocusEffect } from '@react-navigation/native';
 

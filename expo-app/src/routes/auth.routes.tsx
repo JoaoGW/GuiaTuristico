@@ -6,6 +6,7 @@ import { Profile } from "@screens/UserProfile/Profile";
 import { EditProfile } from "@screens/UserProfile/EditProfile";
 import { UserPreferences } from "@screens/UserProfile/UserPreferences";
 import { GenerateItinerary } from "@screens/Itinerary/GenerateItinerary";
+import { ItineraryFeaturesIntroduction } from "@screens/Itinerary/ItineraryFeaturesIntroduction";
 import { AIChat } from "@screens/AIChat/AIChat";
 import { AIVoiceChat } from "@screens/AIChat/AIVoiceChat";
 import { AIMascotIntroduction } from "@screens/AIChat/AIMascotIntroduction";
@@ -27,23 +28,24 @@ const Stack = createNativeStackNavigator();
 
 type AuthStackParamList = {
   Home: undefined;
-  Settings: undefined;
-  Profile: undefined;
+  AIMascotIntroduction: undefined;
+  AIChat: { chatId?: string, topic?: string } | undefined;
+  AIChatMenu: undefined;
+  AIVoiceChat: undefined;
+  CancelPremiumPlan: undefined;
+  DestinationDetail: { destinationId: number };
   EditProfile: undefined;
   GenerateItinerary: undefined;
-  UserPreferences: undefined;
-  AIChat: { chatId?: string, topic?: string } | undefined;
-  AIVoiceChat: undefined;
-  AIMascotIntroduction: undefined;
-  AIChatMenu: undefined;
+  ItineraryFeaturesIntroduction: undefined;
+  ManagePremiumPlan: undefined;
   MapsExpanded: { places: Place[], loading: boolean };
   Notifications: undefined;
-  DestinationDetail: { destinationId: number };
-  PremiumPlans: undefined;
-  WelcomePremium: undefined;
-  ManagePremiumPlan: undefined;
   OptionsManagePremiumPlan: undefined;
-  CancelPremiumPlan: undefined;
+  PremiumPlans: undefined;
+  Profile: undefined;
+  Settings: undefined;
+  UserPreferences: undefined;
+  WelcomePremium: undefined;
 };
 
 export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
@@ -134,6 +136,11 @@ export function AuthRoute() {
       <Stack.Screen 
         name="UserPreferences" 
         component={ UserPreferences }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="ItineraryFeaturesIntroduction" 
+        component={ ItineraryFeaturesIntroduction } 
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
