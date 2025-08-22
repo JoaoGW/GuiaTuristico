@@ -62,12 +62,12 @@ export function GenerateItinerary() {
     setLoading(true);
     setItinerary('');
 
-    const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
+    const prompt = `Gere recomendações de um roteiro turístico, considere os seguintes 
                     interesses do usuário: ${tags}. 
                     Além disso, o usuário está localizado em: Paris, França e seu orçamento é de 3750 reais para 5 dias.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
-                    Formate os dias em formato de lista por dia.`;
+                    Formate os dias em formato de lista.`;
 
     try {
       const result = await generateItinerary(prompt);
@@ -122,6 +122,7 @@ export function GenerateItinerary() {
     if(isExporting || !itinerary) {
       return;
     }
+
     try {
       setIsExporting(true);
 
@@ -261,25 +262,25 @@ export function GenerateItinerary() {
 
           {
             itinerary !== ''
-            ?
+              ?
               <View py={16} style={{ marginTop: 0, marginBottom: 0, maxHeight: 400 }}>
-                <Button 
-                    onPress={handleExportPDF} 
-                    variant="solid" action='primary' disabled={loading} 
-                    bgColor='#2752b790' mb={10} borderRadius={50}>
-                    {loading ? <ButtonSpinner color="$white" alignItems='center' /> : '' }
-                    <ButtonText>{isExporting ? 'Exportando Roteiro...' : 'Exportar Roteiro'}</ButtonText>
-                  </Button>
-                          
-                <Text fontSize="$xl" mb={10} textAlign='center'  style={{ fontWeight: 'bold' }}>Roteiro sugerido</Text>
-                <ScrollView showsVerticalScrollIndicator={ false } borderRadius={5} bgColor='#cacaca49'>
-                  <Text style={{lineHeight: 24}} >{itinerary}</Text>
+                <Button
+                  onPress={handleExportPDF}
+                  variant="solid" action='primary' disabled={loading}
+                  bgColor='#2752b790' mb={10} borderRadius={50}>
+                  { loading ? <ButtonSpinner color="$white" alignItems='center' /> : ''}
+                  <ButtonText>{isExporting ? 'Exportando Roteiro...' : 'Exportar Roteiro'}</ButtonText>
+                </Button>
+
+                <Text fontSize="$xl" mb={10} textAlign='center' style={{ fontWeight: 'bold' }}>Roteiro sugerido</Text>
+                <ScrollView showsVerticalScrollIndicator={false} borderRadius={5} bgColor='#cacaca49'>
+                  <Text style={{ lineHeight: 24 }} >{itinerary}</Text>
                 </ScrollView>
               </View>
-            :
+              :
               <View alignItems='center' justifyContent='center' style={{ marginTop: 150 }}>
-                <Image 
-                  source={ require('@assets/Illustrations/generateitineraryIllustration.png') }
+                <Image
+                  source={require('@assets/Illustrations/generateitineraryIllustration.png')}
                   h={230}
                   w={350}
                   alt=''
