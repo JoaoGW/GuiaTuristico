@@ -84,7 +84,7 @@ export function GenerateItineraryFeaturesIntroduction() {
               elevation: 5,
             }}
           >
-            <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' isDisabled={ isLoading } onPress={ () => navigation.navigate("AIChatMenu") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
+            <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' isDisabled={ isLoading } onPress={ () => navigation.navigate("GenerateItineraryMenu") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
               <ButtonText mr={10} fontSize="$xl">Planejar minha viagem</ButtonText>
               {
                 isLoading ? <ButtonSpinner /> : ''

@@ -24,7 +24,7 @@ export function NavigationBar() {
       key: 'GenerateItinerary', 
       icon: BookMarked, 
       label: 'Roteiros',
-      action: () => navigation.navigate('ItineraryFeaturesIntroduction')
+      action: () => navigation.navigate('GenerateItineraryFeaturesIntroduction')
     },
     { 
       key: 'AIChat', 
@@ -81,7 +81,7 @@ export function NavigationBar() {
 
   const routeMapping: Record<string, string[]> = {
     Home: ['Home', 'DestinationDetails', 'MapsExpanded', 'Notifications'],
-    GenerateItinerary: ['ItineraryFeaturesIntroduction', 'GenerateItinerary'],
+    GenerateItinerary: ['GenerateItineraryFeaturesIntroduction', 'GenerateItineraryMenu', 'GenerateItinerary'],
     AIChat: ['AIChat', 'AIChatMenu', 'AIMascotIntroduction', 'AIVoiceChat'],
     Games: ['Games'],
     Settings: ['Profile', 'EditProfile', 'Settings', 'UserPreferences'],
