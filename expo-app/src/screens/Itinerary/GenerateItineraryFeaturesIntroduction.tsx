@@ -6,12 +6,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { View, Text, ButtonGroup, Button, ButtonText, ButtonSpinner, ButtonIcon } from "@gluestack-ui/themed";
 
-import FelipeMascot from '@assets/Mascot/Felipe_Mascot_Hello.svg';
+import FelipeMascot from '@assets/Mascot/Felipe_Mascot_Itinerary_Features.svg';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 import { X } from 'lucide-react-native';
 
-export function ItineraryFeaturesIntroduction() {
+export function GenerateItineraryFeaturesIntroduction() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const navigation = useNavigation<AuthNavigationProp>();
@@ -64,9 +64,10 @@ export function ItineraryFeaturesIntroduction() {
           <FelipeMascot width={330} height={330} style={{ marginBottom: 20 }} />
         </View>
         <View flexDirection='column' justifyContent='center' alignItems='center'>
-          <Text color='$white' fontSize="$3xl" fontWeight="$bold">Conheça <Text color='$yellow' fontSize="$3xl" fontWeight="$bold">Felipe</Text>!</Text>
-          <Text color='$white' fontSize="$2xl" fontWeight="$semibold" textAlign='center' mt={5}>Seu novo Assistente Turístico</Text>
-          <Text color='$white' fontSize="$lg" textAlign='center' mt={20}>Faça perguntas e peça sugestões para ele sempre que precisar.</Text>
+          <Text color='$yellow' fontSize="$2xl" fontWeight="$semibold" textAlign='center' mt={5}>Itinerários Personalizados!</Text>
+          <Text color='$white' fontSize="$xl" fontWeight="$semibold" textAlign='center' mt={5}>Toda viagem precisa de organização</Text>
+          <Text color='$white' fontSize="$lg" textAlign='center' mt={20} px={5}>Atualizamos a forma com que geramos o roteiro de suas viagens para garantir o melhor resultado possível para você.</Text>
+          <Text color='$white' fontSize="$lg" textAlign='center' mt={20}>Vamos começar?</Text>
         </View>
         <ButtonGroup justifyContent='center' alignItems='center' mt={35}>
           <LinearGradient
@@ -84,7 +85,7 @@ export function ItineraryFeaturesIntroduction() {
             }}
           >
             <Button w="100%" borderRadius={20} bgColor="transparent" size='lg' isDisabled={ isLoading } onPress={ () => navigation.navigate("AIChatMenu") } $pressed={{ opacity: 0.8, transform: [{ scale: 0.98 }] }}>
-              <ButtonText mr={10} fontSize="$xl">Conhecer</ButtonText>
+              <ButtonText mr={10} fontSize="$xl">Planejar minha viagem</ButtonText>
               {
                 isLoading ? <ButtonSpinner /> : ''
               }

@@ -265,7 +265,7 @@ export function GenerateItinerary() {
               ?
               <View py={16} style={{ marginTop: 0, marginBottom: 0, maxHeight: 400 }}>
                 <Button
-                  onPress={handleExportPDF}
+                  onPress={ handleExportPDF }
                   variant="solid" action='primary' disabled={loading}
                   bgColor='#2752b790' mb={10} borderRadius={50}>
                   { loading ? <ButtonSpinner color="$white" alignItems='center' /> : ''}
@@ -280,7 +280,7 @@ export function GenerateItinerary() {
               :
               <View alignItems='center' justifyContent='center' style={{ marginTop: 150 }}>
                 <Image
-                  source={require('@assets/Illustrations/generateitineraryIllustration.png')}
+                  source={ require('@assets/Illustrations/generateitineraryIllustration.png') }
                   h={230}
                   w={350}
                   alt=''
