@@ -37,8 +37,6 @@ import { useAuth } from '@contexts/AuthContext';
 
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
 
-import { WEB_CLIENT_ID, IOS_CLIENT_ID } from '@env';
-
 GoogleSignin.configure({
   scopes: ['email', 'profile'],
   webClientId: process.env.WEB_CLIENT_ID,
@@ -67,10 +65,18 @@ export function LoginScreen() {
   async function handleGoogleSignIn() {
     try {
       setIsAuthenticating(true);
-      const response = await GoogleSignin.signIn();
+
+      const result = await GoogleSignin.signIn();
+
+      if(result.data?.idToken){
+
+      }else{
+        Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
+        setIsAuthenticating(false);
+      }
     }catch(error){
       setIsAuthenticating(false);
-      Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!")
+      Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
     }
   }
 
