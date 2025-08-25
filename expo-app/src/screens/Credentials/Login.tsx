@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
+import { Alert, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
@@ -36,10 +37,19 @@ import { useAuth } from '@contexts/AuthContext';
 
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
 
+import { WEB_CLIENT_ID, IOS_CLIENT_ID } from '@env';
+
+GoogleSignin.configure({
+  scopes: ['email', 'profile'],
+  webClientId: process.env.WEB_CLIENT_ID,
+  iosClientId: process.env.IOS_CLIENT_ID
+})
+
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
 
   const { login } = useAuth();
   const navigation = useNavigation<NoAuthNavigationProp>();
@@ -51,6 +61,16 @@ export function LoginScreen() {
     } else {
       setIsInvalid(false);
       login;
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    try {
+      setIsAuthenticating(true);
+      const response = await GoogleSignin.signIn();
+    }catch(error){
+      setIsAuthenticating(false);
+      Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!")
     }
   }
 
@@ -190,7 +210,8 @@ export function LoginScreen() {
                   iconHeight={30}
                   textContent='Google'
                   buttonSize='xl'
-                  action={ login }
+                  action={ handleGoogleSignIn }
+                  isLoading={ isAuthenticating }
                   iconStyles={{
                     marginRight: 15,
                     marginLeft: 17
