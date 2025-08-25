@@ -31,6 +31,15 @@
       "supportsTablet": true,
       "entitlements": {
         "com.apple.developer.networking.wifi-info": true
+      },
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.200774196112-pc0gsv58am100q5vmdarje54jvn48ss5"
+            ]
+          }
+        ]
       }
     },
     "android": {
