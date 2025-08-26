@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Alert, SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import Constants from 'expo-constants';
+
+let GoogleSignin: any = null;
+if (Constants.appOwnership !== 'expo') {
+  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
+}
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
@@ -39,12 +44,14 @@ import { NoAuthNavigationProp } from '@routes/noauth.routes';
 
 import { WEB_CLIENT_ID, IOS_CLIENT_ID } from "@env";
 
-GoogleSignin.configure({
-  scopes: ['email', 'profile'],
-  webClientId: WEB_CLIENT_ID,
-  iosClientId: IOS_CLIENT_ID,
-  profileImageSize: 150
-})
+if (Constants.appOwnership !== 'expo' && GoogleSignin) {
+  GoogleSignin.configure({
+    scopes: ['email', 'profile'],
+    webClientId: WEB_CLIENT_ID,
+    iosClientId: IOS_CLIENT_ID,
+    profileImageSize: 150
+  });
+}
 
 export function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -68,6 +75,26 @@ export function LoginScreen() {
   async function handleGoogleSignIn() {
     try {
       setIsAuthenticating(true);
+
+      // Verifica se está rodando no Expo Go
+      const isExpoGo = Constants.appOwnership === 'expo';
+
+      if (isExpoGo) {
+        Alert.alert("Modo Expo Go", "Login simulado com sucesso!");
+        navigation.navigate("Welcome", { 
+          name: "Usuário Expo", 
+          email: "expo@example.com", 
+          photo: "https://cdn.pixabay.com/photo/2022/07/16/04/19/biker-7324421_640.jpg" 
+        });
+        setIsAuthenticating(false);
+        return;
+      }
+
+      if (!GoogleSignin) {
+        Alert.alert("Erro", "Google Sign-In não está disponível.");
+        setIsAuthenticating(false);
+        return;
+      }
 
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const result = await GoogleSignin.signIn();
