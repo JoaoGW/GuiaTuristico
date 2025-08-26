@@ -37,11 +37,11 @@ import { useAuth } from '@contexts/AuthContext';
 
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
 
-import { WEB_CLIENT_ID, IOS_CLIENT_ID, ANDROID_CLIENT_ID } from "@env";
+import { WEB_CLIENT_ID, IOS_CLIENT_ID } from "@env";
 
 GoogleSignin.configure({
   scopes: ['email', 'profile'],
-  webClientId: WEB_CLIENT_ID, // Para Android, este deve ser o Web Client ID
+  webClientId: WEB_CLIENT_ID,
   iosClientId: IOS_CLIENT_ID,
   profileImageSize: 150
 })
@@ -68,44 +68,29 @@ export function LoginScreen() {
   async function handleGoogleSignIn() {
     try {
       setIsAuthenticating(true);
-      
-      // Log das configurações para debug
-      console.log('🔧 Google Sign-in Config:');
-      console.log('WEB_CLIENT_ID:', WEB_CLIENT_ID);
-      console.log('ANDROID_CLIENT_ID:', ANDROID_CLIENT_ID);
-      console.log('IOS_CLIENT_ID:', IOS_CLIENT_ID);
 
-      // Verificar se o Google Play Services está disponível
-      console.log('🔍 Checking Google Play Services...');
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      console.log('✅ Google Play Services OK');
-      
-      // Tentar fazer login
-      console.log('🚀 Starting Google Sign-in...');
       const result = await GoogleSignin.signIn();
-      console.log('📦 Google Sign-in result:', JSON.stringify(result, null, 2));
 
       if(result){
-        // Verificar se o resultado não foi cancelado usando type guards
-        if ('idToken' in result && 'user' in result) {
-          // Type assertion para acessar as propriedades do usuário
-          const user = result.user as { name: string; email: string; photo?: string };
+        if (result.type === 'success' && result.data) {
+          const { user, idToken } = result.data;
           const { name, email, photo } = user;
-          console.log('👤 User info:', { name, email, photo });
-          navigation.navigate("Welcome", { name, email, photo: photo || '' });
+          navigation.navigate("Welcome", { 
+            name: name || 'Usuário', 
+            email: email || '', 
+            photo: photo || '' 
+          });
         } else {
-          console.log('❌ Login cancelado pelo usuário');
           Alert.alert("Login com Google", "Login cancelado pelo usuário!");
           setIsAuthenticating(false);
         }
       }else{
-        console.log('❌ Resultado vazio do Google Sign-in');
         Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
         setIsAuthenticating(false);
       }
     }catch(error){
-      console.error('💥 Erro no Google Sign-in:', error);
-      console.error('💥 Error details:', JSON.stringify(error, null, 2));
+      console.error('Erro no Google Sign-in:', error);
       setIsAuthenticating(false);
       Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
     }
