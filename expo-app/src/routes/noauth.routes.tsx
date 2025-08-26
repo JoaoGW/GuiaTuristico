@@ -12,7 +12,7 @@ type NoAuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
   Introduction: undefined;
-  Welcome: undefined;
+  Welcome: { name: string, email: string, photo: string };
 }
 
 export type NoAuthNavigationProp = NativeStackNavigationProp<NoAuthStackParamList>;

@@ -25,22 +25,19 @@
           "imageWidth": 300
         }
       ],
-      "expo-maps"
+      "expo-maps",
+      ["@react-native-google-signin/google-signin", 
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.200774196112-rdm5cakvaspr677ct2p24im2pfijun17"
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true,
       "entitlements": {
         "com.apple.developer.networking.wifi-info": true
       },
-      "infoPlist": {
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": [
-              "com.googleusercontent.apps.200774196112-pc0gsv58am100q5vmdarje54jvn48ss5"
-            ]
-          }
-        ]
-      }
+      "bundleIdentifier": "com.gwbrtech.eztripai"
     },
     "android": {
       "adaptiveIcon": {
@@ -51,7 +48,7 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
       ],
-      "package": "com.joaogw.EzTripAI"
+      "package": "com.gwbrtech.eztripai"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"

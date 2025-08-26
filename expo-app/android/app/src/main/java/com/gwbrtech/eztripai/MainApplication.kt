@@ -1,4 +1,4 @@
-package com.joaogw.EzTripAI
+package com.gwbrtech.eztripai
 
 import android.app.Application
 import android.content.res.Configuration

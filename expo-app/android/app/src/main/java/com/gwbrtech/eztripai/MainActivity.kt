@@ -1,4 +1,4 @@
-package com.joaogw.EzTripAI
+package com.gwbrtech.eztripai
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

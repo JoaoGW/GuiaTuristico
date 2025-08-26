@@ -21,9 +21,20 @@ module.exports = function(api) {
             '@config': './src/config',
             '@hooks': './src/hooks'
           }
-        },
-        'react-native-reanimated/plugin'
-      ]
+        }
+      ],
+      [
+        'module:react-native-dotenv',
+        {
+          moduleName: '@env',
+          path: '.env.local',
+          blacklist: null,
+          whitelist: null,
+          safe: false,
+          allowUndefined: true
+        }
+      ],
+      'react-native-reanimated/plugin'
     ]
   };
 };

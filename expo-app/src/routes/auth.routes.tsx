@@ -26,7 +26,7 @@ import { Place } from '../../@types/PlacesTypes';
 const Stack = createNativeStackNavigator();
 
 type AuthStackParamList = {
-  Home: undefined;
+  Home: { name: string, email: string, photo: string };
   Settings: undefined;
   Profile: undefined;
   EditProfile: undefined;
