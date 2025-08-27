@@ -1,5 +1,3 @@
-import { TouchableOpacity, View } from "react-native";
-import { useEffect } from "react";
 import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 import {
   AccessToken,
@@ -8,20 +6,15 @@ import {
   LoginManager
 } from "react-native-fbsdk-next";
 
+const initializeFacebookSDK = async () => {
+  const { status } = await requestTrackingPermissionsAsync();
 
-useEffect(() => {
-  const requestTracking = async () => {
-    const { status } = await requestTrackingPermissionsAsync();
+  Settings.initializeSDK();
 
-    Settings.initializeSDK();
-
-    if (status === "granted") {
-      await Settings.setAdvertiserTrackingEnabled(true);
-    }
-  };
-
-  requestTracking();
-}, []);
+  if (status === "granted") {
+    await Settings.setAdvertiserTrackingEnabled(true);
+  }
+};
 
 const getUserFBData = () => {
   Profile.getCurrentProfile().then((currentProfile) => {
@@ -29,21 +22,27 @@ const getUserFBData = () => {
   });
 };
 
-export const handleFacebookSignIn = () => {
-  LoginManager.logInWithPermissions(["public_profile", "email"]).then(
-    function (result) {
-      if (result.isCancelled) {
-        console.log("==> Login cancelled");
-      } else {
-        console.log(result);
-        AccessToken.getCurrentAccessToken().then((data) => {
-          console.log(data);
-          getUserFBData();
-        });
+export const handleFacebookSignIn = async (setIsAuthenticating: (status: boolean) => void) => {
+  setIsAuthenticating(true);
+
+  try {
+    await initializeFacebookSDK();
+
+    const result = await LoginManager.logInWithPermissions(["public_profile", "email"]);
+    
+    if (result.isCancelled) {
+      console.log("==> Login cancelled");
+      setIsAuthenticating(false);
+    } else {
+      console.log(result);
+      const data = await AccessToken.getCurrentAccessToken();
+      if (data) {
+        getUserFBData();
       }
-    },
-    function (error: string) {
-      console.log("Login fail with error: " + error);
+      setIsAuthenticating(false);
     }
-  );
+  } catch (error) {
+    console.log("Login fail with error: " + error);
+    setIsAuthenticating(false);
+  }
 };

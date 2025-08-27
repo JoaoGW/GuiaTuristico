@@ -33,6 +33,7 @@ import GoogleLogo from '@assets/Enterprises/Google/google-icon.svg';
 import FacebookLogo from '@assets/Enterprises/Facebook/facebook-svgrepo.svg';
 
 import { handleGoogleSignIn } from '@services/login/googleLogin';
+import { handleFacebookSignIn } from '@services/login/facebookLogin';
 
 import { useAuth } from '@contexts/AuthContext';
 
@@ -193,7 +194,7 @@ export function LoginScreen() {
                   iconWidth={30}
                   iconHeight={30}
                   textContent='Google'
-                  action={ () => handleGoogleSignIn(setIsAuthenticating) }
+                  action={ () => handleGoogleSignIn(setIsAuthenticating, navigation) }
                   isLoading={ isAuthenticating }
                   iconStyles={{
                     marginRight: 15,
@@ -212,7 +213,7 @@ export function LoginScreen() {
                   iconHeight={50}
                   textContent='Facebook'
                   buttonSize='xl'
-                  action={ login } 
+                  action={ () => handleFacebookSignIn(setIsAuthenticating) } 
                   styles={{ 
                     borderWidth: .6,
                     borderRadius: 10,

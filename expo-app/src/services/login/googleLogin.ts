@@ -2,7 +2,6 @@ import { Alert } from 'react-native';
 import Constants from 'expo-constants';
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
 import { WEB_CLIENT_ID, IOS_CLIENT_ID } from "@env";
-import { useNavigation } from '@react-navigation/native';
 
 let GoogleSignin: any = null;
 if (Constants.appOwnership !== 'expo') {
@@ -18,9 +17,10 @@ if (Constants.appOwnership !== 'expo' && GoogleSignin) {
   });
 }
 
-const navigation = useNavigation<NoAuthNavigationProp>();
-
-export async function handleGoogleSignIn(setIsAuthenticating: (status: boolean) => void) {
+export async function handleGoogleSignIn(
+  setIsAuthenticating: (status: boolean) => void,
+  navigation: NoAuthNavigationProp
+) {
   try {
     setIsAuthenticating(true);
 
