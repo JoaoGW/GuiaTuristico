@@ -1,12 +1,6 @@
 import { useState } from 'react';
-import { Alert, SafeAreaView, StatusBar } from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Constants from 'expo-constants';
-
-let GoogleSignin: any = null;
-if (Constants.appOwnership !== 'expo') {
-  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
-}
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
@@ -38,20 +32,11 @@ import { ArrowLeft, CircleAlert } from 'lucide-react-native';
 import GoogleLogo from '@assets/Enterprises/Google/google-icon.svg';
 import FacebookLogo from '@assets/Enterprises/Facebook/facebook-svgrepo.svg';
 
+import { handleGoogleSignIn } from '@services/login/googleLogin';
+
 import { useAuth } from '@contexts/AuthContext';
 
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
-
-import { WEB_CLIENT_ID, IOS_CLIENT_ID } from "@env";
-
-if (Constants.appOwnership !== 'expo' && GoogleSignin) {
-  GoogleSignin.configure({
-    scopes: ['email', 'profile'],
-    webClientId: WEB_CLIENT_ID,
-    iosClientId: IOS_CLIENT_ID,
-    profileImageSize: 150
-  });
-}
 
 export function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -69,57 +54,6 @@ export function LoginScreen() {
     } else {
       setIsInvalid(false);
       login;
-    }
-  }
-
-  async function handleGoogleSignIn() {
-    try {
-      setIsAuthenticating(true);
-
-      // Verifica se está rodando no Expo Go
-      const isExpoGo = Constants.appOwnership === 'expo';
-
-      if (isExpoGo) {
-        Alert.alert("Modo Expo Go", "Login simulado com sucesso!");
-        navigation.navigate("Welcome", { 
-          name: "Usuário Expo", 
-          email: "expo@example.com", 
-          photo: "https://cdn.pixabay.com/photo/2022/07/16/04/19/biker-7324421_640.jpg" 
-        });
-        setIsAuthenticating(false);
-        return;
-      }
-
-      if (!GoogleSignin) {
-        Alert.alert("Erro", "Google Sign-In não está disponível.");
-        setIsAuthenticating(false);
-        return;
-      }
-
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      const result = await GoogleSignin.signIn();
-
-      if(result){
-        if (result.type === 'success' && result.data) {
-          const { user, idToken } = result.data;
-          const { name, email, photo } = user;
-          navigation.navigate("Welcome", { 
-            name: name || 'Usuário', 
-            email: email || '', 
-            photo: photo || '' 
-          });
-        } else {
-          Alert.alert("Login com Google", "Login cancelado pelo usuário!");
-          setIsAuthenticating(false);
-        }
-      }else{
-        Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
-        setIsAuthenticating(false);
-      }
-    }catch(error){
-      console.error('Erro no Google Sign-in:', error);
-      setIsAuthenticating(false);
-      Alert.alert("Login com Google", "Não foi possível conectar-se a sua conta Google!");
     }
   }
 
@@ -255,11 +189,11 @@ export function LoginScreen() {
               <View flexDirection='row' justifyContent='center'>
                 <ButtonIconImageLeft 
                   icon={ GoogleLogo }
+                  buttonSize='xl'
                   iconWidth={30}
                   iconHeight={30}
                   textContent='Google'
-                  buttonSize='xl'
-                  action={ handleGoogleSignIn }
+                  action={ () => handleGoogleSignIn(setIsAuthenticating) }
                   isLoading={ isAuthenticating }
                   iconStyles={{
                     marginRight: 15,
@@ -291,7 +225,7 @@ export function LoginScreen() {
         </LinearGradient>
       </View>
     );
-  }else{
+  } else {
     return (
       <View flex={1}>
         <StatusBar barStyle="light-content" backgroundColor="#000" />

@@ -30,6 +30,18 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.200774196112-rdm5cakvaspr677ct2p24im2pfijun17"
         }
+      ],
+      ["react-native-fbsdk-next",
+        {
+          "appID": "XXX",
+          "clientToken": "XXX",
+          "displayName": "Meta Facebook SDK Login",
+          "scheme": "XXX",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": false,
+          "isAutoInitEnabled": true,
+          "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
       ]
     ],
     "ios": {
