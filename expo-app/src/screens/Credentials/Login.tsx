@@ -3,8 +3,7 @@ import { SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
-import { LibreBodoni_700Bold } from '@expo-google-fonts/libre-bodoni/700Bold';
+import { useFonts, LibreBodoni_700Bold } from '@expo-google-fonts/libre-bodoni';
 
 import { 
   Button, 
@@ -47,14 +46,14 @@ export function LoginScreen() {
 
   const { login } = useAuth();
   const navigation = useNavigation<NoAuthNavigationProp>();
-  const fontsLoaded = useFonts({ LibreBodoni_700Bold });
+  const [fontsLoaded] = useFonts({ LibreBodoni_700Bold });
 
   const handleSubmit = () => {
     if (password.length < 8) {
       setIsInvalid(true);
     } else {
       setIsInvalid(false);
-      login;
+      login();
     }
   }
 
@@ -213,7 +212,7 @@ export function LoginScreen() {
                   iconHeight={50}
                   textContent='Facebook'
                   buttonSize='xl'
-                  action={ () => handleFacebookSignIn(setIsAuthenticating) } 
+                  action={ () => handleFacebookSignIn(setIsAuthenticating, navigation) } 
                   styles={{ 
                     borderWidth: .6,
                     borderRadius: 10,

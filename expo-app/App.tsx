@@ -15,10 +15,12 @@ import { SplashLoading } from "@components/Loading/SplashLoading";
 
 import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
 import { AuthProvider } from '@contexts/AuthContext';
+import { ProvideUserNetInfo } from '@contexts/NetInfo';
 
 import { Routes } from '@routes/index';
+
 import { appPreloader } from '@services/AppPreloader';
-import { ProvideUserNetInfo } from '@contexts/NetInfo';
+import { initializeFacebookSDK } from '@services/login/facebookSDKInit';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,8 +50,11 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        setLoadingMessage("Carregando textos...");
+        setLoadingMessage("Iniciando o seu Guia Turístico...");
         if (!fontsLoaded) return;
+
+        setLoadingMessage("Configurando serviços...");
+        await initializeFacebookSDK();
 
         setLoadingMessage("Verificando conexão à internet...");
         const isApiAvailable = await appPreloader.checkApiAvailability();
