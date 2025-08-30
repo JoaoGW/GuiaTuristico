@@ -75,7 +75,9 @@ export function Home() {
 
   const renderHeader = () => (
     <VStack space="md">
+      {/* "Jabaquara, São Paulo" + Notificações */}
       <CurrentStatusBar />
+      {/* "Ola! Seja Bem-Vindo(a), Usuário Genérico..." */}
       <UserInfo />
       <View flexDirection='row' ml={8} mb={10} alignContent='center'>
         <Map color="black" size={30} style={{ marginRight: 8 }} />

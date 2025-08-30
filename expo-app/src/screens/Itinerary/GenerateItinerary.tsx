@@ -12,8 +12,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
-import { LocationContext } from '@contexts/requestDeviceLocation';
-
 import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
 import { useNotificationStore } from '@utils/notificationStore';
@@ -43,7 +41,7 @@ export function GenerateItinerary() {
   const [tags, setTags] = useState('');
   const [location, setLocation] = useState('');
   // const [time, setTime] = useState('');
-  // const [weather, setWeather] = useState('');
+  const [weather, setWeather] = useState('');
   
   const navigation = useNavigation<AuthNavigationProp>();
   const addNotification = useNotificationStore(state => state.addNotification);
@@ -70,7 +68,7 @@ export function GenerateItinerary() {
     // Prompt a ser enviado para o GPT
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
                     interesses do usuário: ${tags}. 
-                    Além disso, o usuário está localizado em: ${location} e seu orçamento é de 3750 reais para 5 dias.
+                    Além disso, o usuário está localizado em: ${location} e o clima atual é: ${weather}.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;
@@ -98,7 +96,7 @@ export function GenerateItinerary() {
     }
   };
 
-  // Pega os dados das Tags de preferences/interests e joga na variavel tags
+  // Pega os dados das Tags de preferences/interests e joga na variavel Tags
   useFocusEffect(
     useCallback(() => {
       const tagsArray = utilsGetSelectedTags();
@@ -118,7 +116,7 @@ export function GenerateItinerary() {
     }
   };
 
-  // Pega a localização atual e converte em endereço legível (bairro, cidade) na variavel Adress
+  // Pega a localização atual e converte em endereço legível (bairro, cidade) na variavel Location
   useEffect(() => {
     (async () => {
       try {
@@ -140,8 +138,32 @@ export function GenerateItinerary() {
       } catch (error) {
         setLocation('Erro ao obter localização');
         console.error('Erro ao obter localização:', error);
+        
       }
     })();
+  }, []);
+
+  // Pega o clima atual da localização e joga na variavel Weather
+  useEffect(() => {
+    async function fetchWeather() {
+      const loc = await Location.getCurrentPositionAsync({});
+  
+      try {
+        const response = await fetch(
+          `http://<COLOCAR A API AQUI>/api/weather?latitude=${loc.coords.latitude}&longitude=${loc.coords.longitude}`
+        );
+        const data = await response.json();
+        if (data && data.current && data.current.condition) {
+          setWeather(`${data.current.temp_c}°C, ${data.current.condition.text}`);
+        } else {
+          setWeather('Dados de clima indisponíveis');
+        }
+      } catch (error) {
+        setWeather('Erro ao buscar clima');
+      }
+    }
+  
+    fetchWeather();
   }, []);
 
   const handleConfirmYes = () => {
