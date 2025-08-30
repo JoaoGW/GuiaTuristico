@@ -1,5 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StyledProvider } from '@gluestack-ui/themed';
+import { config } from '@gluestack-ui/config';
 
 import { Home } from "@screens/HomePage/Home";
 import { Profile } from "@screens/UserProfile/Profile";
@@ -50,10 +52,10 @@ export type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
 function ScreenWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <StyledProvider config={config}>
       {children}
       <NavigationBar />
-    </>
+    </StyledProvider>
   );
 }
 

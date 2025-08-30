@@ -12,10 +12,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { AuthNavigationProp } from '@routes/auth.routes';
 
+import { LocationContext } from '@contexts/requestDeviceLocation';
+
 import { generateItinerary } from '@utils/gptRequests';
 import { utilsGetSelectedTags } from '@utils/selectedTagsStore';
-
 import { useNotificationStore } from '@utils/notificationStore';
+import { reverseGeocodeWithNominatim } from '@utils/geoDecoder';
 
 import { Globe } from 'lucide-react-native';
 
@@ -26,11 +28,11 @@ import * as Sharing from 'expo-sharing';
 import * as Print from 'expo-print';
 
 import { useFocusEffect } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 const ITINERARY_STORAGE_KEY = '@screens/GenerateItinerary/itineraryPersisted';
 
 export function GenerateItinerary() {
-  const [location, setLocation] = useState('');
   const [preferences, setPreferences] = useState('');
   const [budget, setBudget] = useState('');
   const [itinerary, setItinerary] = useState('');
@@ -39,7 +41,10 @@ export function GenerateItinerary() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [proceedAnyway, setProceedAnyway] = useState(false);
   const [tags, setTags] = useState('');
-
+  const [location, setLocation] = useState('');
+  // const [time, setTime] = useState('');
+  // const [weather, setWeather] = useState('');
+  
   const navigation = useNavigation<AuthNavigationProp>();
   const addNotification = useNotificationStore(state => state.addNotification);
 
@@ -62,12 +67,16 @@ export function GenerateItinerary() {
     setLoading(true);
     setItinerary('');
 
+    // Prompt a ser enviado para o GPT
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
                     interesses do usuário: ${tags}. 
-                    Além disso, o usuário está localizado em: Paris, França e seu orçamento é de 3750 reais para 5 dias.
+                    Além disso, o usuário está localizado em: ${location} e seu orçamento é de 3750 reais para 5 dias.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;
+
+    // DEBUG (remover depois)
+    console.log('Prompt para IA:', prompt);
 
     try {
       const result = await generateItinerary(prompt);
@@ -89,6 +98,7 @@ export function GenerateItinerary() {
     }
   };
 
+  // Pega os dados das Tags de preferences/interests e joga na variavel tags
   useFocusEffect(
     useCallback(() => {
       const tagsArray = utilsGetSelectedTags();
@@ -97,6 +107,7 @@ export function GenerateItinerary() {
     }, [])
   );
 
+  // Checa se as tags estão vazias e mostra o alerta
   const handleGenerate = () => {
     const trimmedTags = (tags || '').trim();
 
@@ -106,6 +117,32 @@ export function GenerateItinerary() {
       generate();
     }
   };
+
+  // Pega a localização atual e converte em endereço legível (bairro, cidade) na variavel Adress
+  useEffect(() => {
+    (async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocation('Localização não permitida');
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({});
+        const result = await reverseGeocodeWithNominatim(loc.coords.latitude, loc.coords.longitude);
+        if (typeof result === 'object' && result !== null) {
+          const { city, neighborhood} = result;
+          setLocation(
+            [neighborhood, city].filter(Boolean).join(', ')
+          );
+        } else {
+          setLocation(result);
+        }
+      } catch (error) {
+        setLocation('Erro ao obter localização');
+        console.error('Erro ao obter localização:', error);
+      }
+    })();
+  }, []);
 
   const handleConfirmYes = () => {
     setShowConfirmation(false);

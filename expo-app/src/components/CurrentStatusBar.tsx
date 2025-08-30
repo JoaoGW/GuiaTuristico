@@ -20,6 +20,7 @@ export function CurrentStatusBar() {
   const navigation = useNavigation<AuthNavigationProp>();
   const checkNotifications = useNotificationStore(state => state.notifications);
 
+  // Pega a localização atual e converte em endereço legível (bairro, cidade) na variavel Adress
   useEffect(() => {
     if (location) {
       (async () => {
