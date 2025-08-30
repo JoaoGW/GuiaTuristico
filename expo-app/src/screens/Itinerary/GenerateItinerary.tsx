@@ -40,7 +40,7 @@ export function GenerateItinerary() {
   const [proceedAnyway, setProceedAnyway] = useState(false);
   const [tags, setTags] = useState('');
   const [location, setLocation] = useState('');
-  // const [time, setTime] = useState('');
+  const [time, setTime] = useState('');
   const [weather, setWeather] = useState('');
   
   const navigation = useNavigation<AuthNavigationProp>();
@@ -68,7 +68,7 @@ export function GenerateItinerary() {
     // Prompt a ser enviado para o GPT
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
                     interesses do usuário: ${tags}. 
-                    Além disso, o usuário está localizado em: ${location} e o clima atual é: ${weather}.
+                    Além disso, o usuário está localizado em: ${location} e o clima atual é ${weather} e agora são ${time}.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;
@@ -164,6 +164,19 @@ export function GenerateItinerary() {
     }
   
     fetchWeather();
+  }, []);
+
+  // Pega a hora atual e joga na variavel Time
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setTime(`${hours}:${minutes}`);
+    };
+  
+    updateTime(); // set initially
+
   }, []);
 
   const handleConfirmYes = () => {
