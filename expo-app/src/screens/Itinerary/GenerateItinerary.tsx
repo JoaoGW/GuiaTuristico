@@ -68,7 +68,8 @@ export function GenerateItinerary() {
     // Prompt a ser enviado para o GPT
     const prompt = `Gere recomendações de um roteiro turístico, leve em consideração os seguintes 
                     interesses do usuário: ${tags}. 
-                    Além disso, o usuário está localizado em: ${location} e o clima atual é ${weather} e agora são ${time}.
+                    Além disso, o usuário está localizado em: ${location} e ficará por 5 dias, com um orçamento de R$500 por dia.
+                    O clima atual é ${weather} e agora são ${time}.
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;
