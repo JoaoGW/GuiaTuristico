@@ -73,7 +73,7 @@ export function GenerateItinerary() {
                     Dispense colocar "Com base nos interesses" e coisas similares. 
                     Fale sobre o que fazer em cada dia e não escreva nada além disso.
                     Formate os dias em formato de lista por dia.`;
-
+  
     // DEBUG (remover depois)
     console.log('Prompt para IA:', prompt);
 
@@ -148,19 +148,22 @@ export function GenerateItinerary() {
   useEffect(() => {
     async function fetchWeather() {
       const loc = await Location.getCurrentPositionAsync({});
+      const weatherApi = process.env.WEATHER;
   
       try {
         const response = await fetch(
-          `http://<COLOCAR A API AQUI>/api/weather?latitude=${loc.coords.latitude}&longitude=${loc.coords.longitude}`
+          `http://api.weatherapi.com/v1/current.json?key=${weatherApi}&q=${loc.coords.latitude},${loc.coords.longitude}&aqi=no`
         );
+        console.log("response: ",response);
         const data = await response.json();
+        console.log("data: ",data);
         if (data && data.current && data.current.condition) {
           setWeather(`${data.current.temp_c}°C, ${data.current.condition.text}`);
         } else {
-          setWeather('Dados de clima indisponíveis');
+          setWeather('[Dados de clima indisponíveis]');
         }
       } catch (error) {
-        setWeather('Erro ao buscar clima');
+        setWeather('[Erro ao buscar clima]');
       }
     }
   
