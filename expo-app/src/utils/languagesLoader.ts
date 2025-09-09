@@ -1,16 +1,12 @@
 import data from "@data/languages.json";
 
 const imageMap: { [key: string]: any } = { 
-    "museu.png": require("@assets/museu.png"),
-    "nightclub.png": require("@assets/nightclub.png"),
-    "eventos.png": require("@assets/eventos.png"),
-    "monumentos.png": require("@assets/monumentos.png"),
-    "church.png": require("@assets/church.png"),
-    "park.png": require("@assets/park.png"),
-    "cachoeiras.png": require("@assets/cachoeiras.png"),
-    "ciencias.png": require("@assets/ciencias.png"),
-    "cultura.png": require("@assets/cultura.png"),
-    "comida.png": require("@assets/comida.png"),
+    "inglaterra.png": require("@assets/Flags/flagInglaterra.webp"),
+    "portugal.png": require("@assets/Flags/flagPortugal.webp"),
+    "espanha.png": require("@assets/Flags/flagEspanha.webp"),
+    "franca.png": require("@assets/Flags/flagFranca.webp"),
+    "italia.png": require("@assets/Flags/flagItalia.webp"),
+    "japao.png": require("@assets/Flags/flagJapao.webp"),
   };
 
 /**
@@ -36,9 +32,10 @@ export const loadImage = (imageName: string) => {
  */
 export const loadLanguages = async () => {
     try {
-      return data.map((item: { id: string; name: string;}) => ({
+      return data.map((item: { id: string; name: string; image:string}) => ({
         id: Number(item.id),
-        name: item.name
+        name: item.name,
+        image: loadImage(item.image)
       }));
     } catch (error) {
       console.error("Erro ao carregar linguas", error);

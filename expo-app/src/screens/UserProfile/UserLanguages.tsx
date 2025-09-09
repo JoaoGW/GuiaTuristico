@@ -14,6 +14,7 @@ import { utilsSetSelectedLanguages, utilsGetSelectedLanguages } from '@utils/sel
 interface Languages {
   id: number;
   name: string;
+  image: any;
 }
 
 export function UserLanguages() {
@@ -49,16 +50,11 @@ export function UserLanguages() {
       </Center>
       <FlatList
         data={languages}
-        numColumns={2}
         keyExtractor={(item) => item.id.toString()}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <VStack space="md" px={6} mt={4} mb={4}>
             <View flexDirection='row'>
-              <Text fontSize="$xl" fontWeight="$bold" color="$black" mt={6} ml={5}>
-                Destinos Populares
-              </Text>
             </View>
           </VStack>
         }
