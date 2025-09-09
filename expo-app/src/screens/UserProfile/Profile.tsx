@@ -41,6 +41,7 @@ export function Profile(){
 
   return(
     <View flex={1}>
+      {/* IMAGEM DE CIMA */}
       <Image source={ require('@assets/santiago_farellones.jpg') } w="100%" h={225} alt="Background do Fundo de Perfil" />
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
@@ -66,6 +67,7 @@ export function Profile(){
               </View>
               <Text fontSize="$sm">Favoritos</Text>
             </View>
+            
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 165 }}>
             <View 
@@ -83,6 +85,7 @@ export function Profile(){
               py={15}
               pl={20}
             >
+              {/* CAIXA INFORMACOES PESSOAIS */}
               <View flexDirection="column">
                 <View flexDirection="row" justifyContent="space-between">
                   <Text color="#2752B7" fontWeight="$semibold" fontSize="$lg" mb={15}>Informações Pessoais</Text>
@@ -90,24 +93,31 @@ export function Profile(){
                     <Edit size={21} color="#2752B7" style={{ marginRight: 20 }} />
                   </Pressable>
                 </View>
+                {/* nascimento + genero*/}
                 <View flexDirection="row" justifyContent="space-between" pr={15}>
                   <PersonalInfoProfile icon={ Cake } topic="Data de Nascimento" information="--/--/----" />
                   <PersonalInfoProfile icon={ VenusAndMars } topic="Gênero" information="Todos" style={{ marginLeft: 10 }} />
                 </View>
+                {/* relacionamento + profissao */}
                 <View flexDirection="row" justifyContent="space-between" pr={15}>
                   <PersonalInfoProfile icon={ ScanHeart } topic="Relacionamento" information="Solteiro" />
                   <PersonalInfoProfile icon={ BriefcaseBusiness } topic="Profissão" information="Viajante" style={{ marginLeft: 10 }} />
                 </View>
+                {/* email + telefone */}
                 <View flexDirection="row" justifyContent="space-between" pr={15}>
                   <PersonalInfoProfile icon={ Mail } topic="Email" information="teste@email.com" />
                   <PersonalInfoProfile icon={ Phone } topic="Telefone" information="+00 11 2233-4455" style={{ marginLeft: 10 }} />
                 </View>
               </View>
             </View>
-            <PersonalInfoPreferences icon={ Globe } preferenceTitle="Idiomas" choices="Português, Inglês, Francês" functionality={ () => {} } style={{ marginTop: 10 }} />
+            {/* IDIOMAS */}
+            <PersonalInfoPreferences icon={ Globe } preferenceTitle="Idiomas" choices="Português, Inglês, Francês" functionality={ () => navigation.navigate('UserLanguages') } style={{ marginTop: 10 }}  />
+            {/* LOCAIS */}
             <PersonalInfoPreferences icon={ MapPin } preferenceTitle="Locais" choices="São Paulo, Brasília, Paris" functionality={ () => {} } style={{ marginTop: 10 }} />
+            {/* INTERESSES */}
             <PersonalInfoPreferences icon={ MessageCircleHeart } preferenceTitle="Interesses" choices="Comida, Templos, Natureza, Museus" functionality={ () => navigation.navigate('UserPreferences') } style={{ marginTop: 10 }} />
             
+            {/* ABA CONFIGURAÇÕES */}
             <View flexDirection="column">
               <Text color="#2752B7" fontWeight="$semibold" fontSize="$lg" mt={20} mb={10} px={20}>Configurações</Text>
               <PersonalInfoSettings icon={ Crown } settingsTitle="Gerenciar Assinatura" functionality={ () => navigation.navigate("ManagePremiumPlan") } />

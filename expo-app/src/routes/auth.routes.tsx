@@ -5,6 +5,7 @@ import { Home } from "@screens/HomePage/Home";
 import { Profile } from "@screens/UserProfile/Profile";
 import { EditProfile } from "@screens/UserProfile/EditProfile";
 import { UserPreferences } from "@screens/UserProfile/UserPreferences";
+import { UserLanguages } from "@screens/UserProfile/UserLanguages";
 import { GenerateItinerary } from "@screens/Itinerary/GenerateItinerary";
 import { AIChat } from "@screens/AIChat/AIChat";
 import { AIVoiceChat } from "@screens/AIChat/AIVoiceChat";
@@ -32,6 +33,7 @@ type AuthStackParamList = {
   EditProfile: undefined;
   GenerateItinerary: undefined;
   UserPreferences: undefined;
+  UserLanguages: undefined;
   AIChat: { chatId?: string, topic?: string } | undefined;
   AIVoiceChat: undefined;
   AIMascotIntroduction: undefined;
@@ -134,6 +136,11 @@ export function AuthRoute() {
       <Stack.Screen 
         name="UserPreferences" 
         component={ UserPreferences }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="UserLanguages" 
+        component={ UserLanguages }
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
