@@ -127,7 +127,7 @@ export function AIChat() {
         return { temperature: "--", condition: "--" };
       }
       const { latitude, longitude } = location.coords;
-      const response = await fetch(`http://192.168.0.81:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`http://SEU-IP-AQUI:3000/api/weather?latitude=${latitude}&longitude=${longitude}`);
       if (!response.ok) {
         console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
         return { temperature: "--", condition: "--" };
