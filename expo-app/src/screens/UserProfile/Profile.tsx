@@ -139,7 +139,7 @@ export function Profile(){
               <PersonalInfoSettings icon={ Crown } settingsTitle="Gerenciar Assinatura" functionality={ () => navigation.navigate("ManagePremiumPlan") } />
               <PersonalInfoSettings icon={ CircleDollarSign } settingsTitle="Cotação" functionality={ () => {} } />
               <PersonalInfoSettings icon={ Moon } settingsTitle="Modo de Exibição" functionality={ () => setShowThemeModal(true) } />
-              <PersonalInfoSettings icon={ Bell } settingsTitle="Notificações" functionality={ () => {} } />
+              <PersonalInfoSettings icon={ Bell } settingsTitle="Notificações" functionality={ () => navigation.navigate("Notifications") } />
               <PersonalInfoSettings icon={ WifiOff } settingsTitle="Modo Offline" functionality={ () => {} } />
               <PersonalInfoSettings icon={ ShieldQuestion } settingsTitle="Privacidade" functionality={ () => {} } />
               <PersonalInfoSettings icon={ Info } settingsTitle="Informações" functionality={ () => {} } />
