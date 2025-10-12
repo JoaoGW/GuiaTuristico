@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import handler from '../../../expo-app/handler'; 
-import { initializeFirebaseApp } from '../../../expo-app/firebase';
+import handler from '../../handler'; 
+import { initializeFirebaseApp } from '../../firebase';
 
 require('dotenv').config();
 
