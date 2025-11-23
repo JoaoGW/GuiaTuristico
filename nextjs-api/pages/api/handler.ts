@@ -17,14 +17,15 @@ export async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     let body;
     if (typeof req.body === 'string') {
         try {
-        body = JSON.parse(req.body || '{}');
+            body = JSON.parse(req.body || '{}');
         } catch (err) {
-        return res.status(400).json({
-            ok: false,
-            error: 'Invalid JSON in request body',
-            details: err instanceof Error ? err.message : String(err),
-            timestamp: Date.now()
-        });
+        
+            return res.status(400).json({
+                ok: false,
+                error: 'Invalid JSON in request body',
+                details: err instanceof Error ? err.message : String(err),
+                timestamp: Date.now()
+            });
         }
     } else {
         body = req.body;

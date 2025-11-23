@@ -1,17 +1,24 @@
 // Endpoint /api que delega para o handler central e aplica CORS/erros.
 import type { NextApiRequest, NextApiResponse, NextApiHandler } from 'next'
 
+// Lista de domínios permitidos para CORS (ajuste para seu domínio em produção)
+const allowedOrigins = [
+  'https://seu-dominio.com', // Substitua pelo seu domínio de produção
+  'http://localhost:3000',   // Exemplo para desenvolvimento local
+];
+
 const allowedMethods = ['GET', 'POST'] as const
 type AllowedMethod = (typeof allowedMethods)[number]
 
-const handler: NextApiHandler = async (req, res) => {
-  res.status(200).json({ message: 'API funcionando!' });
-
+const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // CORS básico (ajuste para seu domínio em produção)
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
 
     if (req.method === 'OPTIONS') {
       return res.status(204).end()

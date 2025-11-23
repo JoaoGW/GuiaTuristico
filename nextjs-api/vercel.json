@@ -14,10 +14,10 @@
         "regions": ["gru1"]
         },
 
-    "pages/api/**/*.js": {
-        "memory": 1024,
-        "maxDuration": 60,
-        "regions": ["gru1"]
-    }
+        "pages/api/**/*.js": {
+            "memory": 1024,
+            "maxDuration": 60,
+            "regions": ["gru1"]
+        }
     }
 }
