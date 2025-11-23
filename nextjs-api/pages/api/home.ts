@@ -1,11 +1,12 @@
 // Endpoint /api que delega para o handler central e aplica CORS/erros.
 import type { NextApiRequest, NextApiResponse, NextApiHandler } from 'next'
-import handler from './handler'
 
 const allowedMethods = ['GET', 'POST'] as const
 type AllowedMethod = (typeof allowedMethods)[number]
 
-const apiHandler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler: NextApiHandler = async (req, res) => {
+  res.status(200).json({ message: 'API funcionando!' });
+
   try {
     // CORS básico (ajuste para seu domínio em produção)
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -30,4 +31,4 @@ const apiHandler: NextApiHandler = async (req: NextApiRequest, res: NextApiRespo
   }
 }
 
-export default apiHandler
+export default handler
