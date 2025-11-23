@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
 };
 
 module.exports = {
-  outputFileTracingRoot: __dirname,
+  output: 'standalone',
 };
 
 export default nextConfig;

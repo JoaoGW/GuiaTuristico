@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 export async function handleGet(_req: NextApiRequest, res: NextApiResponse) {
   // Ex.: cache leve para GET (pode ajustar conforme sua necessidade)
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300')
-  
+
   return res.status(200).json({
     ok: true,
     message: 'GET /api (via handler)',
@@ -13,14 +13,29 @@ export async function handleGet(_req: NextApiRequest, res: NextApiResponse) {
 }
 
 export async function handlePost(req: NextApiRequest, res: NextApiResponse) {
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body
 
-  return res.status(200).json({
-    ok: true,
-    message: 'POST /api (via handler)',
-    received: body ?? null,
-    timestamp: Date.now()
-  })
+    let body;
+    if (typeof req.body === 'string') {
+        try {
+        body = JSON.parse(req.body || '{}');
+        } catch (err) {
+        return res.status(400).json({
+            ok: false,
+            error: 'Invalid JSON in request body',
+            details: err instanceof Error ? err.message : String(err),
+            timestamp: Date.now()
+        });
+        }
+    } else {
+        body = req.body;
+    }
+    
+    return res.status(200).json({
+        ok: true,
+        message: 'POST /api (via handler)',
+        received: body ?? null,
+        timestamp: Date.now()
+    })
 }
 
 // Handler principal: delega por método. Expanda com PUT/DELETE quando precisar.

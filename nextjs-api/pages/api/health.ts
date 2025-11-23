@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export default function health(req: NextApiRequest, res: NextApiResponse) {
-  res.setHeader('access-control-allow-origin', '*') // Em produção, prefira liberar só seu domínio
+  res.setHeader('Access-Control-Allow-Origin', '*') // Em produção, prefira liberar só seu domínio
   
   if (req.method === 'OPTIONS') 
     return res.status(204).end()
