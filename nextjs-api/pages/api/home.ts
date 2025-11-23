@@ -1,6 +1,6 @@
 // Endpoint /api que delega para o handler central e aplica CORS/erros.
 import type { NextApiRequest, NextApiResponse, NextApiHandler } from 'next'
-import handler from '../api/handler'
+import handler from './handler'
 
 const allowedMethods = ['GET', 'POST'] as const
 type AllowedMethod = (typeof allowedMethods)[number]
