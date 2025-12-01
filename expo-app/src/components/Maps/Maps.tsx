@@ -59,7 +59,7 @@ export const Maps = forwardRef<MapView, MapsProps>((props, ref) => {
 
       try {
         const response = await fetch(
-          `http://192.168.0.81:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
+          `http://SEU-IP-AQUI:3000/api/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
         );
 
         if (!response.ok) {
