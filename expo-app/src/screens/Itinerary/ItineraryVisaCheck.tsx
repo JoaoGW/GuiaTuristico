@@ -41,7 +41,7 @@ export function ItineraryVisaCheck(){
       try{
         const originCode = getCountryCode(itineraryData.originCountry);
         setLastCheckedCountryCode(currentCountry);
-        const response = await fetch(`http://SEU-IP-AQUI:3000/api/passportVisa?origin=${originCode}&destination=${currentCountry}`);
+        const response = await fetch(`http://192.168.0.81:3000/api/passportVisa?origin=${originCode}&destination=${currentCountry}`);
 
         if(!response.ok){
           throw new Error("Failed to fetch Visa Information");

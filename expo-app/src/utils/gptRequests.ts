@@ -8,13 +8,13 @@
  * @throws Will throw an error if the request fails or the response is not successful.
  *
  * @remarks
- * - Ensure that the API endpoint (`http://SEU-IP-AQUI:3000/api/generateItinerary`) is accessible.
+ * - Ensure that the API endpoint (`http://192.168.0.81:3000/api/generateItinerary`) is accessible.
  * - If the response status is 429, it indicates that the quota limit has been reached.
  * - Logs relevant information to the console in case of errors or specific response statuses.
  */
 export const generateItinerary = async (prompt: string) => {
   try {
-    const response = await fetch(`http://SEU-IP-AQUI:3000/api/generateItinerary`, {
+    const response = await fetch(`http://192.168.0.81:3000/api/generateItinerary`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,13 +47,13 @@ export const generateItinerary = async (prompt: string) => {
  * @throws Will throw an error if the API request fails or the response status is not OK.
  *
  * @remarks
- * - Ensure that the API endpoint (`http://SEU-IP-AQUI:3000/api/justchat`) is correctly configured.
+ * - Ensure that the API endpoint (`http://192.168.0.81:3000/api/justchat`) is correctly configured.
  * - If the API returns a 429 status code, it indicates that the quota limit has been reached.
  * - Logs relevant error messages to the console for debugging purposes.
  */
 export const generateChatAnswers = async (prompt: string) => {
   try {
-    const response = await fetch(`http://SEU-IP-AQUI:3000/api/justchat`, {
+    const response = await fetch(`http://192.168.0.81:3000/api/justchat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
