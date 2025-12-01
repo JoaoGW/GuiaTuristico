@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SwaggerAccordion from "@/components/SwaggerAccordion";
+//import SwaggerAccordion from "@/components/SwaggerAccordion";
 
 export default function Home() {
   return (
@@ -7,7 +7,7 @@ export default function Home() {
       <main className="flex flex-col gap-[32px] w-full">        
         <h1 className="text-3xl font-bold mt-10 mb-5 text-left">Documentação APIs - EZ Trip AI</h1>
         <section className="w-full">
-          <SwaggerAccordion />
+          {/* <SwaggerAccordion /> */}
         </section>
       </main>
       <footer className="mt-20 flex gap-[24px] flex-wrap items-center justify-center">
