@@ -16,6 +16,7 @@ import { AIChatMenu } from "@screens/AIChat/AIChatMenu";
 import { MapsExpanded } from "@screens/HomePage/MapsExpanded";
 import { Notifications } from "@screens/HomePage/Notifications";
 import { DestinationDetails } from "@screens/HomePage/DestinationDetails";
+import { RecommendedDestinations } from "@screens/HomePage/RecommendedDestinations";
 import { PremiumPlans } from "@screens/Premium/PremiumPlans";
 import { WelcomePremiumPlan } from "@screens/Premium/WelcomePremiumPlan";
 import { ManagePremiumPlan } from "@screens/Premium/ManagePremiumPlan";
@@ -49,6 +50,7 @@ type AuthStackParamList = {
   OptionsManagePremiumPlan: undefined,
   PremiumPlans: undefined,
   Profile: undefined,
+  RecommendedDestinations: undefined,
   Settings: undefined,
   UserPreferences: CreatingItinerary,
   WelcomePremium: undefined
@@ -64,14 +66,6 @@ function ScreenWrapper({ children }: { children: React.ReactNode }) {
       {children}
       <NavigationBar />
     </>
-  );
-}
-
-function HomeWithNavBar() {
-  return (
-    <ScreenWrapper>
-      <Home />
-    </ScreenWrapper>
   );
 }
 
@@ -136,7 +130,7 @@ export function AuthRoute() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen 
         name="Home"
-        component={ HomeWithNavBar } 
+        component={ Home } 
         options={{ animation: 'none' }}
       />
       <Stack.Screen 
@@ -212,6 +206,11 @@ export function AuthRoute() {
       <Stack.Screen 
         name="DestinationDetail" 
         component={ DestinationDetails }
+        options={{ animation: 'none' }}
+      />
+      <Stack.Screen 
+        name="RecommendedDestinations" 
+        component={ RecommendedDestinations }
         options={{ animation: 'none' }}
       />
       <Stack.Screen 

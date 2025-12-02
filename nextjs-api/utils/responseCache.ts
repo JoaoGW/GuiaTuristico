@@ -83,7 +83,7 @@ export class ResponseCache {
     // 1. Verificar respostas pré-definidas primeiro
     for (const [key, response] of this.predefinedResponses) {
       if (this.calculateSimilarity(normalizedQuery, key) >= this.SIMILARITY_THRESHOLD) {
-        console.log(`✅ Cache hit (predefinido): "${query}" → "${key}"`);
+        //DEBUG: console.log(`Cache hit (predefinido): "${query}" → "${key}"`);
         return response;
       }
     }
@@ -101,12 +101,12 @@ export class ResponseCache {
       // Verificar similaridade
       if (this.calculateSimilarity(normalizedQuery, this.normalizeText(cached.query)) >= this.SIMILARITY_THRESHOLD) {
         cached.useCount++;
-        console.log(`✅ Cache hit (dinâmico): "${query}" → "${cached.query}" (usado ${cached.useCount}x)`);
+        //DEBUG: console.log(`Cache hit (dinâmico): "${query}" → "${cached.query}" (usado ${cached.useCount}x)`);
         return cached.response;
       }
     }
     
-    console.log(`❌ Cache miss: "${query}"`);
+    console.log(`Cache miss: "${query}"`);
     return null;
   }
 
@@ -116,7 +116,7 @@ export class ResponseCache {
     const normalizedQuery = this.normalizeText(query);
     for (const key of this.predefinedResponses.keys()) {
       if (this.calculateSimilarity(normalizedQuery, key) >= this.SIMILARITY_THRESHOLD) {
-        console.log(`⚠️ Não armazenando no cache: muito similar a resposta pré-definida`);
+        //DEBUG: console.log(`Não armazenando no cache: muito similar a resposta pré-definida`);
         return;
       }
     }
@@ -134,7 +134,7 @@ export class ResponseCache {
       useCount: 1
     });
     
-    console.log(`💾 Resposta armazenada no cache: "${query}"`);
+    //DEBUG: console.log(`Resposta armazenada no cache: "${query}"`);
   }
 
   // Limpar entradas antigas do cache
@@ -155,7 +155,7 @@ export class ResponseCache {
       this.cache.delete(entries[i][0]);
     }
     
-    console.log(`🧹 Cache limpo: ${toRemove} entradas removidas`);
+    //DEBUG: console.log(`Cache limpo: ${toRemove} entradas removidas`);
   }
 
   // Estatísticas do cache
@@ -171,7 +171,7 @@ export class ResponseCache {
   // Limpar todo o cache
   clear(): void {
     this.cache.clear();
-    console.log('🗑️ Cache completamente limpo');
+    //DEBUG: console.log('Cache completamente limpo');
   }
 }
 

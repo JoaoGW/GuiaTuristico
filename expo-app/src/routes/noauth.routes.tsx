@@ -3,16 +3,16 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { LoginScreen } from "@screens/Credentials/Login";
 import { SignUpScreen } from "@screens/Credentials/SignUp";
+import { ForgotPasswordScreen } from "@screens/Credentials/ForgotPassword";
 import { Introduction } from "@screens/Presentations/Introduction";
-import { Welcome } from "@screens/Presentations/Welcome";
 
 const Stack = createNativeStackNavigator();
 
 type NoAuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
+  ForgotPassword: undefined;
   Introduction: undefined;
-  Welcome: { name: string, email: string, photo: string };
 }
 
 export type NoAuthNavigationProp = NativeStackNavigationProp<NoAuthStackParamList>;
@@ -23,7 +23,7 @@ export function NoAuthRoute(){
       <Stack.Screen name="Introduction" component={ Introduction } />
       <Stack.Screen name="Login" component={ LoginScreen }/>
       <Stack.Screen name="SignUp" component={ SignUpScreen }/>
-      <Stack.Screen name="Welcome" component={ Welcome } />
+      <Stack.Screen name="ForgotPassword" component={ ForgotPasswordScreen }/>
     </Stack.Navigator>
   )
 }

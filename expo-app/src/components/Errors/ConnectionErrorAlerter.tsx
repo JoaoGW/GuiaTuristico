@@ -101,7 +101,7 @@ export function ConnectionErrorAlerter({ showModal, setShowModal }: ConnectionEr
               navigation.navigate("Home");
             }}
           >
-            <ButtonText>Voltar ao Início</ButtonText>
+            <ButtonText>Vou verificar a conexão!</ButtonText>
           </Button>
         </ModalFooter>
       </ModalContent>

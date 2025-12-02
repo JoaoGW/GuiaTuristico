@@ -8,17 +8,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
 import { LibreBodoni_700Bold } from '@expo-google-fonts/libre-bodoni/700Bold';
 
-import { 
-  Button, 
+import {
+  Button,
   ButtonText,
-  View, 
-  Text, 
-  FormControl, 
-  FormControlLabel, 
-  FormControlLabelText, 
+  View,
+  Text,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
   Input,
   InputField,
   FormControlHelper,
+  FormControlHelperText,
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText
@@ -26,30 +27,20 @@ import {
 
 import { IconButton } from '@components/Buttons/IconButton';
 import { Loading } from '@components/Loading/Loading';
-import { ButtonIconImageLeft } from '@components/Buttons/ButtonIconImageLeft';
 
-import { ArrowLeft, CircleAlert } from 'lucide-react-native';
+import { ArrowLeft, CircleAlert, Mail } from 'lucide-react-native';
 
-import GoogleLogo from '@assets/Enterprises/Google/google-icon.svg';
-
-import { handleGoogleSignIn } from '@services/login/googleLogin';
+import { sendPasswordReset } from '@services/login/passwordReset';
 import { validateEmail } from '@utils/validators';
 
-import { useAuth } from '@contexts/AuthContext';
-
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
-import { signInUser } from '@services/login/emailLogin';
 
-export function LoginScreen() {
+export function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string>('');
-  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const [isSending, setIsSending] = useState<boolean>(false);
 
-  const { login } = useAuth();
   const navigation = useNavigation<NoAuthNavigationProp>();
-
   const fontsLoaded = useFonts({ LibreBodoni_700Bold });
 
   // Fixa o background na primeira renderização para não mudar durante digitação
@@ -64,43 +55,35 @@ export function LoginScreen() {
     return possibleBackgrounds[randomIndex];
   }, []);
 
-  const handleSubmit = () => {
-    // Limpa erros anteriores
+  const handleSubmit = async () => {
     setEmailError('');
-    setPasswordError('');
-
-    let hasError = false;
 
     // Valida email
     const emailValidation = validateEmail(email);
     if (!emailValidation.isValid) {
       setEmailError(emailValidation.error || '');
-      hasError = true;
-    }
-
-    // Valida senha (apenas se não está vazia)
-    if (!password || password.length === 0) {
-      setPasswordError('Senha é obrigatória');
-      hasError = true;
-    }
-
-    // Se houver erros, não prossegue
-    if (hasError) {
       return;
     }
 
-    // Prossegue com o login
-    setIsAuthenticating(true);
-    signInUser(email, password, navigation, setIsAuthenticating);
-  }
+    setIsSending(true);
+    const success = await sendPasswordReset(email);
+    setIsSending(false);
 
-  if(fontsLoaded){
+    if (success) {
+      // Volta para tela de login após envio
+      setTimeout(() => {
+        navigation.goBack();
+      }, 2000);
+    }
+  };
+
+  if (fontsLoaded) {
     return (
       <View flex={1}>
         <StatusBar barStyle="light-content" backgroundColor="#000" />
-        <Image 
-          source={ backgroundImage } 
-          style={{ 
+        <Image
+          source={backgroundImage}
+          style={{
             position: 'absolute',
             top: 0,
             left: 0,
@@ -108,22 +91,30 @@ export function LoginScreen() {
             bottom: 0,
             width: '100%',
             height: '100%'
-          }} 
+          }}
           alt=''
         />
         <View style={{ flex: 1 }}>
           <SafeAreaView>
             <View flexDirection='row' alignItems='center' justifyContent='space-between' p={15}>
-              <IconButton buttonBgColor='transparent' icon={ArrowLeft} iconColor='white' iconSize='xl' buttonFunctionality={() => navigation.goBack()} />
+              <IconButton 
+                buttonBgColor='transparent' 
+                icon={ArrowLeft} 
+                iconColor='white' 
+                iconSize='xl' 
+                buttonFunctionality={() => navigation.goBack()} 
+              />
               <View flexDirection='row' alignItems='center'>
-                <Text color='$white' mr={10} size='sm' fontWeight="$semibold">Novo por aqui?</Text>
-                <Button bgColor='#8a8a9d72' size='sm' onPress={() => navigation.navigate('SignUp')}>
-                  <ButtonText>Criar Conta</ButtonText>
+                <Text color='$white' mr={10} size='sm'>Lembrou a senha?</Text>
+                <Button bgColor='#8a8a9d72' size='sm' onPress={() => navigation.navigate('Login')}>
+                  <ButtonText>Entrar</ButtonText>
                 </Button>
               </View>
             </View>
           </SafeAreaView>
-          <Text textAlign='center' color='$white' fontFamily='LibreBodoni_700Bold' fontSize="$4xl" my={40}>EZ TRIP AI</Text>
+          <Text textAlign='center' color='$white' fontFamily='LibreBodoni_700Bold' fontSize="$4xl" my={40}>
+            EZ TRIP AI
+          </Text>
           <View
             bgColor='#ffffffae'
             w="90%"
@@ -144,10 +135,17 @@ export function LoginScreen() {
             p={20}
             zIndex={1}
           >
-            <Text fontSize="$2xl" fontWeight="$bold" color='$black' my={15}>Bem-Vindo de Volta!</Text>
-            <Text fontSize="$lg" color='$black' mb={20}>Insira suas credenciais para continuar</Text>
+            <View alignItems='center' mb={20}>
+              <Mail size={60} color="#336df6" />
+            </View>
+            <Text fontSize="$2xl" fontWeight="$bold" color='$black' my={15}>
+              Esqueceu sua Senha?
+            </Text>
+            <Text fontSize="$md" color='$gray600' mb={20} textAlign='center' px={20}>
+              Não se preocupe! Digite seu email abaixo e enviaremos instruções para redefinir sua senha.
+            </Text>
             <FormControl
-              isInvalid={!!emailError || !!passwordError}
+              isInvalid={!!emailError}
               size="lg"
               isDisabled={false}
               isReadOnly={false}
@@ -160,9 +158,9 @@ export function LoginScreen() {
               <Input my={1} borderColor={emailError ? '$error500' : '#8a8a8a'}>
                 <InputField
                   type="text"
-                  placeholder="Email"
-                  value={ email }
-                  onChangeText={ (text) => {
+                  placeholder="Seu email cadastrado"
+                  value={email}
+                  onChangeText={(text) => {
                     setEmail(text);
                     if (emailError) setEmailError('');
                   }}
@@ -171,35 +169,15 @@ export function LoginScreen() {
                 />
               </Input>
               <FormControlHelper>
+                <FormControlHelperText>
+                  {emailError ? '' : 'Enviaremos um link para este email'}
+                </FormControlHelperText>
               </FormControlHelper>
               {emailError ? (
                 <FormControlError>
-                  <FormControlErrorIcon as={ CircleAlert } />
-                  <FormControlErrorText>
-                    { emailError }
-                  </FormControlErrorText>
-                </FormControlError>
-              ) : null}
-              <FormControlLabel>
-                <FormControlLabelText mt={10}>Senha</FormControlLabelText>
-              </FormControlLabel>
-              <Input my={1} borderColor={passwordError ? '$error500' : '#8a8a8a'}>
-                <InputField
-                  type="password"
-                  placeholder="Senha"
-                  value={ password }
-                  onChangeText={ (text) => {
-                    setPassword(text);
-                    if (passwordError) setPasswordError('');
-                  }}
-                  autoCapitalize="none"
-                />
-              </Input>
-              {passwordError ? (
-                <FormControlError>
                   <FormControlErrorIcon as={CircleAlert} />
                   <FormControlErrorText>
-                    { passwordError }
+                    {emailError}
                   </FormControlErrorText>
                 </FormControlError>
               ) : null}
@@ -209,8 +187,8 @@ export function LoginScreen() {
                   w="100%"
                   borderRadius={25}
                   size="xl"
-                  onPress={ handleSubmit }
-                  disabled={ isAuthenticating ? true : false }
+                  onPress={handleSubmit}
+                  disabled={isSending}
                   style={{
                     shadowColor: "#000",
                     shadowOffset: {
@@ -222,50 +200,20 @@ export function LoginScreen() {
                     elevation: 4,
                   }}
                 >
-                  <ButtonText color="#FFF">Continuar</ButtonText>
+                  <ButtonText color="#FFF">
+                    {isSending ? 'Enviando...' : 'Enviar Link de Recuperação'}
+                  </ButtonText>
                 </Button>
               </View>
             </FormControl>
-            <Button
-              bgColor="transparent"
-              size="lg"
-              onPress={ () => navigation.navigate('ForgotPassword') }
-              disabled={ isAuthenticating ? true : false }
-            >
-              <ButtonText fontWeight="$medium" color="#000">Esqueceu sua senha?</ButtonText>
-            </Button>
-            <View flexDirection='row' justifyContent='space-evenly' mt={15} mb={25} alignItems='center'>
-              <View borderBottomWidth={.7} borderColor='$gray' w="22.5%"></View>
-              <Text mx={10}>Faça login com</Text>
-              <View borderBottomWidth={.7} borderColor='$gray' w="22.5%"></View>
-            </View>
-            <View width="100%" alignItems="center" mt={10}>
-              <ButtonIconImageLeft
-                icon={ GoogleLogo }
-                iconWidth={30}
-                iconHeight={30}
-                textContent='Google'
-                buttonSize='xl'
-                action={ () => handleGoogleSignIn(setIsAuthenticating, navigation) }
-                iconStyles={{
-                  marginRight: 15
-                }}
-                styles={{
-                  borderWidth: .6,
-                  borderRadius: 10,
-                  width: '80%',
-                  textAlign: 'center',
-                  alignSelf: 'center',
-                  borderColor: "black",
-                  marginBottom: 20
-                }}
-              />
-            </View>
+            <Text fontSize="$sm" color='$gray600' mt={30} textAlign='center' px={30}>
+              Lembre-se de verificar sua caixa de spam se não encontrar o email.
+            </Text>
           </View>
         </View>
       </View>
     );
-  }else{
+  } else {
     return (
       <View flex={1}>
         <StatusBar barStyle="light-content" backgroundColor="#000" />

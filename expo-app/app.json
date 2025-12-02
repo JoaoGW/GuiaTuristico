@@ -116,7 +116,17 @@
     "extra": {
       "eas": {
         "projectId": "080ff03d-b4c0-4408-9c17-8b2bd0672c24"
-      }
+      },
+      "firebaseApiKey": "${FIREBASE_API_KEY}",
+      "firebaseAuthDomain": "${FIREBASE_AUTH_DOMAIN}",
+      "firebaseProjectId": "${FIREBASE_PROJECT_ID}",
+      "firebaseStorageBucket": "${FIREBASE_STORAGE_BUCKET}",
+      "firebaseMessagingSenderId": "${FIREBASE_MESSAGING_SENDER_ID}",
+      "firebaseAppId": "${FIREBASE_APP_ID}",
+      "firebaseMeasurementId": "${FIREBASE_MEASUREMENT_ID}",
+      "androidClientId": "${ANDROID_CLIENT_ID}",
+      "iosClientId": "${IOS_CLIENT_ID}",
+      "webClientId": "${WEB_CLIENT_ID}"
     }
   }
 }
