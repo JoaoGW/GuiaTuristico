@@ -12,7 +12,7 @@
   "dependencies": {
     "formidable": "^3.5.4",
     "lightningcss": "^1.30.1",
-    "next": "^15.5.7",
+    "next": "^16.3.5",
     "openai": "^4.98.0",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
