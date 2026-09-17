@@ -183,7 +183,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 Responda à pergunta do turista de forma útil e prática:`;
 
       completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-5.6-luna',
         messages: [
           {
             role: 'system',
@@ -218,7 +218,7 @@ Responda à pergunta do turista de forma útil e prática:`;
       },
       usage: {
         transcriptionModel: 'whisper-1',
-        chatModel: 'gpt-3.5-turbo',
+        chatModel: 'gpt-5.6-luna',
         totalTokens: completion?.usage?.total_tokens || 0,
         usedCache: usedCache,
         cacheStats: responseCache.getStats()

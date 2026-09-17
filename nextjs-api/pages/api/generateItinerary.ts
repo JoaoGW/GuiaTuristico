@@ -9,7 +9,7 @@ export default async function generateItineraryHandler(req: NextApiRequest, res:
 
     try {
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-5.6-luna',
         messages: [{ role: 'assistant', content: prompt }],
         max_tokens: 3334,
         temperature: 0.75

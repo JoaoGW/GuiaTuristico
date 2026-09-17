@@ -29,7 +29,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/voiceChat",
       summary: "Chat por voz unificado",
-      description: "Endpoint unificado que combina transcrição de áudio (Whisper) + resposta da IA (GPT-3.5-turbo) em uma única chamada. Inclui sistema de cache inteligente para reduzir custos com a OpenAI.",
+      description: "Endpoint unificado que combina transcrição de áudio (Whisper) + resposta da IA (GPT-5.6-luna) em uma única chamada. Inclui sistema de cache inteligente para reduzir custos com a OpenAI.",
       parameters: [
         { name: "audio", type: "file", required: true, description: "Arquivo de áudio (máx. 2MB, ~15 segundos). Formatos: WAV, MP3, M4A, etc." }
       ],
@@ -68,7 +68,7 @@ export default function SwaggerAccordion() {
       method: "POST", 
       path: "/api/chat",
       summary: "Chat com IA (texto)",
-      description: "Endpoint de chat baseado em texto usando OpenAI GPT-3.5-turbo. Integrado com sistema de cache inteligente para otimizar custos e performance.",
+      description: "Endpoint de chat baseado em texto usando OpenAI GPT-5.6-luna. Integrado com sistema de cache inteligente para otimizar custos e performance.",
       parameters: [
         { name: "message", type: "string", required: true, description: "Mensagem ou pergunta para a IA sobre turismo" }
       ],
@@ -117,7 +117,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Gera um itinerário personalizado usando OpenAI GPT-3.5-turbo baseado nas preferências pessoais setadas pelo usuário, localização desejada e budget máximo estipulado.",
+      description: "Gera um itinerário personalizado usando OpenAI GPT-5.6-luna baseado nas preferências pessoais setadas pelo usuário, localização desejada e budget máximo estipulado.",
       parameters: [
         { name: "prompt", type: "string", required: true, description: "Prompt com preferências e detalhes da viagem desejada" }
       ],
@@ -172,7 +172,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/justchat",
       summary: "Chat simples com IA",
-      description: "Endpoint de chat simples usando OpenAI GPT-3.5-turbo para conversas gerais sobre turismo",
+      description: "Endpoint de chat simples usando OpenAI GPT-5.6-luna para conversas gerais sobre turismo",
       parameters: [
         { name: "prompt", type: "string", required: true, description: "Mensagem ou pergunta para a IA" }
       ],

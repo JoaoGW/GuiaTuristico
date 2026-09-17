@@ -9,7 +9,7 @@ export default async function JustChatHandler(req: NextApiRequest, res: NextApiR
 
     try {
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-5.6-luna',
         messages: [{ role: 'assistant', content: prompt }],
         max_tokens: 500,
         temperature: 0.5
