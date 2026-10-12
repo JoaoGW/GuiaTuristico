@@ -13,8 +13,8 @@ if (Constants.appOwnership !== 'expo') {
 if (Constants.appOwnership !== 'expo' && GoogleSignin) {
   GoogleSignin.configure({
     scopes: ['email', 'profile'],
-    webClientId: process.env.WEB_CLIENT_ID,
-    iosClientId: process.env.IOS_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
     profileImageSize: 150
   });
 }

@@ -12,7 +12,7 @@ if (!isExpoGo) {
     mobileAds()
       .setRequestConfiguration({
         maxAdContentRating: MaxAdContentRating.PG,
-        tagForChildDirectedTreatment: true,
+        tagForChildDirectedTreatment: false,
         tagForUnderAgeOfConsent: true,
         testDeviceIdentifiers: ['EMULATOR'],
       })

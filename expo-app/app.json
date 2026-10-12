@@ -94,7 +94,8 @@
       "expo-tracking-transparency",
       "@react-native-community/datetimepicker",
       "expo-sharing",
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-audio"
     ],
     "ios": {
       "supportsTablet": true,

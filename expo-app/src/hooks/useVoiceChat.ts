@@ -1,6 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  useAudioRecorder,
+} from 'expo-audio';
 import { voiceService } from '../services/voiceService';
+import { VoiceConfig } from '../config/voiceConfig';
 import type { VoiceState, VoiceMessage } from '../../@types/VoiceTypes';
+
+const recordingOptions = {
+  ...RecordingPresets.HIGH_QUALITY,
+  isMeteringEnabled: true,
+  sampleRate: VoiceConfig.recording.sampleRate,
+  numberOfChannels: VoiceConfig.recording.numberOfChannels,
+  bitRate: VoiceConfig.recording.bitRate,
+  android: {
+    ...RecordingPresets.HIGH_QUALITY.android,
+    outputFormat: 'mpeg4' as const,
+    audioEncoder: 'aac' as const,
+  },
+};
 
 export const useVoiceChat = () => {
   const [voiceState, setVoiceState] = useState<VoiceState>({
@@ -15,13 +35,17 @@ export const useVoiceChat = () => {
 
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [recordingStartTime, setRecordingStartTime] = useState<number>(0);
+  const recorder = useAudioRecorder(recordingOptions);
 
   // Cleanup quando o hook é desmontado
   useEffect(() => {
     return () => {
+      if (recorder.isRecording) {
+        void recorder.stop();
+      }
       voiceService.cleanup();
     };
-  }, []);
+  }, [recorder]);
 
   /**
    * Updates the current voice state with the provided partial updates.
@@ -100,21 +124,31 @@ export const useVoiceChat = () => {
     try {
       updateVoiceState({ error: null });
       
-      const success = await voiceService.startRecording();
-      if (success) {
-        setRecordingStartTime(Date.now());
-        updateVoiceState({ 
-          isRecording: true, 
-          transcribedText: '',
-          recordingDuration: 0 
-        });
-        return true;
-      } else {
-        updateVoiceState({ 
-          error: 'Não foi possível iniciar a gravação. Verifique as permissões.' 
+      const permission = await requestRecordingPermissionsAsync();
+      if (!permission.granted) {
+        updateVoiceState({
+          error: 'Não foi possível iniciar a gravação. Verifique as permissões.',
         });
         return false;
       }
+
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
+        interruptionMode: 'duckOthers',
+        shouldRouteThroughEarpiece: false,
+        shouldPlayInBackground: false,
+      });
+      await recorder.prepareToRecordAsync();
+      recorder.record({ forDuration: VoiceConfig.recording.maxDuration / 1000 });
+
+      setRecordingStartTime(Date.now());
+      updateVoiceState({
+        isRecording: true,
+        transcribedText: '',
+        recordingDuration: 0,
+      });
+      return true;
     } catch (error) {
       console.error('Erro ao iniciar gravação:', error);
       updateVoiceState({ 
@@ -122,7 +156,7 @@ export const useVoiceChat = () => {
       });
       return false;
     }
-  }, [updateVoiceState]);
+  }, [recorder, updateVoiceState]);
 
   
   /**
@@ -152,8 +186,14 @@ export const useVoiceChat = () => {
     try {
       updateVoiceState({ isRecording: false, isTranscribing: true });
       
-      const result = await voiceService.stopRecording();
-      if (result) {
+      await recorder.stop();
+      const status = recorder.getStatus();
+      const uri = recorder.uri ?? status.url;
+      if (uri) {
+        const result = {
+          uri,
+          duration: status.durationMillis,
+        };
         updateVoiceState({ 
           recordingUri: result.uri,
           recordingDuration: result.duration 
@@ -220,7 +260,7 @@ export const useVoiceChat = () => {
       });
       return null;
     }
-  }, [updateVoiceState, addMessage]);
+  }, [recorder, updateVoiceState, addMessage]);
 
   
   /**
