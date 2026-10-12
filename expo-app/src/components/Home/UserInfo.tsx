@@ -11,7 +11,6 @@ if (Constants.appOwnership !== 'expo') {
 
 export function UserInfo() {
   const [userName, setUserName] = useState<string>("");
-  const [userMail, setUserMail] = useState<string>("");
   const [userPhoto, setUserPhoto] = useState<string>("");
 
   useEffect(() => {
@@ -20,13 +19,11 @@ export function UserInfo() {
 
       if (isExpoGo) {
         setUserName("Usuário Expo Go");
-        setUserMail("expo@example.com");
         setUserPhoto("https://cdn.pixabay.com/photo/2022/07/16/04/19/biker-7324421_640.jpg");
       } else {
         try {
           const userInfo = await GoogleSignin.getCurrentUser();
           setUserName(userInfo?.user.name || "Usuário");
-          setUserMail(userInfo?.user.email || "email failed");
 
           const photoUrl = userInfo?.user.photo;
           if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim() !== '') {

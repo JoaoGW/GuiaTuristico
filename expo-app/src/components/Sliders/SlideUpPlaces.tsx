@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { FlatList, StyleSheet, Text } from "react-native";
 
 import { Box, Spinner, View } from "@gluestack-ui/themed";

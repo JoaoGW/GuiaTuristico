@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useRef } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { TouchableOpacity, Animated, Dimensions } from 'react-native';
 
 import { useNavigation, useNavigationState } from '@react-navigation/native';
@@ -17,6 +17,14 @@ type NavbarContextType = {
 };
 
 export const NavbarContext = createContext<NavbarContextType>({ currentActive: "Home", setCurrentActive: () => {} });
+
+const routeMapping: Record<string, string[]> = {
+  Home: ['Home', 'DestinationDetails', 'MapsExpanded', 'Notifications'],
+  GenerateItinerary: ['GenerateItineraryFeaturesIntroduction', 'GenerateItineraryMenu', 'GenerateItinerary', 'ItineraryMapMenu'],
+  AIChat: ['AIChat', 'AIChatMenu', 'AIMascotIntroduction', 'AIVoiceChat'],
+  Games: ['Games'],
+  Settings: ['Profile', 'EditProfile', 'Settings', 'UserPreferences'],
+};
 
 export function NavigationBar() {
   const navItems = [
@@ -58,8 +66,8 @@ export function NavigationBar() {
   const navigationState = useNavigationState((state) => state);
   const insets = useSafeAreaInsets();
   
-  const slideAnimation = useRef(new Animated.Value(0)).current;
-  const scaleAnimation = useRef(new Animated.Value(1)).current;
+  const [slideAnimation] = useState(() => new Animated.Value(0));
+  const [scaleAnimation] = useState(() => new Animated.Value(1));
   
   const { width } = Dimensions.get('window');
   const containerWidth = width - 32;
@@ -79,14 +87,6 @@ export function NavigationBar() {
     }
   };
 
-  const routeMapping: Record<string, string[]> = {
-    Home: ['Home', 'DestinationDetails', 'MapsExpanded', 'Notifications'],
-    GenerateItinerary: ['GenerateItineraryFeaturesIntroduction', 'GenerateItineraryMenu', 'GenerateItinerary', 'ItineraryMapMenu'],
-    AIChat: ['AIChat', 'AIChatMenu', 'AIMascotIntroduction', 'AIVoiceChat'],
-    Games: ['Games'],
-    Settings: ['Profile', 'EditProfile', 'Settings', 'UserPreferences'],
-  };
-
   useEffect(() => {
     if (navigationState && navigationState.routes) {
       const currentRoute = navigationState.routes[navigationState.index]?.name;
@@ -96,7 +96,7 @@ export function NavigationBar() {
           routeMapping[key].includes(currentRoute)
         );
 
-        if (mainRoute && mainRoute !== currentActive) {
+        if (mainRoute) {
           setCurrentActive(mainRoute);
         }
       }
@@ -109,9 +109,10 @@ export function NavigationBar() {
     return () => clearTimeout(loadTimeout);
   }, [navigationState]);
 
+  const targetPosition = activeIndex !== -1 ? getItemPosition(activeIndex) : null;
+
   useEffect(() => {
-    if (activeIndex !== -1 && isPageLoaded) {
-      const targetPosition = getItemPosition(activeIndex);
+    if (targetPosition !== null && isPageLoaded) {
       Animated.spring(slideAnimation, {
         toValue: targetPosition,
         useNativeDriver: false,
@@ -119,7 +120,7 @@ export function NavigationBar() {
         friction: 8,
       }).start();
     }
-  }, [activeIndex, availableWidth, isPageLoaded]);
+  }, [targetPosition, isPageLoaded, slideAnimation]);
 
   const handleItemPress = (item: typeof navItems[0]) => {
     Animated.sequence([

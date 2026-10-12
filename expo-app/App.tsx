@@ -1,11 +1,23 @@
-import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useState, useEffect, useCallback } from "react";
 import { StatusBar, useColorScheme, View } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
+import * as SplashScreen from 'expo-splash-screen';
+
+import { config } from "@gluestack-ui/config";
+import { GluestackUIProvider, StyledProvider } from "@gluestack-ui/themed";
+
+import { SplashLoading } from "@components/Loading/SplashLoading";
+
+import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
+import { AuthProvider } from '@contexts/AuthContext';
+import { ProvideUserNetInfo } from '@contexts/NetInfo';
+
+import { Routes } from '@routes/index';
 
 let mobileAds: any, getTrackingPermissionsAsync: any, PermissionStatus: any, requestTrackingPermissionsAsync: any;
 const isExpoGo = Constants.appOwnership === 'expo';
@@ -30,20 +42,6 @@ if (!isExpoGo) {
   PermissionStatus = { UNDETERMINED: 'undetermined' };
   requestTrackingPermissionsAsync = async () => ({ status: 'granted' });
 }
-
-import { useFonts, Poppins_300Light, Poppins_400Regular, Poppins_500Medium } from "@expo-google-fonts/poppins";
-import * as SplashScreen from 'expo-splash-screen';
-
-import { config } from "@gluestack-ui/config";
-import { GluestackUIProvider, StyledProvider } from "@gluestack-ui/themed";
-
-import { SplashLoading } from "@components/Loading/SplashLoading";
-
-import { ProvideUserLocation } from "@contexts/requestDeviceLocation";
-import { AuthProvider } from '@contexts/AuthContext';
-import { ProvideUserNetInfo } from '@contexts/NetInfo';
-
-import { Routes } from '@routes/index';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -87,7 +85,7 @@ export default function App() {
           if (status === PermissionStatus.UNDETERMINED) {
             await requestTrackingPermissionsAsync();
           }
-          const adapterStatuses = await mobileAds().initialize();
+          await mobileAds().initialize();
         } else {
           console.log('Skipping AdMob initialization in Expo GO');
         }

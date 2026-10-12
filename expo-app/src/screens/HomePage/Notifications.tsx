@@ -3,8 +3,8 @@ import { SafeAreaView, StyleSheet, StatusBar } from "react-native";
 
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, {
+  SharedValue,
   useAnimatedStyle,
-  useSharedValue,
 } from 'react-native-reanimated';
 
 import { Pressable } from "@gluestack-ui/themed";
@@ -18,32 +18,37 @@ import { useNotificationStore } from '@utils/notificationStore';
 import { Earth, Trash } from "lucide-react-native";
 import { TitleAndBack } from "@components/TitleBack";
 
-export function Notifications() {
-  const [showAlertDialog, setShowAlertDialog] = useState(false);
-  const [selectedNotificationId, setSelectedNotificationId] = useState<number | null>(null);
+type RightActionProps = {
+  drag: SharedValue<number>;
+  onPress: () => void;
+};
 
-  const { notifications, removeNotification } = useNotificationStore();
-
-  const drag = useSharedValue(0);
+function RightAction({ drag, onPress }: RightActionProps) {
   const styleAnimation = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: drag.value + 50 }],
     };
   });
 
-  const RightAction = (notificationId: number) => {
-    return (
-      <Pressable 
-        style={[styles.rightAction, styleAnimation]} 
-        onPress={() => {
-          setSelectedNotificationId(notificationId);
-          setShowAlertDialog(true);
-        }}
+  return (
+    <Reanimated.View style={[styles.rightAction, styleAnimation]}>
+      <Pressable
+        style={styles.rightActionButton}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel="Excluir notificação"
       >
         <Trash color="#FFF" size={30}/>
       </Pressable>
-    );
-  };
+    </Reanimated.View>
+  );
+}
+
+export function Notifications() {
+  const [showAlertDialog, setShowAlertDialog] = useState(false);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<number | null>(null);
+
+  const { notifications, removeNotification } = useNotificationStore();
 
   const handleDeleteNotification = () => {
     if (selectedNotificationId !== null) {
@@ -52,20 +57,6 @@ export function Notifications() {
       setSelectedNotificationId(null);
     }
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flexDirection: "row",
-    },
-    rightAction: {
-      backgroundColor: "red",
-      width: 100,
-      height: "95%",
-      marginLeft: -25,
-      justifyContent: "center",
-      alignItems: "center"
-    },
-  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -81,7 +72,15 @@ export function Notifications() {
                   containerStyle={ styles.container } 
                   friction={2} 
                   rightThreshold={40} 
-                  renderRightActions={ () => RightAction(data.id) }
+                  renderRightActions={ (_progress, drag) => (
+                    <RightAction
+                      drag={ drag }
+                      onPress={() => {
+                        setSelectedNotificationId(data.id);
+                        setShowAlertDialog(true);
+                      }}
+                    />
+                  ) }
                 >
                   <NotificationCard
                     id={ data.id }
@@ -108,3 +107,19 @@ export function Notifications() {
     </SafeAreaView>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+  },
+  rightAction: {
+    backgroundColor: "red",
+    width: 100,
+    height: "95%",
+    marginLeft: -25,
+  },
+  rightActionButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+});

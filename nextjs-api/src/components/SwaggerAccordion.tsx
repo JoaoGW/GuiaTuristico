@@ -9,7 +9,7 @@ interface ApiEndpoint {
   summary: string;
   description: string;
   parameters?: { name: string; type: string; required: boolean; description: string }[];
-  responses: { [key: string]: { description: string; example?: any } };
+  responses: { [key: string]: { description: string; example?: object } };
 }
 
 export default function SwaggerAccordion() {

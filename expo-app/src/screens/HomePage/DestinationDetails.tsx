@@ -1,4 +1,4 @@
-import { SafeAreaView, StatusBar, ScrollView } from "react-native";
+import { StatusBar, ScrollView } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import CountryFlag from "react-native-country-flag";

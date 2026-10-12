@@ -22,11 +22,11 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function AlertToast({ children }: { children: ReactNode }) {
   const toast = useToast();
-  const [toastId, setToastId] = useState<number | null>(null);
+  const [toastId, setToastId] = useState<string | null>(null);
 
   const handleToast = (message: string) => {
     if (!toastId || !toast.isActive(toastId)) {
-      const newId = Math.random();
+      const newId = Math.random().toString();
       setToastId(newId);
       toast.show({
         id: newId,

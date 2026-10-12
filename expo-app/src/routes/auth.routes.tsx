@@ -1,5 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from "@screens/HomePage/Home";
 import { Profile } from "@screens/UserProfile/Profile";
@@ -33,7 +32,7 @@ import { CreatingItinerary } from "../../@types/CreatingItinerary";
 import { VisaModelTypes } from "../../@types/VisaModelTypes";
 
 type AuthStackParamList = {
-  Home:  { name: string, email: string, photo: string },
+  Home: undefined,
   AIMascotIntroduction: undefined,
   AIChat: { chatId?: string, topic?: string } | undefined,
   AIChatMenu: undefined,
@@ -56,7 +55,7 @@ type AuthStackParamList = {
   Profile: undefined,
   RecommendedDestinations: undefined,
   Settings: undefined,
-  UserPreferences: CreatingItinerary,
+  UserPreferences: CreatingItinerary | undefined,
   WelcomePremium: undefined
 };
 

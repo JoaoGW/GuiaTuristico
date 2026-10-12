@@ -1,25 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useEffectEvent, useState, useRef, useCallback } from "react";
 
 import { Platform, SafeAreaView, StatusBar, Image as RNImage, TouchableOpacity } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback } from "react";
 
 import Constants from 'expo-constants';
-
-let RewardedAd: any, RewardedAdEventType: any, TestIds: any;
-const isExpoGo = Constants.appOwnership === 'expo';
-
-if (!isExpoGo) {
-  try {
-    const admobModule = require('react-native-google-mobile-ads');
-    RewardedAd = admobModule.RewardedAd;
-    RewardedAdEventType = admobModule.RewardedAdEventType;
-    TestIds = admobModule.TestIds;
-  } catch (error) {
-    console.log('AdMob module not available:', error);
-  }
-}
 
 import { Button, ButtonText, ScrollView, Text, View } from "@gluestack-ui/themed";
 
@@ -47,6 +32,20 @@ import { utilsGetSelectedTags } from "@utils/selectedTagsStore";
 
 import { ArrowLeft, ChevronRight, Coins, Crown, Heart, Plus } from "lucide-react-native";
 
+let RewardedAd: any, RewardedAdEventType: any, TestIds: any;
+const isExpoGo = Constants.appOwnership === 'expo';
+
+if (!isExpoGo) {
+  try {
+    const admobModule = require('react-native-google-mobile-ads');
+    RewardedAd = admobModule.RewardedAd;
+    RewardedAdEventType = admobModule.RewardedAdEventType;
+    TestIds = admobModule.TestIds;
+  } catch (error) {
+    console.log('AdMob module not available:', error);
+  }
+}
+
 type MenuItineraryTypes = {
   dialog: boolean,
   filters: "Planejados" | "Rascunhos" | "Passados"
@@ -67,12 +66,12 @@ export function GenerateItineraryMenu(){
   const [showActionsDialog, setShowActionsDialog] = useState<boolean>(false);
 
   const totalAdsRequired = 3;
+  // O bloqueio só vale enquanto há modal aberto ou anúncio em exibição.
+  const isAdActionDisabled = disableAdIsLoading && (showAdProgressModal || !!showAlertDialog || isAdPlaying);
   
   const navigation = useNavigation<AuthNavigationProp>();
   const rewardedRef = useRef<any>(null);
 
-  // Recurso essencial para fazer os dados dos roteiros funcionarem (Atenção!)
-  const itineraries = allUserItineraries as any[];
 
   // Configuração do AdMob
   const getCorrectIdForPlatform = () => {
@@ -82,9 +81,9 @@ export function GenerateItineraryMenu(){
     return process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID;
   }
 
+  // Sem módulo de anúncios, `rewardedRef` fica vazio e a visualização é simulada.
   const loadNewAd = () => {
     if (isExpoGo || !RewardedAd || !RewardedAdEventType || !TestIds) {
-      setAdLoaded(true);
       return;
     }
 
@@ -154,7 +153,7 @@ export function GenerateItineraryMenu(){
       };
     } catch (error) {
       console.log('Error loading ad:', error);
-      setAdLoaded(true);
+      rewardedRef.current = null;
     }
   };
 
@@ -324,18 +323,16 @@ export function GenerateItineraryMenu(){
     }
   };
 
-  useEffect(() => {
+  const onMount = useEffectEvent(() => {
     loadNewAd();
+  });
+
+  useEffect(() => {
+    onMount();
   }, []);
 
   useEffect(() => {
-    if (!showAdProgressModal && !showAlertDialog && !isAdPlaying) {
-      setDisableAdIsLoading(false);
-    }
-  }, [showAdProgressModal, showAlertDialog, isAdPlaying]);
-
-  useEffect(() => {
-    const ifEmptyRestoreDefaultUserTripData = async (value: Object) => {
+    const ifEmptyRestoreDefaultUserTripData = async (value: object) => {
       try {
         const jsonValue = JSON.stringify(value);
         await AsyncStorage.setItem('@eztripai_allUserTripItineraries', jsonValue);
@@ -401,7 +398,7 @@ export function GenerateItineraryMenu(){
             action={ handleNewItinerary }
             iconDimension={24}
             textColor="#FFF"
-            disabled={ disableAdIsLoading }
+            disabled={ isAdActionDisabled }
             loading={ !adLoaded }
             iconStyles={{ marginRight: 5, color: '#FFF' }}
             buttonStyles={{ backgroundColor: '#2752B7', borderRadius: 20 }}
@@ -439,7 +436,7 @@ export function GenerateItineraryMenu(){
                     action={ handleNewItinerary }
                     iconDimension={24}
                     textColor="#FFF"
-                    disabled={ disableAdIsLoading }
+                    disabled={ isAdActionDisabled }
                     loading={ !adLoaded }
                     iconStyles={{ marginRight: 5, color: '#FFF' }}
                     buttonStyles={{ backgroundColor: '#2752B7', borderRadius: 20 }}
@@ -721,7 +718,7 @@ export function GenerateItineraryMenu(){
                       action={ handleNewItinerary }
                       iconDimension={24}
                       textColor="#FFF"
-                      disabled={ disableAdIsLoading }
+                      disabled={ isAdActionDisabled }
                       loading={ !adLoaded }
                       iconStyles={{ marginRight: 5, color: '#FFF' }}
                       buttonStyles={{ backgroundColor: '#2752B7', borderRadius: 20 }}

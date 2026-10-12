@@ -1,4 +1,4 @@
-import { Contact } from "expo-contacts";
+import type { ExistingContact } from "expo-contacts";
 
 import { VisaModelTypes } from "./VisaModelTypes";
 
@@ -37,22 +37,22 @@ export type CreatingItinerary = {
   dateEnd: Date | string, 
   days: number, 
   continent?: string, 
-  countries?: Array<string>,
+  countries?: string[],
   visa?: boolean | VisaModelTypes["results"],
   originCountry: string,
-  contacts?: Contact[],
+  contacts?: ExistingContact[],
   budget: number,
   peopleQuantity: number,
   acconpanying: "Family" | "Friends",
   tripStyleTypes?: "Urban" | "Countryside",
-  tripStyle: Array<CreatingItinerary["tripStyleTypes"]>
+  tripStyle: CreatingItinerary["tripStyleTypes"][]
   vehiclesTypes?: "Car" | "Motorcycle" | "Foot" | "Train" | "Boat" | "Bicycle"
-  locomotionMethod: Array<CreatingItinerary["vehiclesTypes"]>,
+  locomotionMethod: CreatingItinerary["vehiclesTypes"][],
   specialWish: string,
-  visitPreferences?: Array<string>,
-  itinerary?: Object,
+  visitPreferences?: string[],
+  itinerary?: object,
   pixabayTags?: string,
-  images?: Object,
+  images?: object,
   status?: "Planejado" | "Rascunho" | "Passado",
   coverImage?: string,
   isNew?: boolean,

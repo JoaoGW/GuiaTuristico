@@ -4,16 +4,13 @@ import {
   Modal,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  Dimensions,
   Image,
   Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import * as Contacts from 'expo-contacts';
-import { Contact } from "expo-contacts";
 
 import { Calendar, DateData } from 'react-native-calendars';
 
@@ -44,7 +41,6 @@ export function ItineraryCreateDialog({ showAlertDialog, setShowAlertDialog }: s
   const [itineraryTitle, setItineraryTitle] = useState<string>("");
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
-  const [showDatePickers, setShowDatePickers] = useState<boolean>(false);
   const [activeCalendar, setActiveCalendar] = useState<'start' | 'end' | null>(null);
   const [days, setDays] = useState<number>(1);
   const [selectedContinent, setSelectedContinent] = useState<string>("");
@@ -52,9 +48,8 @@ export function ItineraryCreateDialog({ showAlertDialog, setShowAlertDialog }: s
   const [originCountry, setOriginCountry] = useState<string>("");
   const [showOriginCountrySelector, setShowOriginCountrySelector] = useState<boolean>(false);
   const [includeContacts, setIncludeContacts] = useState<boolean>(false);
-  const [listContacts, setListContacts] = useState<Contact[]>([]);
-  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
-  const [showContacts, setShowContacts] = useState<boolean>(false);
+  const [listContacts, setListContacts] = useState<Contacts.ExistingContact[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<Contacts.ExistingContact[]>([]);
   const [showContinentSelector, setShowContinentSelector] = useState<boolean>(false);
   const [showCountrySelector, setShowCountrySelector] = useState<boolean>(false);
 
@@ -223,15 +218,13 @@ export function ItineraryCreateDialog({ showAlertDialog, setShowAlertDialog }: s
   const toggleContactSelection = () => {
     const newValue = !includeContacts;
     setIncludeContacts(newValue);
-    if (newValue) {
-      setShowContacts(true);
-    } else {
+    if (!newValue) {
       // Limpa os contatos selecionados quando desabilita a opção
       setSelectedContacts([]);
     }
   };
 
-  const handleContactSelection = (contact: Contact) => {
+  const handleContactSelection = (contact: Contacts.ExistingContact) => {
     setSelectedContacts(prev => {
       const isAlreadySelected = prev.some(c => c.id === contact.id);
       if (isAlreadySelected) {
@@ -242,7 +235,7 @@ export function ItineraryCreateDialog({ showAlertDialog, setShowAlertDialog }: s
     });
   };
 
-  const isContactSelected = (contact: Contact) => {
+  const isContactSelected = (contact: Contacts.ExistingContact) => {
     return selectedContacts.some(c => c.id === contact.id);
   };
 

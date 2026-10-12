@@ -2,7 +2,6 @@
   "extends": "expo/tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": "./",
     "paths": {
       "@assets/*": [
         "./src/assets/*"
@@ -35,10 +34,10 @@
         "./src/services/*"
       ],
       "@config/*": [
-        "./src/config"
+        "./src/config/*"
       ],
       "@hooks/*": [
-        "./src/hooks"
+        "./src/hooks/*"
       ]
     }
   }

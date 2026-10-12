@@ -67,7 +67,7 @@ export const UnlockProgressModal: React.FC<UnlockProgressModalProps> = ({
       progressWidth.setValue(0);
       pulseAnim.setValue(1);
     }
-  }, [visible, watchedAds]);
+  }, [animatedValue, progressWidth, pulseAnim, totalAds, visible, watchedAds]);
 
   const scaleValue = animatedValue.interpolate({
     inputRange: [0, 1],

@@ -16,9 +16,9 @@ type ButtonContent = {
   disabled?: boolean,
   loading?: boolean,
   buttonSize?: "xs" | "sm" | "md" | "lg" | "xl" | undefined,
-  iconStyles?: Object,
-  buttonStyles?: Object,
-  styles?: Object
+  iconStyles?: object,
+  buttonStyles?: object,
+  styles?: object
 }
 
 export function ButtonIconLeft({ textContent, buttonSize, icon: Icon, iconDimension, textColor, disabled, loading, action, iconStyles, buttonStyles, styles }: ButtonContent){

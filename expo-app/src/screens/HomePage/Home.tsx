@@ -55,24 +55,20 @@ const PlaceCard = ({ item }: { item: any }) => {
   const isIconFallback = hasNoPhoto && item.iconFallback;
   
   const [imageLoading, setImageLoading] = useState(!hasNoPhoto);
-  const [imageError, setImageError] = useState(false);
   const [currentImageUri, setCurrentImageUri] = useState(initialUri);
   const [usingIcon, setUsingIcon] = useState(isIconFallback);
 
-  useEffect(() => {
-    const noPhoto = item.img.uri.includes('placeholder') || item.img.uri.includes('Sem+Foto');
-    const uri = noPhoto && item.iconFallback ? item.iconFallback : item.img.uri;
-    const isIcon = noPhoto && item.iconFallback;
-    
-    setImageLoading(!noPhoto);
-    setImageError(false);
-    setCurrentImageUri(uri);
-    setUsingIcon(isIcon);
-  }, [item.img.uri, item.iconFallback]);
+  // Reinicia o estado da imagem quando o card passa a exibir outro lugar.
+  const [prevImageSource, setPrevImageSource] = useState({ uri: item.img.uri, iconFallback: item.iconFallback });
+  if (prevImageSource.uri !== item.img.uri || prevImageSource.iconFallback !== item.iconFallback) {
+    setPrevImageSource({ uri: item.img.uri, iconFallback: item.iconFallback });
+    setImageLoading(!hasNoPhoto);
+    setCurrentImageUri(initialUri);
+    setUsingIcon(isIconFallback);
+  }
 
   const handleImageError = () => {
     // DEBUG: console.log(`Erro ao carregar imagem de ${item.name}, usando ícone como fallback`);
-    setImageError(true);
     setImageLoading(false);
     
     // Usar o ícone como fallback se disponível
@@ -157,7 +153,7 @@ export function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentRoute, setCurrentRoute] = useState('Home');
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
-  const [loadingNearby, setLoadingNearby] = useState(false);
+  const [loadingNearby, setLoadingNearby] = useState(true);
   const [showConnectionError, setShowConnectionError] = useState(false);
   const [hasNearbyError, setHasNearbyError] = useState(false);
   const [storiesVisible, setStoriesVisible] = useState(false);
@@ -173,10 +169,6 @@ export function Home() {
       StatusBar.setBarStyle('light-content');
     }
   }, [drawerOpen]);
-
-  useEffect(() => {
-    fetchNearbyPlaces();
-  }, []);
 
   const handleOpenStories = (destination: any) => {
     setSelectedDestination(destination);
@@ -220,80 +212,83 @@ export function Home() {
     navigation.navigate('MapsExpanded', { places: placesForMap, loading: false });
   };
 
-  const fetchNearbyPlaces = async () => {
-    try {
-      setLoadingNearby(true);
-      setHasNearbyError(false);
-      const { status } = await Location.requestForegroundPermissionsAsync();
+  // Executa uma única vez ao montar a tela; `loadingNearby` já começa em true.
+  useEffect(() => {
+    const fetchNearbyPlaces = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
 
-      if (status !== 'granted') {
-        console.log('Permissão de localização negada');
-        setNearbyPlaces(popular);
-        setLoadingNearby(false);
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-
-      const response = await fetch(
-        `${API_URL}/googlePlacesApi?latitude=${latitude}&longitude=${longitude}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        if (status !== 'granted') {
+          console.log('Permissão de localização negada');
+          setNearbyPlaces(popular);
+          setLoadingNearby(false);
+          return;
         }
-      );
 
-      if (response.ok) {
-        const data = await response.json();
-        // DEBUG: console.log('Dados recebidos da API:', data.results?.length || 0, 'lugares');
-        
-        if (data.results && data.results.length > 0) {
-          const formattedPlaces = data.results.slice(0, 10).map((place: any, index: number) => {
-            // Obter URL da foto real do Google Places
-            let photoUrl = 'https://via.placeholder.com/160x230?text=Sem+Foto';
-            
-            if (place.photos && place.photos.length > 0 && place.photos[0].photo_url) {
-              photoUrl = place.photos[0].photo_url;
-              // DEBUG: console.log(`Lugar ${place.name} - URL da foto:`, photoUrl.substring(0, 80));
-            } else {
-              // DEBUG: console.log(`Lugar ${place.name} - SEM FOTO`);
-            }
-            
-            return {
-              id: `nearby-${index}`,
-              name: place.name,
-              img: { uri: photoUrl },
-              iconFallback: place.icon || null,
-              rating: place.rating || 0,
-              vicinity: place.vicinity || '',
-              geometry: place.geometry,
-              opening_hours: place.opening_hours,
-              open_now: place.opening_hours?.open_now || false,
-            };
-          });
-          setNearbyPlaces(formattedPlaces);
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        const response = await fetch(
+          `${API_URL}/googlePlacesApi?latitude=${latitude}&longitude=${longitude}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          // DEBUG: console.log('Dados recebidos da API:', data.results?.length || 0, 'lugares');
+          
+          if (data.results && data.results.length > 0) {
+            const formattedPlaces = data.results.slice(0, 10).map((place: any, index: number) => {
+              // Obter URL da foto real do Google Places
+              let photoUrl = 'https://via.placeholder.com/160x230?text=Sem+Foto';
+              
+              if (place.photos && place.photos.length > 0 && place.photos[0].photo_url) {
+                photoUrl = place.photos[0].photo_url;
+                // DEBUG: console.log(`Lugar ${place.name} - URL da foto:`, photoUrl.substring(0, 80));
+              } else {
+                // DEBUG: console.log(`Lugar ${place.name} - SEM FOTO`);
+              }
+              
+              return {
+                id: `nearby-${index}`,
+                name: place.name,
+                img: { uri: photoUrl },
+                iconFallback: place.icon || null,
+                rating: place.rating || 0,
+                vicinity: place.vicinity || '',
+                geometry: place.geometry,
+                opening_hours: place.opening_hours,
+                open_now: place.opening_hours?.open_now || false,
+              };
+            });
+            setNearbyPlaces(formattedPlaces);
+          } else {
+            setNearbyPlaces(popular);
+          }
         } else {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Erro na resposta da API:', response.status, errorData);
           setNearbyPlaces(popular);
         }
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Erro na resposta da API:', response.status, errorData);
-        setNearbyPlaces(popular);
+      } catch (error: any) {
+        console.error('Erro ao buscar lugares próximos:', error);
+        if (error.message === 'Network request failed') {
+          setShowConnectionError(true);
+          setHasNearbyError(true);
+        }
+        setNearbyPlaces([]);
+      } finally {
+        setLoadingNearby(false);
       }
-    } catch (error: any) {
-      console.error('Erro ao buscar lugares próximos:', error);
-      if (error.message === 'Network request failed' && !showConnectionError) {
-        setShowConnectionError(true);
-        setHasNearbyError(true);
-      }
-      setNearbyPlaces([]);
-    } finally {
-      setLoadingNearby(false);
-    }
-  };
+    };
+
+    fetchNearbyPlaces();
+  }, []);
 
   const navItems = [
     {
@@ -361,7 +356,7 @@ export function Home() {
       label: 'Configurações',
       action: () => {
         setCurrentRoute('Settings');
-        navigation.navigate('UserPreferences', {} as any);
+        navigation.navigate('UserPreferences');
         setDrawerOpen(false);
       }
     }

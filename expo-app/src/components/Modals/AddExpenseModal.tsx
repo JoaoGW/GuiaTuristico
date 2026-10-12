@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView as RNScrollView } from "react-native";
 
 import { Calendar } from 'react-native-calendars';
@@ -43,13 +43,17 @@ export function AddExpenseModal({
   const [date, setDate] = useState(defaultDate);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  useEffect(() => {
+  // Reaplica os valores padrão ao abrir o modal ou quando eles mudam com o modal aberto.
+  const resetKey = visible ? JSON.stringify([defaultTitle, defaultDescription, defaultDate]) : null;
+  const [appliedResetKey, setAppliedResetKey] = useState<string | null>(null);
+  if (resetKey !== appliedResetKey) {
+    setAppliedResetKey(resetKey);
     if (visible) {
       setTitle(defaultTitle);
       setDescription(defaultDescription);
       setDate(defaultDate);
     }
-  }, [visible, defaultTitle, defaultDescription, defaultDate]);
+  }
 
   const categories: ExpenseCategory[] = [
     "Transporte",

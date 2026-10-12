@@ -21,7 +21,7 @@ export const loadImage = (imageName: string) => {
 
 export const loadDestinations = async () => {
     try {
-      return data.map((item: { id: string; title: string; description: string; image: string }) => ({
+      return data.map((item: { id: number; title: string; description: string; image: string }) => ({
         id: Number(item.id),
         name: item.title,
         description: item.description,

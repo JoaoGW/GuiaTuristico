@@ -56,17 +56,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       usage: completion.usage
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erro ao gerar resposta do chat:', error);
 
-    if (error.status === 401) {
+    const status = error instanceof OpenAI.APIError ? error.status : undefined;
+
+    if (status === 401) {
       return res.status(500).json({
         error: 'Erro de autenticação',
         details: 'API key da OpenAI inválida ou expirada'
       });
     }
 
-    if (error.status === 429) {
+    if (status === 429) {
       return res.status(429).json({
         error: 'Limite de taxa excedido',
         details: 'Muitas requisições. Tente novamente em alguns segundos.'
@@ -76,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({
       error: 'Erro interno do servidor',
       details: 'Falha ao gerar resposta do chat',
-      message: error.message || 'Erro desconhecido'
+      message: (error instanceof Error && error.message) || 'Erro desconhecido'
     });
   }
 }

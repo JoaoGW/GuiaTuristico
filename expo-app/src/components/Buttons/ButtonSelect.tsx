@@ -12,7 +12,7 @@ type SelectButtonProps = {
   isSelected: boolean,
   objective: () => void,
   icon?: LucideIcon,
-  style?: Object
+  style?: object
 }
 
 export function ButtonSelect({ text, isSelected, objective, icon, style }: SelectButtonProps) {

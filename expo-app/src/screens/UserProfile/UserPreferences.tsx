@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FlatList, StatusBar } from 'react-native';
 
 import { Box, View, ButtonGroup, Button, ButtonText, Text, Spinner, Image } from "@gluestack-ui/themed";
@@ -27,10 +27,11 @@ export function UserPreferences() {
   const [tags, setTags] = useState<Tags[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [imagesLoadedSet, setImagesLoadedSet] = useState<Set<number>>(new Set());
+  // Só controla quando todas as imagens terminaram de carregar; não é exibido.
+  const loadedImageIds = useRef(new Set<number>());
 
   const navigation = useNavigation<AuthNavigationProp>();
-  const route = useRoute<RouteProp<{ params: CreatingItinerary }, 'params'>>();
+  const route = useRoute<RouteProp<{ params: CreatingItinerary | undefined }, 'params'>>();
   const itineraryData = route.params;
 
   const previousRouteName = useNavigationState((state) => {
@@ -55,19 +56,14 @@ export function UserPreferences() {
   }, []);
 
   const handleImageLoaded = (id: number) => {
-    setImagesLoadedSet(prevSet => {
-      if (prevSet.has(id)) return prevSet;
-      const newSet = new Set(prevSet);
-      newSet.add(id);
-      
-      if (newSet.size === tags.length) {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-      }
-      
-      return newSet;
-    });
+    if (loadedImageIds.current.has(id)) return;
+    loadedImageIds.current.add(id);
+
+    if (loadedImageIds.current.size === tags.length) {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
   };
 
   const toggleTagSelection = (tagName: string) => {
@@ -179,6 +175,9 @@ export function UserPreferences() {
                     utilsSetSelectedTags(selectedTags);
                     if (previousRouteName === "Profile") {
                       navigation.navigate("Profile");
+                    } else if (!itineraryData) {
+                      // Aberto pelo menu (sem roteiro em criação): apenas salva as preferências.
+                      navigation.goBack();
                     } else if (itineraryData.isSurpriseMode) {
                       // Modo Surpresa: pular checagem de visto e ir direto para o mapa
                       navigation.navigate("ItineraryMapMenu", { 

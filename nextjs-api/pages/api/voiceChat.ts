@@ -35,7 +35,7 @@ function validateAndFixWavFile(inputPath: string, outputPath: string): boolean {
 }
 
 // Função para tentar diferentes extensões na transcrição
-async function tryTranscriptionWithDifferentFormats(tempPath: string, originalName: string): Promise<string> {
+async function tryTranscriptionWithDifferentFormats(tempPath: string): Promise<string> {
   const formats = [
     { ext: 'm4a', mime: 'audio/m4a' },
     { ext: 'mp3', mime: 'audio/mp3' },
@@ -72,8 +72,8 @@ async function tryTranscriptionWithDifferentFormats(tempPath: string, originalNa
       console.log(`Sucesso com formato ${format.ext.toUpperCase()}`);
       return transcription as string;
       
-    } catch (error: any) {
-      console.log(`Falha com formato ${format.ext.toUpperCase()}:`, error?.message || error);
+    } catch (error: unknown) {
+      console.log(`Falha com formato ${format.ext.toUpperCase()}:`, (error instanceof Error && error.message) || error);
       const testPath = `${tempPath}.${format.ext}`;
       if (fs.existsSync(testPath)) fs.unlinkSync(testPath);
       continue;
@@ -107,10 +107,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       allowEmptyFiles: false,
     });
 
-    const { fields, files } = await new Promise<{ fields: any, files: any }>((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
+    const files = await new Promise<formidable.Files>((resolve, reject) => {
+      form.parse(req, (err, _fields, files) => {
         if (err) reject(err);
-        else resolve({ fields, files });
+        else resolve(files);
       });
     });
     
@@ -146,7 +146,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let transcription: string;
     try {
-      transcription = await tryTranscriptionWithDifferentFormats(tempPath, audioFile.originalFilename || 'recording');
+      transcription = await tryTranscriptionWithDifferentFormats(tempPath);
       
     } finally {
       // Limpar arquivo temporário original
@@ -162,7 +162,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Verificar cache primeiro
     let felipeResponse = responseCache.getCachedResponse(transcription);
-    let usedCache = !!felipeResponse;
+    const usedCache = !!felipeResponse;
     let completion;
     
     if (!felipeResponse) {
@@ -225,11 +225,14 @@ Responda à pergunta do turista de forma útil e prática:`;
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erro no processamento de voz:', error);
 
-    // Tratar diferentes tipos de erro
-    if (error.code === 'LIMIT_FILE_SIZE') {
+    const message = error instanceof Error ? error.message : undefined;
+    const status = error instanceof OpenAI.APIError ? error.status : undefined;
+
+    // O formidable sinaliza arquivo acima de maxFileSize com httpCode 413.
+    if (error instanceof Error && 'httpCode' in error && error.httpCode === 413) {
       return res.status(413).json({
         error: 'Arquivo muito grande',
         details: 'O arquivo deve ter no máximo 2MB (equivale a ~15 segundos)',
@@ -237,7 +240,7 @@ Responda à pergunta do turista de forma útil e prática:`;
       });
     }
 
-    if (error.message && (error.message.includes('Unrecognized file format') || error.message.includes('unsupported file format'))) {
+    if (message && (message.includes('Unrecognized file format') || message.includes('unsupported file format'))) {
       return res.status(400).json({
         error: 'Formato de arquivo não reconhecido pela OpenAI',
         details: 'O arquivo pode estar corrompido, ter formato inválido ou a extensão não corresponde ao conteúdo real',
@@ -245,14 +248,14 @@ Responda à pergunta do turista de forma útil e prática:`;
       });
     }
 
-    if (error.status === 401) {
+    if (status === 401) {
       return res.status(500).json({
         error: 'Erro de autenticação',
         details: 'API key da OpenAI inválida ou expirada'
       });
     }
 
-    if (error.status === 429) {
+    if (status === 429) {
       return res.status(429).json({
         error: 'Limite de taxa excedido',
         details: 'Muitas requisições. Tente novamente em alguns segundos.'
@@ -262,7 +265,7 @@ Responda à pergunta do turista de forma útil e prática:`;
     return res.status(500).json({
       error: 'Erro interno do servidor',
       details: 'Falha ao processar áudio e gerar resposta',
-      message: error.message || 'Erro desconhecido'
+      message: message || 'Erro desconhecido'
     });
   }
 }

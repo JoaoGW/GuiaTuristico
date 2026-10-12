@@ -3,10 +3,11 @@ import { Linking, StatusBar, SafeAreaView } from "react-native";
 import { View, Text, Button, ButtonText } from "@gluestack-ui/themed";
 
 import WelcomeIllustration from '@assets/Illustrations/Welcome/Welcome.svg';
-import { useAuth } from "@contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NoAuthNavigationProp } from "@routes/noauth.routes";
 
 export function Welcome(){
-  const { login } = useAuth();
+  const navigation = useNavigation<NoAuthNavigationProp>();
 
   return(
     <View flex={1} bgColor="#336df6">
@@ -26,7 +27,7 @@ export function Welcome(){
               borderRadius={25}
               size="xl"
               mb={10}
-              onPress={ login }
+              onPress={ () => navigation.navigate("Login") }
               style={{
                 shadowColor: "#000",
                 shadowOffset: {

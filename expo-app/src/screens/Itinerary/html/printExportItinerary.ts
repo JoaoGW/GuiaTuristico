@@ -7,13 +7,13 @@ type DayItineraryTypes = {
   day: number,
   date: string,
   location: string,
-  timeline: Array<{
+  timeline: {
     time: string,
     title: string,
     description: string,
     coordinates?: string,
     category: string
-  }>,
+  }[],
   suggestedActivities?: string[],
   pixabayTags?: string,
   images?: string[]

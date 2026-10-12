@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import Constants from 'expo-constants';
+
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../../firebase';
 import { NoAuthNavigationProp } from '@routes/noauth.routes';

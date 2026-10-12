@@ -9,7 +9,7 @@ import { AuthNavigationProp } from '@routes/auth.routes';
 import FelipeMascotPremium from '@assets/Mascot/Felipe_Mascot_GoPremium.svg';
 
 type GoPremiumTypes = {
-  styles?: Object
+  styles?: object
 }
 
 export function GoPremium({ styles }: GoPremiumTypes) {
@@ -18,7 +18,7 @@ export function GoPremium({ styles }: GoPremiumTypes) {
   return (
     <LinearGradient
       colors={['#b6e0c7', '#93deb4']}
-      style={{ padding: 20, borderRadius: 15, ...(styles as Object) }}
+      style={{ padding: 20, borderRadius: 15, ...(styles as object) }}
     >
       <View flexDirection="row">
         <View maxWidth="50%">

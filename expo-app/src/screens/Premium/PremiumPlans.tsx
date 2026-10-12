@@ -5,9 +5,9 @@ import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { View, Text, RadioGroup, Radio, RadioIndicator, RadioLabel, CircleIcon, RadioIcon, Button, ButtonIcon, ScrollView, ButtonText } from "@gluestack-ui/themed";
+import { View, Text, RadioGroup, Radio, RadioIndicator, RadioLabel, CircleIcon, RadioIcon, Button, ScrollView, ButtonText } from "@gluestack-ui/themed";
 
-import { Check, CircleCheckBig, X } from "lucide-react-native";
+import { Check, CircleCheckBig } from "lucide-react-native";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 

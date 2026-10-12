@@ -67,14 +67,6 @@ export const ProvideUserLocation = ({ children }: { children: React.ReactNode })
     getCurrentLocation();
   }, []);
 
-  let information = 'Waiting...';
-
-  if (errorMsg) {
-    information = errorMsg;
-  } else if (location) {
-    information = JSON.stringify(location);
-  }
-
   return(
     <LocationContext.Provider value={{ location, errorMsg }}>
       <AlertToast>

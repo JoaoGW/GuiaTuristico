@@ -24,19 +24,7 @@ export function ItineraryVisaCheck(){
   const navigation = useNavigation<AuthNavigationProp>();
   const route = useRoute<RouteProp<{ params: { itineraryData: CreatingItinerary, userPreferences: string[] } }, 'params'>>();
   const { itineraryData } = route.params;
-
-  // Verificação de segurança para garantir que os dados existem
-  if (!itineraryData || !itineraryData.originCountry) {
-    console.warn("Dados do itinerário não encontrados ou incompletos");
-    return (
-      <VisaModel
-        results="Unknown"
-        origin="ERROR"
-        destination={["ERROR"]}
-        action={ () => navigation.goBack() }
-      />
-    );
-  }
+  const hasItineraryData = !!itineraryData?.originCountry;
 
   useEffect(() => {
     const checkVisaInformation = async (currentCountry: string) => {
@@ -74,7 +62,7 @@ export function ItineraryVisaCheck(){
     }
 
     const checkAllCountries = async () => {
-      if (hasVisaIssueFound || !itineraryData.countries || itineraryData.countries.length === 0) {
+      if (!hasItineraryData || hasVisaIssueFound || !itineraryData.countries || itineraryData.countries.length === 0) {
         return;
       }
 
@@ -94,7 +82,20 @@ export function ItineraryVisaCheck(){
     };
 
     checkAllCountries();
-  }, [hasVisaIssueFound]);
+  }, [hasItineraryData, hasVisaIssueFound, itineraryData]);
+
+  // Verificação de segurança para garantir que os dados existem
+  if (!hasItineraryData) {
+    console.warn("Dados do itinerário não encontrados ou incompletos");
+    return (
+      <VisaModel
+        results="Unknown"
+        origin="ERROR"
+        destination={["ERROR"]}
+        action={ () => navigation.goBack() }
+      />
+    );
+  }
 
   return (
     <VisaModel

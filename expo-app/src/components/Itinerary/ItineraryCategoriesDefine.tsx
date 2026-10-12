@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
 
 import { 
@@ -22,9 +22,85 @@ type ItineraryCategoriesDefineTypes = {
   onSelectCategory: (category: string) => void
 }
 
+type AnimatedCardProps = {
+  children: ReactNode,
+  onPress: () => void,
+  colors: { primary: string, shadow: string, border: string },
+  delay?: number,
+  showModal: boolean,
+};
+
+function AnimatedCard({ children, onPress, colors, delay = 0, showModal }: AnimatedCardProps) {
+  const [cardScale] = useState(() => new Animated.Value(1));
+  const [cardOpacity] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    if (showModal) {
+      Animated.timing(cardOpacity, {
+        toValue: 1,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [showModal, cardOpacity, delay]);
+
+  const handlePressIn = () => {
+    Animated.spring(cardScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 150,
+      friction: 4,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(cardScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 150,
+      friction: 4,
+    }).start();
+  };
+
+  return (
+    <Animated.View
+      style={{
+        transform: [{ scale: cardScale }],
+        opacity: cardOpacity,
+      }}
+    >
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        accessibilityRole="button"
+        style={{
+          width: 150,
+          height: 120,
+          borderRadius: 20,
+          padding: 16,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.primary,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 2,
+          borderColor: colors.border,
+        }}
+      >
+        {children}
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCategory }: ItineraryCategoriesDefineTypes) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [scaleAnim] = useState(() => new Animated.Value(0));
+  const [fadeAnim] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (showModal) {
@@ -45,74 +121,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
       scaleAnim.setValue(0);
       fadeAnim.setValue(0);
     }
-  }, [showModal]);
-
-  const AnimatedCard = ({ children, onPress, colors, delay = 0 }: any) => {
-    const cardScale = useRef(new Animated.Value(1)).current;
-    const cardOpacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-      if (showModal) {
-        Animated.timing(cardOpacity, {
-          toValue: 1,
-          duration: 400,
-          delay,
-          useNativeDriver: true,
-        }).start();
-      }
-    }, [showModal]);
-
-    const handlePressIn = () => {
-      Animated.spring(cardScale, {
-        toValue: 0.95,
-        useNativeDriver: true,
-        tension: 150,
-        friction: 4,
-      }).start();
-    };
-
-    const handlePressOut = () => {
-      Animated.spring(cardScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 150,
-        friction: 4,
-      }).start();
-    };
-
-    return (
-      <Animated.View
-        style={{
-          transform: [{ scale: cardScale }],
-          opacity: cardOpacity,
-        }}
-      >
-        <Pressable
-          onPress={onPress}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          style={{
-            width: 150,
-            height: 120,
-            borderRadius: 20,
-            padding: 16,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: colors.primary,
-            shadowColor: colors.shadow,
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.3,
-            shadowRadius: 12,
-            elevation: 8,
-            borderWidth: 2,
-            borderColor: colors.border,
-          }}
-        >
-          {children}
-        </Pressable>
-      </Animated.View>
-    );
-  };
+  }, [showModal, scaleAnim, fadeAnim]);
 
   return (
     <AlertDialog isOpen={showModal} onClose={setShowModal}>
@@ -167,6 +176,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
           <AlertDialogBody px={20} py={20}>
             <View flexDirection="row" gap={12} flexWrap='wrap' justifyContent='center' ml={20}>
               <AnimatedCard
+                showModal={showModal}
                 delay={100}
                 onPress={ () => {
                   onSelectCategory("Ponto Turístico");
@@ -197,6 +207,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={200}
                 onPress={() => {
                   onSelectCategory("Gastronomia");
@@ -227,6 +238,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={300}
                 onPress={() => {
                   onSelectCategory("Hospedagem");
@@ -257,6 +269,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={400}
                 onPress={() => {
                   onSelectCategory("Vida Noturna");
@@ -287,6 +300,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={500}
                 onPress={() => {
                   onSelectCategory("Parques");
@@ -317,6 +331,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={600}
                 onPress={() => {
                   onSelectCategory("Shopping");
@@ -347,6 +362,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={700}
                 onPress={() => {
                   onSelectCategory("Cultura");
@@ -377,6 +393,7 @@ export function ItineraryCategoriesDefine({ showModal, setShowModal, onSelectCat
                 </Text>
               </AnimatedCard>
               <AnimatedCard
+                showModal={showModal}
                 delay={800}
                 onPress={() => {
                   onSelectCategory("Viagens");

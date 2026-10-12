@@ -1,5 +1,4 @@
 import {
-  Heading, 
   Icon, 
   Modal, 
   ModalBackdrop, 
@@ -26,12 +25,12 @@ import Animated, {
 
 import { X, WifiOff } from "lucide-react-native";
 
-type ConnectionErrorAlerter = {
+type ConnectionErrorAlerterProps = {
   showModal: boolean,
   setShowModal: (show: boolean) => void;
 }
 
-export function ConnectionErrorAlerter({ showModal, setShowModal }: ConnectionErrorAlerter) {
+export function ConnectionErrorAlerter({ showModal, setShowModal }: ConnectionErrorAlerterProps) {
   const navigation = useNavigation<AuthNavigationProp>();
 
   // Animação de pulse

@@ -26,12 +26,12 @@ Run the narrowest available check in the affected package:
 
 | Check | Command | Current baseline |
 | --- | --- | --- |
-| Lint (app) | `cd expo-app && npm run lint` | `expo lint` (ESLint 9, `eslint-config-expo`): 72 errors, 186 warnings |
-| Lint (API) | `cd nextjs-api && npm run lint` | ESLint 9, `eslint-config-next`: 10 errors, 2 warnings |
-| Type check (app) | `cd expo-app && npx tsc --noEmit` | fails with 1 error: `TS5101` (`baseUrl` deprecated in TypeScript 6) |
+| Lint (app) | `cd expo-app && npm run lint` | `expo lint` (ESLint 9, `eslint-config-expo`): 0 errors, 0 warnings |
+| Lint (API) | `cd nextjs-api && npm run lint` | ESLint 9, `eslint-config-next`: 0 errors, 0 warnings |
+| Type check (app) | `cd expo-app && npx tsc --noEmit` | passes |
 | Type check (API) | `cd nextjs-api && npx tsc --noEmit` | passes |
-| Expo diagnostics | `cd expo-app && npm run checkup` | `expo-doctor` |
+| Expo diagnostics | `cd expo-app && npm run checkup` | `npx expo-doctor` (needs network; known dependency findings in `AGENTS.md`) |
 | API build | `cd nextjs-api && npm run build` | type errors ignored by `ignoreBuildErrors` |
 | API manual check | `cd nextjs-api && npm run dev` | endpoints listed at `/` |
 
-All baseline lint and type errors are pre-existing (measured on 2026-10-12). Report new errors separately from the baseline and do not fix old ones unless asked; never disable rules to make lint pass. Use `npm run android` or `npm run ios` only when the changed platform and a local target are available. If a command is unavailable, fails because of unrelated existing work, or cannot run locally, say so and state what remains unverified.
+Lint and type checks are clean (measured on 2026-10-12), so any error or warning is new and must be fixed; never disable rules to make lint pass. Use `npm run android` or `npm run ios` only when the changed platform and a local target are available. If a command is unavailable, fails because of unrelated existing work, or cannot run locally, say so and state what remains unverified.

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { StyleSheet, Dimensions, FlatList, Alert, ScrollView as RNScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Modal, TextInput as RNTextInput } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -67,6 +67,38 @@ type DayItineraryTypes = {
   images?: string[]
 }
 
+function parseDate(dateInput: Date | string): Date {
+  if (typeof dateInput === 'string') {
+    const dateOnly = dateInput.split('T')[0];
+    const [year, month, day] = dateOnly.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  } else {
+    return new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate());
+  }
+}
+
+function weekDaysCalendarConstruction(dateStart: Date | string) {
+  const currentSelectedDate = parseDate(dateStart);
+  const weekdays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
+
+  return weekdays[currentSelectedDate.getDay()];
+}
+
+function getDatesBetween(startDate: Date | string, endDate: Date | string): Date[] {
+  const start = parseDate(startDate);
+  const end = parseDate(endDate);
+
+  const dates: Date[] = [];
+  let current = new Date(start);
+
+  while (current <= end) {
+    dates.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+}
+
 export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, setFirstLongitude, setSelectedDay, setCategoriesCounter }: ItinerarySliderProps) {
   const navigation = useNavigation<AuthNavigationProp>();
   const route = useRoute<RouteProp<{ params: { itineraryData: CreatingItinerary, userPreferences: string[], visaIssue: any } }, 'params'>>();
@@ -80,7 +112,13 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
   const { addFavoritePlace, isFavorite } = useFavoritePlaces();
   const { addExpense, expenses } = useExpenseControl();
 
-  const [allTripDays, setAllTripDays] = useState<CalendarDaysTypes[]>([]);
+  const allTripDays = useMemo<CalendarDaysTypes[]>(() => (
+    getDatesBetween(dateBegin, dateEnd).map((date, index) => ({
+      id: index.toString(),
+      numberOfDay: date.getDate(),
+      nameOfWeekday: weekDaysCalendarConstruction(date)
+    }))
+  ), [dateBegin, dateEnd]);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showCategories, setShowCategories] = useState<boolean>(false);
@@ -90,6 +128,15 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
   const [currentExpenseContext, setCurrentExpenseContext] = useState<{ title: string, description: string, date: string, location: string } | null>(null);
   const [editingTimelineIndex, setEditingTimelineIndex] = useState<number | null>(null);
   const [itineraryState, setItineraryState] = useState<DayItineraryTypes[]>(Array.isArray(itinerary) ? itinerary : []);
+
+  // Atualiza itineraryState quando itinerary muda
+  const [prevItinerary, setPrevItinerary] = useState(itinerary);
+  if (itinerary !== prevItinerary) {
+    setPrevItinerary(itinerary);
+    if (Array.isArray(itinerary)) {
+      setItineraryState(itinerary);
+    }
+  }
   const [showAddActivityModal, setShowAddActivityModal] = useState<boolean>(false);
   const [addActivityPosition, setAddActivityPosition] = useState<'before' | 'after' | 'move' | null>(null);
   const [newActivityData, setNewActivityData] = useState<{ time: string, title: string, description: string, category: string, coordinates: string }>({ time: '', title: '', description: '', category: '', coordinates: '0.0000,0.0000' });
@@ -471,7 +518,7 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
         `"${rowData.title}" foi adicionado à sua lista de locais favoritos.`,
         [{ text: "OK" }]
       );
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao adicionar aos favoritos:', error);
       Alert.alert(
         "Erro",
@@ -560,61 +607,6 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
     }
   };
 
-  function parseDate(dateInput: Date | string): Date {
-    if (typeof dateInput === 'string') {
-      const dateOnly = dateInput.split('T')[0];
-      const [year, month, day] = dateOnly.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    } else {
-      return new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate());
-    }
-  }
-
-  function weekDaysCalendarConstruction(dateStart: Date | string) {
-    const currentSelectedDate = parseDate(dateStart);
-    const weekdays = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
-
-    return weekdays[currentSelectedDate.getDay()];
-  }
-
-  function getDatesBetween(startDate: Date | string, endDate: Date | string): Date[] {
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
-
-    const dates: Date[] = [];
-    let current = new Date(start);
-
-    while (current <= end) {
-      dates.push(new Date(current));
-      current.setDate(current.getDate() + 1);
-    }
-
-    return dates;
-  }
-
-  function loadAllDayElements() {
-    const possibleDays = getDatesBetween(dateBegin, dateEnd);
-
-    const daysArray = possibleDays.map((date, index) => ({
-      id: index.toString(),
-      numberOfDay: date.getDate(),
-      nameOfWeekday: weekDaysCalendarConstruction(date)
-    }));
-
-    setAllTripDays(daysArray);
-  }
-
-  useEffect(() => {
-    loadAllDayElements();
-  }, [dateBegin, dateEnd]);
-
-  // Atualiza itineraryState quando itinerary muda
-  useEffect(() => {
-    if (Array.isArray(itinerary)) {
-      setItineraryState(itinerary);
-    }
-  }, [itinerary]);
-
   // Conta as categorias existentes no itinerário quando ele é carregado
   useEffect(() => {
     if (!Array.isArray(itineraryState) || itineraryState.length === 0) return;
@@ -666,7 +658,7 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
     });
 
     setCategoriesCounter(categoryCount);
-  }, [itineraryState]);
+  }, [itineraryState, setCategoriesCounter]);
 
   useEffect(() => {
     if (setSelectedDay) {
@@ -694,9 +686,9 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
       setFirstLatitude(firstLatitude);
       setFirstLongitude(firstLongitude);
     }
-  }, [itinerary]);
+  }, [itinerary, setFirstLatitude, setFirstLongitude]);
 
-  const renderDetail = useCallback((rowData: TimelineItemTypes, index: number) => {
+  const renderDetail = (rowData: TimelineItemTypes, index: number) => {
     return (
       <View flex={1} px={2}>
         <Text
@@ -852,7 +844,7 @@ export function SlideUpItinerary({ isLoading, hideBackButton, setFirstLatitude, 
         }
       </View>
     );
-  }, [isEditing, itineraryState, selectedDayIndex, title, expenses, isFavorite]);
+  };
 
   const getTimelineDataForDay = (dayIndex: number) => {  
     if (!itineraryState || !Array.isArray(itineraryState)) {

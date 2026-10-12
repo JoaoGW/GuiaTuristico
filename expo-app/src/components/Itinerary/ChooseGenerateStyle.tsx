@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Animated, Pressable } from 'react-native';
+import { ReactNode, useEffect, useState } from 'react';
+import { Animated, Pressable, StyleProp, ViewStyle } from 'react-native';
 
 import { 
   AlertDialog, 
@@ -10,7 +10,6 @@ import {
   AlertDialogBody,
   View, 
   Text, 
-  Button,
   Icon,
   CloseIcon
 } from '@gluestack-ui/themed';
@@ -24,9 +23,93 @@ type ChooseGenerateStyleTypes = {
   onRandomItinerary?: () => void
 }
 
+type AnimatedCardProps = {
+  children: ReactNode,
+  onPress: () => void,
+  colors: { primary: string, shadow: string, border: string },
+  delay?: number,
+  showModal: boolean,
+  styles?: StyleProp<ViewStyle>,
+  pressableStyles?: StyleProp<ViewStyle>,
+};
+
+function AnimatedCard({ children, onPress, colors, delay = 0, styles, pressableStyles, showModal }: AnimatedCardProps) {
+  const [cardScale] = useState(() => new Animated.Value(1));
+  const [cardOpacity] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    if (showModal) {
+      Animated.timing(cardOpacity, {
+        toValue: 1,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [showModal, cardOpacity, delay]);
+
+  const handlePressIn = () => {
+    Animated.spring(cardScale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 150,
+      friction: 4,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(cardScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 150,
+      friction: 4,
+    }).start();
+  };
+
+  return (
+    <Animated.View
+      style={[{
+          flex: 1,
+          transform: [{ scale: cardScale }],
+          opacity: cardOpacity,
+        },
+        styles
+      ]}
+    >
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        accessibilityRole="button"
+        style={[
+          {
+            flex: 1,
+            aspectRatio: 1,
+            borderRadius: 20,
+            padding: 16,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.primary,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.3,
+            shadowRadius: 12,
+            elevation: 8,
+            borderWidth: 2,
+            borderColor: colors.border,
+          },
+          pressableStyles
+        ]}
+      >
+        {children}
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export function ChooseGenerateStyle({ showModal, setShowModal, onDefinedItinerary, onRandomItinerary }: ChooseGenerateStyleTypes) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [scaleAnim] = useState(() => new Animated.Value(0));
+  const [fadeAnim] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (showModal) {
@@ -47,80 +130,7 @@ export function ChooseGenerateStyle({ showModal, setShowModal, onDefinedItinerar
       scaleAnim.setValue(0);
       fadeAnim.setValue(0);
     }
-  }, [showModal]);
-
-  const AnimatedCard = ({ children, onPress, colors, delay = 0, styles, pressableStyles }: any) => {
-    const cardScale = useRef(new Animated.Value(1)).current;
-    const cardOpacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-      if (showModal) {
-        Animated.timing(cardOpacity, {
-          toValue: 1,
-          duration: 400,
-          delay,
-          useNativeDriver: true,
-        }).start();
-      }
-    }, [showModal]);
-
-    const handlePressIn = () => {
-      Animated.spring(cardScale, {
-        toValue: 0.95,
-        useNativeDriver: true,
-        tension: 150,
-        friction: 4,
-      }).start();
-    };
-
-    const handlePressOut = () => {
-      Animated.spring(cardScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 150,
-        friction: 4,
-      }).start();
-    };
-
-    return (
-      <Animated.View
-        style={[{
-            flex: 1,
-            transform: [{ scale: cardScale }],
-            opacity: cardOpacity,
-          },
-          styles
-        ]}
-      >
-        <Pressable
-          onPress={onPress}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          style={[
-            {
-              flex: 1,
-              aspectRatio: 1,
-              borderRadius: 20,
-              padding: 16,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.primary,
-              shadowColor: colors.shadow,
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3,
-              shadowRadius: 12,
-              elevation: 8,
-              borderWidth: 2,
-              borderColor: colors.border,
-            },
-            pressableStyles
-          ]}
-        >
-          {children}
-        </Pressable>
-      </Animated.View>
-    );
-  };
+  }, [showModal, scaleAnim, fadeAnim]);
 
   return (
     <AlertDialog isOpen={showModal} onClose={setShowModal}>
@@ -191,6 +201,7 @@ export function ChooseGenerateStyle({ showModal, setShowModal, onDefinedItinerar
           <AlertDialogBody px={20} py={20}>
             <View flexDirection="row" gap={12}>
               <AnimatedCard
+                showModal={showModal}
                 delay={100}
                 onPress={() => onDefinedItinerary && onDefinedItinerary()}
                 colors={{
@@ -228,6 +239,8 @@ export function ChooseGenerateStyle({ showModal, setShowModal, onDefinedItinerar
               </AnimatedCard>
               
               <AnimatedCard
+              
+                showModal={showModal}
                 delay={200}
                 onPress={() => onRandomItinerary && onRandomItinerary()}
                 colors={{
@@ -265,6 +278,7 @@ export function ChooseGenerateStyle({ showModal, setShowModal, onDefinedItinerar
               </AnimatedCard>
             </View>
             <AnimatedCard
+              showModal={showModal}
                 delay={200}
                 onPress={ () => {} }
                 colors={{

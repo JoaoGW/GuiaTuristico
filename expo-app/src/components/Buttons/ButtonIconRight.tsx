@@ -1,6 +1,5 @@
 import {
   Button,
-  ButtonSpinner,
   ButtonIcon,
   ButtonGroup,
   ButtonText
@@ -11,7 +10,7 @@ import { ArrowLeft } from "lucide-react-native";
 type ButtonContent = {
   textContent: string,
   action: () => void,
-  styles?: Object
+  styles?: object
 }
 
 export function ButtonIconRight({ textContent, action, styles }: ButtonContent) {

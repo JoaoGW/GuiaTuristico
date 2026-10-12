@@ -39,7 +39,7 @@ type GenerateItineraryPreferencesFormTypes = {
   acconpanying: "Family" | "Friends",
   tripStyle: "Urban" | "Countryside",
   vehicleLocomotionTypes: "Car" | "Motorcycle" | "Foot" | "Train" | "Boat" | "Bicycle",
-  locomotionMethod: Array<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"]>,
+  locomotionMethod: GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"][],
   specialWish: string
 }
 
@@ -47,9 +47,9 @@ export function GenerateItineraryPreferences() {
   const [budget, setBudget] = useState<GenerateItineraryPreferencesFormTypes["budget"]>(0);
   const [peopleQuantity, setPeopleQuantity] = useState<GenerateItineraryPreferencesFormTypes["peopleQuantity"]>(0);
   const [acconpanyingType, setAcconpanyingType] = useState<GenerateItineraryPreferencesFormTypes["acconpanying"]>();
-  const [tripStyle, setTripStyle] = useState<Array<"Urban" | "Countryside">>([]);
+  const [tripStyle, setTripStyle] = useState<("Urban" | "Countryside")[]>([]);
   const [specialWish, setSpecialWish] = useState<GenerateItineraryPreferencesFormTypes["specialWish"]>("");
-  const [locomotionMethod, setLocomotionMethod] = useState<Array<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"]>>([]);
+  const [locomotionMethod, setLocomotionMethod] = useState<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"][]>([]);
 
   // Estados para controlar erros de validação
   const [errors, setErrors] = useState<{

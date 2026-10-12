@@ -1,16 +1,11 @@
-import { useNavigation } from "@react-navigation/native";
-
 import { Pressable, Text, View } from "@gluestack-ui/themed";
 
-import { AuthNavigationProp } from "@routes/auth.routes";
 
 import { NotificationsTypes } from "../../../@types/NotificationsTypes";
 
 import { ArrowRightToLine } from "lucide-react-native";
 
 export function NotificationCard({ routeIcon: RouteIcon, title, description }: NotificationsTypes){
-  const navigation = useNavigation<AuthNavigationProp>();
-
   return(
     <Pressable
       p={16}

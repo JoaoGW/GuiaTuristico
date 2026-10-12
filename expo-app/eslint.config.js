@@ -13,4 +13,19 @@ module.exports = defineConfig([
       'import/no-unresolved': ['error', { ignore: ['^@env$'] }],
     },
   },
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
+    rules: {
+      // Mantém a lista de assets do eslint-config-expo e libera apenas os módulos nativos
+      // carregados por require() condicional para não quebrar no Expo Go (ver App.tsx).
+      '@typescript-eslint/no-require-imports': ['warn', {
+        allow: [
+          '\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$',
+          '^react-native-google-mobile-ads$',
+          '^expo-tracking-transparency$',
+          '^@react-native-google-signin/google-signin$',
+        ],
+      }],
+    },
+  },
 ]);

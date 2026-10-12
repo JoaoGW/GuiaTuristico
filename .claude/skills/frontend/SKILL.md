@@ -35,6 +35,6 @@ Before making a frontend decision, read `${CLAUDE_SKILL_DIR}/design.md` and `${C
 
 ## Validation and Completion
 
-- Run `cd expo-app && npm run lint` and `npx tsc --noEmit`, and compare with the known baseline in `AGENTS.md` (pre-existing lint errors; `TS5101` only for types).
+- Run `cd expo-app && npm run lint` and `npx tsc --noEmit`, and compare with the known baseline in `AGENTS.md` (both clean: any error or warning is new).
 - Run `npm run android` or `npm run ios` only when a suitable local target is available.
 - Report the design requirements applied, reused components, covered states, validation results, unverified platforms, and any product decision still needed.

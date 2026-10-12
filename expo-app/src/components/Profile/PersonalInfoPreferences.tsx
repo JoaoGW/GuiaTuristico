@@ -7,7 +7,7 @@ type PersonalInfoPreferencesTypes = {
   preferenceTitle: string,
   choices: string,
   functionality: () => void,
-  style?: Object
+  style?: object
 }
 
 export function PersonalInfoPreferences({ icon: Icon, preferenceTitle, choices, functionality, style }: PersonalInfoPreferencesTypes){

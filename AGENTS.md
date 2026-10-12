@@ -50,7 +50,7 @@ GuiaTuristico/
 └── nextjs-api/
     ├── pages/api/            # endpoints (ver tabela abaixo)
     ├── utils/responseCache.ts# cache em memória das respostas do Felipe
-    ├── src/app/              # página "Documentação APIs - EZ Trip AI"
+    ├── app/                  # página "Documentação APIs - EZ Trip AI" (mesmo nível de pages/, exigido pelo Next 16)
     ├── src/components/SwaggerAccordion.tsx
     └── Docker/Dockerfile
 ```
@@ -71,7 +71,7 @@ Aliases do app (em `tsconfig.json` e `babel.config.js`): `@assets`, `@components
 | `POST /api/voiceChat` | multipart, campo `audio` (≤ 2 MB, ~15 s) | OpenAI Whisper + Chat Completions | `{ success, transcription, response, audioInfo, usage }` | `services/voiceService.ts` |
 | `GET` / `DELETE /api/cacheStats` | — | — | estatísticas / limpeza do cache | depuração |
 
-A página `/` (`src/app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`. As rotas não têm autenticação nem limite de taxa.
+A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`. As rotas não têm autenticação nem limite de taxa.
 
 ## Modelos de LLM e Voz
 
@@ -166,13 +166,13 @@ Altere apenas os arquivos necessários. Não refatore, reformate ou remova códi
 
 | Pacote | Scripts definidos |
 | --- | --- |
-| `expo-app` | `npm run start` (`expo start --tunnel`), `npm run android`, `npm run ios`, `npm run web`, `npm run checkup` (`expo-doctor`), `npm run lint` (`expo lint`) |
+| `expo-app` | `npm run start` (`expo start --tunnel`), `npm run android`, `npm run ios`, `npm run web`, `npm run checkup` (`npx expo-doctor`), `npm run lint` (`expo lint`) |
 | `nextjs-api` | `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run clean` |
 | raiz | `docker-compose up --build` |
 
 - Lint: `npm run lint` em cada pacote (ESLint 9, flat config): `expo-app/eslint.config.js` com `eslint-config-expo` e `nextjs-api/eslint.config.mjs` com `eslint-config-next` (`core-web-vitals` + `typescript`).
 - Verificação de tipos: `npx tsc --noEmit` em cada pacote.
-- Linha de base em 12/10/2026, toda em código preexistente: app 72 erros e 186 avisos de lint (a maioria regras de React Hooks/Compiler, como acesso a `ref` e `setState` durante render) e 1 erro de tipos (`TS5101`); API 10 erros e 2 avisos de lint (`no-explicit-any`, `prefer-const`) e 0 erros de tipos. Relate erros novos separadamente dessa linha de base; não corrija os antigos sem pedido.
+- Linha de base em 12/10/2026: os dois pacotes estão com 0 erros e 0 avisos de lint e 0 erros de tipos. Qualquer erro ou aviso é novo e deve ser corrigido sem desabilitar regras. A única exceção configurada é o `allow` de `@typescript-eslint/no-require-imports` em `expo-app/eslint.config.js` para os módulos nativos carregados por `require()` condicional (AdMob, rastreamento, Google Sign-In).
 - Não há testes configurados. Não alegue cobertura de testes nem execute `npm run test`.
 - Valide em dispositivo ou emulador só quando houver destino local; mudanças de API podem ser testadas com `npm run dev` e a página `/`.
 - Relate comandos executados, resultados e o que não pôde ser validado. Não alegue sucesso sem evidência.
@@ -188,13 +188,15 @@ Altere apenas os arquivos necessários. Não refatore, reformate ou remova códi
 
 Fatos observados no código em 12/10/2026; não os corrija sem pedido.
 
-1. Os dois pacotes têm erros de lint preexistentes (ver Validação Local); o app falha em `npx tsc --noEmit` com `TS5101` (`baseUrl` obsoleto no TypeScript 6). `next.config.ts` usa `typescript.ignoreBuildErrors: true`.
+1. `next.config.ts` usa `typescript.ignoreBuildErrors: true`, embora `npx tsc --noEmit` passe. A build marca `pages/api/voiceChat.ts` com avisos de rastreamento de sistema de arquivos dinâmico (Turbopack).
 2. Não há testes automatizados em nenhum pacote.
 3. `nextjs-api`: `npm run clean` usa `rimraf`, que não está nas dependências.
 4. `googlePlacesApi` devolve `photo_url` com a chave do Google embutida; `googlePhotoProxy` já existe como alternativa. As rotas não têm autenticação, e `DELETE /api/cacheStats` é público.
 5. `expo-app` declara `next` e `openai` como dependências, mas o código de `src/` não os importa. `config/gluestack-ui.config.ts` não é usado (o App importa `@gluestack-ui/config`).
 6. `app.json` → `extra` contém placeholders `${FIREBASE_*}` que não são interpolados; o código usa `process.env.EXPO_PUBLIC_*`.
 7. `expo-app/Docker/Dockerfile.eas` usa a imagem inexistente `node20:slim` e um `CMD` inválido.
+8. `expo-doctor` aponta: dependências de pares ausentes (`expo-font` para `@expo/vector-icons`, `expo-asset` para `expo-audio`), `react-native-safe-area-context` duplicado (4.5.0 dentro de `react-native-calendars`) e `@expo/config-plugins` instalado diretamente.
+9. `EditProfile` exibe "Informações salvas com sucesso!" sem persistir os dados do formulário.
 
 ## Regras de Revisão de Código
 

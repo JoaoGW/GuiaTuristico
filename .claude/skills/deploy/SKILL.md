@@ -16,8 +16,8 @@ This skill verifies local quality and startup readiness of `expo-app` and `nextj
 
 Run only checks relevant to the changed package:
 
-1. `expo-app`: `npm run lint` (baseline: 72 errors, 186 warnings), `npx tsc --noEmit` (baseline: 1 error, `TS5101`), then `npm run checkup` (`expo-doctor`).
-2. `nextjs-api`: `npm run lint` (baseline: 10 errors, 2 warnings), `npx tsc --noEmit` (baseline: clean), then `npm run build`.
+1. `expo-app`: `npm run lint` (baseline: clean), `npx tsc --noEmit` (baseline: clean), then `npm run checkup` (`npx expo-doctor`).
+2. `nextjs-api`: `npm run lint` (baseline: clean), `npx tsc --noEmit` (baseline: clean), then `npm run build`.
 3. Startup, when a local target is available: `npm run dev` in `nextjs-api` (port 3000, docs at `/`), `npm run start` in `expo-app` (tunnel), or `docker-compose up --build` at the root.
 4. Confirm that each package's `.env.local` defines the variable names listed in `AGENTS.md`, without reading or printing values (for example, `grep -o '^[A-Z_]*=' .env.local`).
 

@@ -189,7 +189,7 @@ export function ExpenseControl() {
   const totalExpenses = getTotalExpenses();
   const expensesByCategory = getExpensesByCategory();
 
-  const categories: Array<"Todos" | ExpenseCategory> = [
+  const categories: ("Todos" | ExpenseCategory)[] = [
     "Todos",
     "Transporte",
     "Hospedagem",

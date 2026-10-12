@@ -1,14 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { Image } from '@gluestack-ui/themed';
-
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
-import { LibreBodoni_700Bold } from '@expo-google-fonts/libre-bodoni/700Bold';
-
-import {
+import { Image ,
   Button,
   ButtonText,
   View,
@@ -23,7 +17,11 @@ import {
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText
-} from "@gluestack-ui/themed";
+} from '@gluestack-ui/themed';
+
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from '@expo-google-fonts/libre-bodoni/useFonts';
+import { LibreBodoni_700Bold } from '@expo-google-fonts/libre-bodoni/700Bold';
 
 import { IconButton } from '@components/Buttons/IconButton';
 import { Loading } from '@components/Loading/Loading';
@@ -44,7 +42,7 @@ export function ForgotPasswordScreen() {
   const fontsLoaded = useFonts({ LibreBodoni_700Bold });
 
   // Fixa o background na primeira renderização para não mudar durante digitação
-  const backgroundImage = useMemo(() => {
+  const [backgroundImage] = useState(() => {
     const possibleBackgrounds = [
       require("@assets/CredentialsBackgrounds/gaztelugatxe-4377342_640.png"),
       require("@assets/CredentialsBackgrounds/italy-2725346_640.png"),
@@ -53,7 +51,7 @@ export function ForgotPasswordScreen() {
     ];
     const randomIndex = Math.floor(Math.random() * possibleBackgrounds.length);
     return possibleBackgrounds[randomIndex];
-  }, []);
+  });
 
   const handleSubmit = async () => {
     setEmailError('');

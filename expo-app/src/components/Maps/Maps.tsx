@@ -36,15 +36,13 @@ interface PointsPlaces {
 interface MapsProps {
   initialLatitude?: string,
   initialLongitude?: string,
-  itineraryPlaces?: Array<PointsPlaces>,
+  itineraryPlaces?: PointsPlaces[],
   externalPlaces?: Place[]
 }
 
-export const Maps = forwardRef<MapView, MapsProps>((props, ref) => {
+export const Maps = forwardRef<MapView, MapsProps>(function Maps(props, ref) {
   const { location } = useContext(LocationContext);
   const [places, setPlaces] = useState<Place[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [latitude, setLatitude] = useState<number>();
   const [longitude, setLongitude] = useState<number>();
 
@@ -63,9 +61,6 @@ export const Maps = forwardRef<MapView, MapsProps>((props, ref) => {
     const fetchNearbyPlaces = async () => {
       if (!location) return;
 
-      setLoading(true);
-      setError(null);
-
       try {
         const response = await fetch(
           `${API_URL}/googlePlacesApi?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
@@ -77,10 +72,8 @@ export const Maps = forwardRef<MapView, MapsProps>((props, ref) => {
 
         const data = await response.json();
         setPlaces(data.results || []);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      } catch {
+        // Falha na busca mantém o mapa sem marcadores de lugares próximos.
       }
     };
 

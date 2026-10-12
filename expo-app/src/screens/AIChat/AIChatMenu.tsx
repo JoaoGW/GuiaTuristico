@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { StatusBar, FlatList, ScrollView, Alert, View as RNView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { Button, ButtonGroup, ButtonText, Pressable, Text, View } from "@gluestack-ui/themed";
+import { Pressable, Text, View } from "@gluestack-ui/themed";
 
 import { ChooseDialog } from "@components/Dialogs/ChooseDialog";
 
@@ -199,30 +199,39 @@ export function AIChatMenu(){
       await clearAllChatsHistory();
       setChatsHistory([]);
       setShowAlertDialog(false);
-    } catch (error) {
+    } catch {
       Alert.alert("Erro ao limpar histórico de chats");
     }
   };
+
+  const toChatHistoryItems = useCallback((history: ChatHistoryTypes[]) => (
+    history.map(chat => ({
+      ...chat,
+      date: chat.date || "Data indisponível",
+      navigate: (routeName: string, chatId: string) => navigation.navigate(routeName as any, { chatId })
+    }))
+  ), [navigation]);
 
   const loadAllChats = async () => {
     try {
       const history = await loadAllChatsHistory();
       if (history) {
-        const updatedHistory = history.map(chat => ({
-          ...chat,
-          date: chat.date || "Data indisponível",
-          navigate: (routeName: string, chatId: string) => navigation.navigate(routeName as any, { chatId })
-        }));
-        setChatsHistory(updatedHistory);
+        setChatsHistory(toChatHistoryItems(history));
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Erro ao carregar histórico de chats');
     }
   };
 
   useEffect(() => {
-    loadAllChats();
-  }, []);
+    loadAllChatsHistory()
+      .then((history) => {
+        if (history) {
+          setChatsHistory(toChatHistoryItems(history));
+        }
+      })
+      .catch(() => Alert.alert('Erro ao carregar histórico de chats'));
+  }, [toChatHistoryItems]);
 
   return(
     <RNView style={{ flex: 1 }}>

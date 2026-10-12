@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 
 export interface UserData {
@@ -45,9 +45,84 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   /**
+   * Faz login do usuário e persiste dados localmente
+   */
+  const login = useCallback(async (userData: UserData) => {
+    try {
+      // Garante que apenas dados serializáveis são salvos
+      const cleanUserData: UserData = {
+        uid: userData.uid || '',
+        email: userData.email || null,
+        displayName: userData.displayName || null,
+        photoURL: userData.photoURL || null,
+        emailVerified: userData.emailVerified || false,
+      };
+      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(cleanUserData));
+      setUser(cleanUserData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Erro ao salvar usuário no storage:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Faz logout do usuário, limpa dados locais e sessão do Firebase
+   */
+  const logout = useCallback(async () => {
+    try {
+      await signOut(auth);
+      await AsyncStorage.removeItem(USER_STORAGE_KEY);
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Atualiza dados do usuário a partir do Firebase
+   */
+  const refreshUser = useCallback(async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await currentUser.reload();
+        const userData: UserData = {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          photoURL: currentUser.photoURL,
+          emailVerified: currentUser.emailVerified,
+        };
+        await login(userData);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar dados do usuário:', error);
+      throw error;
+    }
+  }, [login]);
+
+  /**
    * Carrega dados do usuário do AsyncStorage na inicialização
    */
   useEffect(() => {
+    const loadUserFromStorage = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
+        if (storedUser) {
+          const userData: UserData = JSON.parse(storedUser);
+          setUser(userData);
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar usuário do storage:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadUserFromStorage();
   }, []);
 
@@ -72,85 +147,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     return () => unsubscribe();
-  }, []);
-
-  /**
-   * Carrega dados do usuário armazenados localmente
-   */
-  const loadUserFromStorage = async () => {
-    try {
-      const storedUser = await AsyncStorage.getItem(USER_STORAGE_KEY);
-      if (storedUser) {
-        const userData: UserData = JSON.parse(storedUser);
-        setUser(userData);
-        setIsAuthenticated(true);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar usuário do storage:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Faz login do usuário e persiste dados localmente
-   */
-  const login = async (userData: UserData) => {
-    try {
-      // Garante que apenas dados serializáveis são salvos
-      const cleanUserData: UserData = {
-        uid: userData.uid || '',
-        email: userData.email || null,
-        displayName: userData.displayName || null,
-        photoURL: userData.photoURL || null,
-        emailVerified: userData.emailVerified || false,
-      };
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(cleanUserData));
-      setUser(cleanUserData);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Erro ao salvar usuário no storage:', error);
-      throw error;
-    }
-  };
-
-  /**
-   * Faz logout do usuário, limpa dados locais e sessão do Firebase
-   */
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      await AsyncStorage.removeItem(USER_STORAGE_KEY);
-      setUser(null);
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
-      throw error;
-    }
-  };
-
-  /**
-   * Atualiza dados do usuário a partir do Firebase
-   */
-  const refreshUser = async () => {
-    try {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        await currentUser.reload();
-        const userData: UserData = {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName,
-          photoURL: currentUser.photoURL,
-          emailVerified: currentUser.emailVerified,
-        };
-        await login(userData);
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar dados do usuário:', error);
-      throw error;
-    }
-  };
+  }, [login, logout]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout, refreshUser }}>

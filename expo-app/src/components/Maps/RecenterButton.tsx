@@ -4,7 +4,7 @@ import { LocateFixed } from 'lucide-react-native';
 
 interface RecenterButtonProps {
   onPress: () => void,
-  styles?: Object
+  styles?: object
 }
 
 export function RecenterButton({ onPress, styles }: RecenterButtonProps) {

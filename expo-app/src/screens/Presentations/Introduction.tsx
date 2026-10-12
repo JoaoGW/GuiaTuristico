@@ -43,7 +43,7 @@ export function Introduction() {
       <SafeAreaView style={{ flex: 1 }}>
         <View mx={10} alignItems="center" flex={1}>
           {
-            currentPage != 9
+            currentPage !== 9
               ?
                 <Button bgColor="transparent" size="md" mb={40} alignSelf="flex-end" onPress={ () => navigation.navigate("Login") }>
                   <ButtonText color="#FFF">Pular  &gt;</ButtonText>

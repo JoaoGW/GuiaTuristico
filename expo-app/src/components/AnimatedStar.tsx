@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated } from 'react-native';
-import { View } from '@gluestack-ui/themed';
 import Svg, { Polygon } from 'react-native-svg';
 
 interface AnimatedStarProps {
@@ -11,7 +10,7 @@ interface AnimatedStarProps {
 }
 
 export default function AnimatedStar({ size = 24, style, delay = 0, duration = 1600 }: AnimatedStarProps) {
-  const opacity = useRef(new Animated.Value(0.5)).current;
+  const [opacity] = useState(() => new Animated.Value(0.5));
 
   useEffect(() => {
     Animated.loop(

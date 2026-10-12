@@ -1,15 +1,8 @@
 // Importação de hooks do React e componentes do React Native
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useEffectEvent, useState } from "react";
 import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, Keyboard } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Constants from 'expo-constants';
-
-import { API_URL } from '../../config';
-
-let GoogleSignin: any = null;
-if (Constants.appOwnership !== 'expo') {
-  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
-}
 
 // Importação de componentes UI do Gluestack
 import { Text, View, Input, InputField, InputIcon, Pressable, ScrollView, Button, ButtonIcon, AvatarBadge, InputSlot } from "@gluestack-ui/themed";
@@ -28,7 +21,7 @@ import { Bot, ArrowLeft, Send, Loader } from 'lucide-react-native';
 import { AuthNavigationProp } from "@routes/auth.routes";
 
 // Funções utilitárias
-import { reverseGeocodeWithNominatim } from "@utils/geoDecoder";
+
 import { generateChatAnswers } from "@utils/gptRequests"
 import { useNotificationStore } from "@utils/notificationStore";
 
@@ -36,7 +29,7 @@ import { useNotificationStore } from "@utils/notificationStore";
 import { loadChatHistory, storeChatHistory } from '@services/storageManager'
 
 // Contextos
-import { LocationContext } from "@contexts/requestDeviceLocation";
+
 import { NetInfoContext } from "@contexts/NetInfo";
 
 // Assets
@@ -49,16 +42,15 @@ import { MessageTypes } from '../../../@types/MessagesTypes';
 
 import { responseCache } from '@utils/responseCache';
 
+let GoogleSignin: any = null;
+if (Constants.appOwnership !== 'expo') {
+  GoogleSignin = require('@react-native-google-signin/google-signin').GoogleSignin;
+}
+
 // Função para gerar um ID único baseado no timestamp + random
 const generateUniqueId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
-
-// Tipagem para o clima
-type Weather = {
-  temperature: number | string,
-  condition: string
-}
 
 // Tipagem dos parâmetros da rota
 type AIChatRouteParams = {
@@ -76,20 +68,18 @@ export function AIChat() {
   const receivedChatTopic = route.params?.topic;
   
   // Estados locais
-  const [address, setAddress] = useState<{ city: string; neighborhood: string } | null>(null);
   const [currentCharactersQuantity, setCurrentCharactersQuantity] = useState(0);
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [messages, setMessages] = useState<MessageTypes[]>([]);
-  const [weatherInfo, setWeatherInfo] = useState<Weather>({ temperature: "--", condition: "--" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [lastModifiedDate, setLastModifiedDate] = useState<string>("Data indisponível");
+
   const [chatId] = useState<string>(() => receivedChatId || generateUniqueId());
   const [showModal, setShowModal] = useState<boolean>(true);
   const [userName, setUserName] = useState<string>("");
   const [userPhoto, setUserPhoto] = useState<string>("");
 
   // Contextos
-  const { location } = useContext(LocationContext);
+
   const { isConnected } = useContext(NetInfoContext);
 
   // Função do store de notificações
@@ -130,7 +120,7 @@ export function AIChat() {
     }
 
     checkCurrentUser();
-  }, []);
+  }, [user?.displayName, user?.photoURL]);
 
   // Função para enviar uma mensagem e receber resposta da IA
   const handleChatRequest = async (topicMessage?: string) => {
@@ -193,7 +183,7 @@ export function AIChat() {
         routeIcon: Bot
       });
   
-    } catch (error) {
+    } catch {
       // Em caso de erro, envia uma mensagem de erro da IA
       setMessages((prev) => [
         ...prev,
@@ -212,80 +202,31 @@ export function AIChat() {
     }
   }
 
-  // Função para buscar clima a partir da localização
-  const handleWeatherRequest = async (): Promise<Weather> => {
-    try {
-      if (!location) {
-        console.log("Localização não disponível.");
-        return { temperature: "--", condition: "--" };
-      }
-      const { latitude, longitude } = location.coords;
-      const response = await fetch(`${API_URL}/weather?latitude=${latitude}&longitude=${longitude}`);
-      if (!response.ok) {
-        console.error(`Failed to fetch weather data: ${response.status} ${response.statusText}`);
-        return { temperature: "--", condition: "--" };
-      }
-      const result = await response.json();
-
-      const temperature = result.current?.temp_c ?? null;
-      const condition = result.current?.condition?.text ?? null;
-
-      return { temperature, condition };
-    } catch (error) {
-      console.log(error);
-      return { temperature: "--", condition: "--" };
-    }
-  }
-
-  // Efeito que atualiza o clima sempre que a localização mudar
-  useEffect(() => {
-    if (location) {
-      (async () => {
-        try {
-          const { temperature, condition } = await handleWeatherRequest();
-          setWeatherInfo({ temperature, condition });
-        } catch (error) {
-          console.error('Erro ao obter clima:', error);
-        }
-      })();
-    }
-  }, [location]);
-
   // Efeito que carrega histórico do chat ao iniciar
   useEffect(() => {
-    loadChatHistory(chatId, setMessages, setLastModifiedDate);
+    loadChatHistory(chatId, setMessages);
   }, [chatId]);
 
   // Efeito que salva o histórico sempre que as mensagens mudam
   useEffect(() => {
     if (messages.length > 0) {
       const currentDate = "Data: " + new Date().toLocaleString().split(" ").slice(0, 5).join(" ");
-      setLastModifiedDate(currentDate);
-
       storeChatHistory({ messages, lastModified: currentDate }, chatId);
     }
   }, [messages, chatId]);
 
-  // Se houver tópico recebido, inicia a conversa automaticamente
-  useEffect(() => {
-    if(receivedChatTopic != undefined){
-      handleChatRequest(receivedChatTopic);
-    }
-  }, [receivedChatTopic]);
+  const sendReceivedTopic = useEffectEvent((topic: string) => {
+    handleChatRequest(topic);
+  });
 
-  // Efeito para obter endereço a partir da localização
+  // Se houver tópico recebido, inicia a conversa automaticamente após a montagem.
+  // O cancelamento no cleanup evita envio duplicado quando o efeito é reexecutado.
   useEffect(() => {
-    if (location) {
-      (async () => {
-        try {
-          const result = await reverseGeocodeWithNominatim(location.coords.latitude, location.coords.longitude);
-          setAddress(result);
-        } catch (error) {
-          console.error('Erro ao obter endereço:', error);
-        }
-      })();
-    }
-  }, [location]);
+    if (receivedChatTopic == null) return;
+
+    const timer = setTimeout(() => sendReceivedTopic(receivedChatTopic), 0);
+    return () => clearTimeout(timer);
+  }, [receivedChatTopic]);
 
   return (
     <View flex={1}>

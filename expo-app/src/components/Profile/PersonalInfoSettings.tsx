@@ -6,7 +6,7 @@ type PersonalInfoPreferencesTypes = {
   icon: LucideIcon,
   settingsTitle: string,
   functionality: () => void,
-  style?: Object
+  style?: object
 }
 
 export function PersonalInfoSettings({ icon: Icon, settingsTitle, functionality, style }: PersonalInfoPreferencesTypes){

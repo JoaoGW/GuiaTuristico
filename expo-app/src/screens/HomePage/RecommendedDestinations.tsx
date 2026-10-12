@@ -11,9 +11,7 @@ import {
   Input,
   InputField,
   Icon,
-  Button,
-  ButtonIcon,
-} from "@gluestack-ui/themed";
+  } from "@gluestack-ui/themed";
 
 import { TitleAndBack } from "@components/TitleBack";
 import { NavigationBar } from "@components/NavigationBar";
@@ -22,7 +20,7 @@ import destinationsData from "@data/destinations.json";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
-import { Search, MapPin, Star, TrendingUp, Map, Globe, Compass, Sparkles, Navigation, ArrowRight } from "lucide-react-native";
+import { Search, MapPin, Star, Navigation, ArrowRight } from "lucide-react-native";
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;

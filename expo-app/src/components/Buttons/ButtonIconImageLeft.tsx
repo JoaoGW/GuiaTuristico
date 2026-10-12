@@ -11,9 +11,9 @@ type ButtonContent = {
   icon: React.FC<SvgProps>,
   iconWidth: number,
   iconHeight: number,
-  iconStyles?: Object,
+  iconStyles?: object,
   action: () => void,
-  styles?: Object
+  styles?: object
 }
 
 export function ButtonIconImageLeft({ textContent, buttonSize, icon: Icon, iconWidth, iconHeight, iconStyles, action, styles }: ButtonContent){

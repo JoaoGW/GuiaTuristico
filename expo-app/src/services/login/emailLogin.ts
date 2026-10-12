@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import Constants from 'expo-constants';
+
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../firebase';
 import { NoAuthNavigationProp } from '@routes/noauth.routes';
@@ -33,8 +33,7 @@ export async function signInUser(
     }
 
     // Autenticação via Firebase
-    const userCredential = await signInWithEmailAndPassword(auth, sanitizedEmail, sanitizedPassword);
-    const user = userCredential.user;
+    await signInWithEmailAndPassword(auth, sanitizedEmail, sanitizedPassword);
     
     // O AuthContext observer detectará a mudança e navegará automaticamente
     if (setIsAuthenticating) setIsAuthenticating(false);

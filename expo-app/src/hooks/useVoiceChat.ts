@@ -34,7 +34,6 @@ export const useVoiceChat = () => {
   });
 
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
-  const [recordingStartTime, setRecordingStartTime] = useState<number>(0);
   const recorder = useAudioRecorder(recordingOptions);
 
   // Cleanup quando o hook é desmontado
@@ -142,7 +141,6 @@ export const useVoiceChat = () => {
       await recorder.prepareToRecordAsync();
       recorder.record({ forDuration: VoiceConfig.recording.maxDuration / 1000 });
 
-      setRecordingStartTime(Date.now());
       updateVoiceState({
         isRecording: true,
         transcribedText: '',

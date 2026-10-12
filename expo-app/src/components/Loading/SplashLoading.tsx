@@ -1,5 +1,5 @@
 // Este componente foi criado inteiramente pela IA da Claude Sonnet 4 para testar suas capacidades no Agent Mode
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, Animated, Easing } from 'react-native';
 import { VStack, Spinner, HStack } from '@gluestack-ui/themed';
 
@@ -8,8 +8,8 @@ interface SplashLoadingProps {
 }
 
 export function SplashLoading({ message = "Carregando recursos..." }: SplashLoadingProps) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [scaleAnim] = useState(() => new Animated.Value(0.8));
 
   useEffect(() => {
     const fadeIn = Animated.timing(fadeAnim, {
@@ -27,7 +27,7 @@ export function SplashLoading({ message = "Carregando recursos..." }: SplashLoad
     });
 
     Animated.parallel([fadeIn, scaleIn]).start();
-  }, []);
+  }, [fadeAnim, scaleAnim]);
 
   return (
     <View style={{
@@ -71,7 +71,7 @@ export function SplashLoading({ message = "Carregando recursos..." }: SplashLoad
 }
 
 function LoadingDot({ delay }: { delay: number }) {
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  const [animatedValue] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const animate = () => {
@@ -93,7 +93,7 @@ function LoadingDot({ delay }: { delay: number }) {
 
     const timeout = setTimeout(animate, delay);
     return () => clearTimeout(timeout);
-  }, [delay]);
+  }, [animatedValue, delay]);
 
   return (
     <Animated.View

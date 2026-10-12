@@ -705,8 +705,8 @@ export const componentsConfig = createComponents(componentsTheme);
 
 export type { UIConfig, UIComponents } from '@gluestack-ui/themed';
 
-export interface IConfig {}
-export interface IComponents {}
+export type IConfig = Record<never, never>;
+export type IComponents = Record<never, never>;
 
 declare module '@gluestack-ui/themed' {
   interface UIConfig extends Omit<Config, keyof IConfig>, IConfig {}

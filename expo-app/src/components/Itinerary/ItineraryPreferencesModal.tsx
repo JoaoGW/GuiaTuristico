@@ -6,14 +6,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Dimensions,
   Image,
   Alert
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import * as Contacts from 'expo-contacts';
-import { Contact } from "expo-contacts";
 
 import { Calendar, DateData } from 'react-native-calendars';
 
@@ -23,8 +21,6 @@ import {
   FormControlLabelText,
   FormControlError,
   FormControlErrorText,
-  FormControlHelper,
-  FormControlHelperText,
   Input,
   InputField
 } from '@gluestack-ui/themed';
@@ -43,7 +39,7 @@ type GenerateItineraryPreferencesFormTypes = {
   acconpanying: "Family" | "Friends",
   tripStyle: "Urban" | "Countryside",
   vehicleLocomotionTypes: "Car" | "Motorcycle" | "Foot" | "Train" | "Boat" | "Bicycle",
-  locomotionMethod: Array<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"]>,
+  locomotionMethod: GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"][],
   specialWish: string
 }
 
@@ -62,15 +58,14 @@ export function ItineraryPreferencesModal({ showAlertDialog, setShowAlertDialog 
   const [originCountry, setOriginCountry] = useState<string>("");
   const [showOriginCountrySelector, setShowOriginCountrySelector] = useState<boolean>(false);
   const [includeContacts, setIncludeContacts] = useState<boolean>(false);
-  const [listContacts, setListContacts] = useState<Contact[]>([]);
-  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
-  const [showContacts, setShowContacts] = useState<boolean>(false);
+  const [listContacts, setListContacts] = useState<Contacts.ExistingContact[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<Contacts.ExistingContact[]>([]);
   const [budget, setBudget] = useState<GenerateItineraryPreferencesFormTypes["budget"]>(0);
   const [peopleQuantity, setPeopleQuantity] = useState<GenerateItineraryPreferencesFormTypes["peopleQuantity"]>(0);
   const [acconpanyingType, setAcconpanyingType] = useState<GenerateItineraryPreferencesFormTypes["acconpanying"]>();
-  const [tripStyle, setTripStyle] = useState<Array<"Urban" | "Countryside">>([]);
+  const [tripStyle, setTripStyle] = useState<("Urban" | "Countryside")[]>([]);
   const [specialWish, setSpecialWish] = useState<GenerateItineraryPreferencesFormTypes["specialWish"]>("");
-  const [locomotionMethod, setLocomotionMethod] = useState<Array<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"]>>([]);
+  const [locomotionMethod, setLocomotionMethod] = useState<GenerateItineraryPreferencesFormTypes["vehicleLocomotionTypes"][]>([]);
 
   const [errors, setErrors] = useState<{
     itineraryTitle?: string;
@@ -248,14 +243,12 @@ export function ItineraryPreferencesModal({ showAlertDialog, setShowAlertDialog 
   const toggleContactSelection = () => {
     const newValue = !includeContacts;
     setIncludeContacts(newValue);
-    if (newValue) {
-      setShowContacts(true);
-    } else {
+    if (!newValue) {
       setSelectedContacts([]);
     }
   };
 
-  const handleContactSelection = (contact: Contact) => {
+  const handleContactSelection = (contact: Contacts.ExistingContact) => {
     setSelectedContacts(prev => {
       const isAlreadySelected = prev.some(c => c.id === contact.id);
       if (isAlreadySelected) {
@@ -266,7 +259,7 @@ export function ItineraryPreferencesModal({ showAlertDialog, setShowAlertDialog 
     });
   };
 
-  const isContactSelected = (contact: Contact) => {
+  const isContactSelected = (contact: Contacts.ExistingContact) => {
     return selectedContacts.some(c => c.id === contact.id);
   };
 

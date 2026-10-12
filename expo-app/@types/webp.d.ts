@@ -1,3 +1,1 @@
-declare module "*.webp" {
-  import React from "react";
-}
+declare module "*.webp" {}

@@ -70,7 +70,7 @@ Em caso de divergência entre `README.md`/`SETUP_LOCAL.md` e o código, prefira 
 | Lint | `npm run lint` em cada pacote |
 | Verificação de tipos | `npx tsc --noEmit` em cada pacote |
 
-Não há testes. Lint e verificação de tipos já acusam erros preexistentes (linha de base em `AGENTS.md`, Validação Local); compare com ela e relate apenas o que mudou. Builds EAS e deploys não são validação local e exigem autorização.
+Não há testes. Lint e verificação de tipos estão zerados nos dois pacotes (linha de base em `AGENTS.md`, Validação Local); qualquer erro ou aviso é novo. Builds EAS e deploys não são validação local e exigem autorização.
 
 ## Dependências, Git e Dados Sensíveis
 

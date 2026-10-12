@@ -79,7 +79,7 @@ export const useAuthForm = (navigation: NoAuthNavigationProp): UseAuthFormReturn
   const resetPassword = async (email: string): Promise<boolean> => {
     try {
       return await sendPasswordReset(email);
-    } catch (error) {
+    } catch {
       return false;
     }
   };

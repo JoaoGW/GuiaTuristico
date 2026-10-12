@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { SafeAreaView, StatusBar, StyleSheet, Image, Alert } from "react-native";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { SafeAreaView, StatusBar, StyleSheet, Image, Alert, Platform } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import MapView from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,7 +19,6 @@ import { generateItinerary } from '@utils/gptRequests';
 import { useNotificationStore } from '@utils/notificationStore';
 import { filterItineraryData, filterUserPreferences } from '@utils/dataFilters';
 
-import { userTrips } from "@data/itineraries";
 
 import { AuthNavigationProp } from "@routes/auth.routes";
 
@@ -51,12 +50,13 @@ type ShowMapStatsInformationType = {
 }
 
 export function ItineraryMapMenu() {
+  const route = useRoute<RouteProp<{ params: { itineraryData: CreatingItinerary, userPreferences: string[], visaIssue: any } }, 'params'>>();
   const [loading, setLoading] = useState(false);
-  const [itinerary, setItinerary] = useState<any[]>([]);
+  const [itinerary, setItinerary] = useState<any[]>(() => {
+    const existingItinerary = route.params?.itineraryData?.itinerary;
+    return Array.isArray(existingItinerary) && existingItinerary.length > 0 ? existingItinerary : [];
+  });
   const [isExporting, setIsExporting] = useState(false);
-  const [allCountriesTogether, setAllCountriesTogether] = useState<string>("");
-  const [allTripStylesTogether, setAllTripStylesTogether] = useState<string>("");
-  const [allVehicleTypesTogether, setAllVehicleTypesTogether] = useState<string>("");
   const [hideBackButton, setHideBackButton] = useState<boolean>(false);
   const [showMapStatsInformation, setShowMapStatsInformation] = useState<ShowMapStatsInformationType["show"]>("Map");
   const [firstLatitude, setFirstLatitude] = useState<number>();
@@ -81,7 +81,6 @@ export function ItineraryMapMenu() {
   const categoriesOptions = ["Ponto Turístico", "Gastronomia", "Hospedagem", "Vida Noturna", "Parques", "Shopping", "Cultura", "Viagens"]
 
   const navigation = useNavigation<AuthNavigationProp>();
-  const route = useRoute<RouteProp<{ params: { itineraryData: CreatingItinerary, userPreferences: string[], visaIssue: any } }, 'params'>>();
 
   const addNotification = useNotificationStore(state => state.addNotification);
 
@@ -92,16 +91,15 @@ export function ItineraryMapMenu() {
   const BACKGROUND_STORAGE_KEY = '@eztripai_statsBackground';
 
   const getCorrectIdForPlatform = () => {
-    const Platform = require('react-native').Platform;
     if(Platform.OS === "android"){
       return process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID;
     }
     return process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID;
   };
 
+  // Sem módulo de anúncios, `rewardedRef` fica vazio e a exportação segue sem anúncio.
   const loadAd = () => {
     if (isExpoGo || !RewardedAd || !RewardedAdEventType || !TestIds) {
-      setAdLoaded(true);
       return;
     }
 
@@ -127,38 +125,41 @@ export function ItineraryMapMenu() {
       };
     } catch (error) {
       console.log('Error loading ad:', error);
-      setAdLoaded(true);
+      rewardedRef.current = null;
     }
   };
 
-  // Detectar se é um roteiro novo ou já existente
-  useEffect(() => {
-    const checkIfNewItinerary = async () => {
-      try {
-        // Primeiro, verifica se tem a flag isNew nos params
-        if (route.params.itineraryData.isNew === true) {
-          setIsNewItinerary(true);
-          return;
-        }
-
-        const savedItineraries = await AsyncStorage.getItem(ITINERARY_STORAGE_KEY);
-        if (savedItineraries) {
-          const itineraries: CreatingItinerary[] = JSON.parse(savedItineraries);
-          const exists = itineraries.some(item => 
-            item.title === filteredItineraryData.title &&
-            item.dateBegin === route.params.itineraryData.dateBegin
-          );
-          setIsNewItinerary(!exists);
-        } else {
-          setIsNewItinerary(true);
-        }
-      } catch (error) {
-        console.error('Erro ao verificar itinerário:', error);
-        setIsNewItinerary(false);
+  // Detectar se é um roteiro novo ou já existente (somente ao montar)
+  const checkIfNewItinerary = useEffectEvent(async () => {
+    try {
+      // Primeiro, verifica se tem a flag isNew nos params
+      if (route.params.itineraryData.isNew === true) {
+        setIsNewItinerary(true);
+        return;
       }
-    };
 
-    checkIfNewItinerary();
+      const savedItineraries = await AsyncStorage.getItem(ITINERARY_STORAGE_KEY);
+      if (savedItineraries) {
+        const itineraries: CreatingItinerary[] = JSON.parse(savedItineraries);
+        const exists = itineraries.some(item => 
+          item.title === filteredItineraryData.title &&
+          item.dateBegin === route.params.itineraryData.dateBegin
+        );
+        setIsNewItinerary(!exists);
+      } else {
+        setIsNewItinerary(true);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar itinerário:', error);
+      setIsNewItinerary(false);
+    }
+  });
+
+  useEffect(() => {
+    const start = async () => {
+      await checkIfNewItinerary();
+    };
+    start();
   }, []);
 
   // Função para salvar alterações em um roteiro existente
@@ -272,8 +273,12 @@ export function ItineraryMapMenu() {
   }, []);
 
   // Carregar anúncio ao montar o componente
-  useEffect(() => {
+  const onMount = useEffectEvent(() => {
     loadAd();
+  });
+
+  useEffect(() => {
+    onMount();
   }, []);
 
   // Aplicando filtros aos dados recebidos
@@ -286,43 +291,25 @@ export function ItineraryMapMenu() {
     days, 
     continent, 
     countries,
-    visa,
     originCountry,
     budget, 
     peopleQuantity, 
     acconpanying, 
     tripStyle, 
     locomotionMethod,
-    specialWish,
-    contacts
+    specialWish
   } = filteredItineraryData;
 
   // Preparando lista de países se não for o Modo Surpresa e também estilo de viagem e os métodos de locomoção que serão utilizados
-  useEffect(() => {
-    if (countries && countries.length > 0) {
-      var finalText = "";
-      for (let i = 0; i < countries.length; i++) {
-        finalText += (countries[i] + ", ")
-      }
-      setAllCountriesTogether(finalText);
-    }
-
-    if (tripStyle && tripStyle.length > 0) {
-      var finalText = "";
-      for (let i = 0; i < tripStyle.length; i++) {
-        finalText += (tripStyle[i] + " e ")
-      }
-      setAllTripStylesTogether(finalText);
-    }
-
-    if (locomotionMethod && locomotionMethod.length > 0) {
-      var finalText = "";
-      for (let i = 0; i < locomotionMethod.length; i++) {
-        finalText += (locomotionMethod[i] + ", ")
-      }
-      setAllVehicleTypesTogether(finalText);
-    }
-  }, [countries, tripStyle, locomotionMethod]);
+  const allCountriesTogether = countries && countries.length > 0
+    ? countries.map((country: string) => country + ", ").join("")
+    : "";
+  const allTripStylesTogether = tripStyle && tripStyle.length > 0
+    ? tripStyle.map((style: string) => style + " e ").join("")
+    : "";
+  const allVehicleTypesTogether = locomotionMethod && locomotionMethod.length > 0
+    ? locomotionMethod.map((method: string) => method + ", ").join("")
+    : "";
 
   // Texto final do "Preparando os parâmetros inseridos pelo usuário"
   const preferencesAllDefinedText = `Início da viagem em ${ dateBegin } e o fim em ${ dateEnd }, possuindo ${ days } dias de viagem.
@@ -567,8 +554,8 @@ export function ItineraryMapMenu() {
   }
 
   // Função para converter itinerário em pontos para o mapa em um dia específico que estará selecionado
-  const convertItineraryToMapPoints = (itineraryData: any[], dayIndex: number): Array<{title: string, description: string, coordinate: {latitude: number, longitude: number}}> => {    
-    const points: Array<{title: string, description: string, coordinate: {latitude: number, longitude: number}}> = [];
+  const convertItineraryToMapPoints = (itineraryData: any[], dayIndex: number): {title: string, description: string, coordinate: {latitude: number, longitude: number}}[] => {    
+    const points: {title: string, description: string, coordinate: {latitude: number, longitude: number}}[] = [];
     
     if (!Array.isArray(itineraryData)) {
       return points;
@@ -600,10 +587,11 @@ export function ItineraryMapMenu() {
     return points;
   };
 
-  useEffect(() => {
-    // Verifica se há itinerário nos parâmetros e define no estado local
+  // Gera o roteiro quando as preferências ficam prontas. As funções de geração ficam fora
+  // das dependências para não disparar novas requisições à IA a cada renderização.
+  const startItineraryGeneration = useEffectEvent(async (countriesText: string, tripStylesText: string, vehicleTypesText: string) => {
+    // Na montagem o itinerário existente já é o estado inicial (mesma referência, sem nova renderização).
     const existingItinerary = route.params?.itineraryData?.itinerary;
-    
     if (existingItinerary && Array.isArray(existingItinerary) && existingItinerary.length > 0) {
       setItinerary(existingItinerary);
       return;
@@ -614,38 +602,42 @@ export function ItineraryMapMenu() {
       typeof route.params.itineraryData.itinerary === 'object' &&
       Object.keys(route.params.itineraryData.itinerary).length > 0;
 
-    if (!hasExistingItinerary && allTripStylesTogether !== "" && allVehicleTypesTogether !== "") {
+    if (!hasExistingItinerary && tripStylesText !== "" && vehicleTypesText !== "") {
       if (countries && countries.length > 0) {
-        if (allCountriesTogether !== "") {
-          generateDetailed();
+        if (countriesText !== "") {
+          await generateDetailed();
         }
       } else {
-        generateSurprise();
+        await generateSurprise();
       }
     }
+  });
+
+  useEffect(() => {
+    const start = async () => {
+      await startItineraryGeneration(allCountriesTogether, allTripStylesTogether, allVehicleTypesTogether);
+    };
+    start();
   }, [allCountriesTogether, allTripStylesTogether, allVehicleTypesTogether]);
 
-  // Define as coordenadas iniciais do mapa baseado no primeiro ponto do itinerário
-  useEffect(() => {
-    if (itinerary.length > 0) {
-      const firstDay = itinerary[0];
-      if (firstDay && firstDay.timeline && firstDay.timeline.length > 0) {
-        const firstActivity = firstDay.timeline.find((activity: any) => 
-          activity.coordinates && activity.coordinates !== "0.0000,0.0000"
-        );
-        
-        if (firstActivity && firstActivity.coordinates) {
-          const coordinates = firstActivity.coordinates.replace(/\s+/g, '');
-          const [lat, lng] = coordinates.split(/[;,]/).map((coord: string) => parseFloat(coord.trim()));
-          
-          if (!isNaN(lat) && !isNaN(lng)) {
-            setFirstLatitude(lat);
-            setFirstLongitude(lng);
-          }
-        }
-      }
-    }
+  // Define as coordenadas iniciais do mapa baseado no primeiro ponto do itinerário;
+  // sem ponto válido, vale o valor informado pelo SlideUpItinerary.
+  const itineraryFirstCoordinates = useMemo(() => {
+    const firstDay = itinerary[0];
+    if (!firstDay || !firstDay.timeline || firstDay.timeline.length === 0) return null;
+
+    const firstActivity = firstDay.timeline.find((activity: any) => 
+      activity.coordinates && activity.coordinates !== "0.0000,0.0000"
+    );
+    if (!firstActivity || !firstActivity.coordinates) return null;
+
+    const coordinates = firstActivity.coordinates.replace(/\s+/g, '');
+    const [lat, lng] = coordinates.split(/[;,]/).map((coord: string) => parseFloat(coord.trim()));
+    return !isNaN(lat) && !isNaN(lng) ? { latitude: lat, longitude: lng } : null;
   }, [itinerary]);
+
+  const mapInitialLatitude = itineraryFirstCoordinates?.latitude ?? firstLatitude;
+  const mapInitialLongitude = itineraryFirstCoordinates?.longitude ?? firstLongitude;
 
   // Função para salvar o background escolhido
   const handleBackgroundChange = async (imagePath: any) => {
@@ -789,8 +781,8 @@ export function ItineraryMapMenu() {
           ?
             <Maps 
               ref={ mapUserPositionRef } 
-              initialLatitude={ firstLatitude?.toString() } 
-              initialLongitude={ firstLongitude?.toString() } 
+              initialLatitude={ mapInitialLatitude?.toString() } 
+              initialLongitude={ mapInitialLongitude?.toString() } 
               itineraryPlaces={ convertItineraryToMapPoints(itinerary, selectedDay) } 
             />
           :

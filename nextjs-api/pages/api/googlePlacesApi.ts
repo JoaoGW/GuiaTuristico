@@ -1,8 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+interface PlacePhoto {
+  photo_reference: string;
+  photo_url?: string;
+  [key: string]: unknown;
+}
+
 interface Place {
   name: string;
-  [key: string]: any;
+  photos?: PlacePhoto[];
+  [key: string]: unknown;
 }
 
 interface GooglePlacesResponse {
@@ -49,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Processar os resultados para incluir URLs de fotos
-    const processedResults = data.results.map((place: any) => {
+    const processedResults = data.results.map((place) => {
       if (place.photos && place.photos.length > 0) {
         const photoReference = place.photos[0].photo_reference;
         // Usar Place Photos API para obter URL completa da foto
@@ -65,8 +72,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Retornar no formato esperado pelo frontend
     res.status(200).json({ results: processedResults });
-  } catch (error: any) {
-    console.error('Failed to fetch nearby places:', error.message);
-    res.status(500).json({ error: 'Failed to fetch nearby places', details: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : undefined;
+    console.error('Failed to fetch nearby places:', message);
+    res.status(500).json({ error: 'Failed to fetch nearby places', details: message });
   }
 }

@@ -2,42 +2,58 @@ import { useState, useEffect, useCallback } from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Expense, ExpensesByCategory, ExpenseCategory } from '../../@types/ExpenseControlTypes';
+import { Expense, ExpensesByCategory } from '../../@types/ExpenseControlTypes';
 
 const EXPENSES_STORAGE_KEY = '@eztripai_userExpenses';
 const BUDGET_LIMIT_STORAGE_KEY = '@eztripai_userBudgetLimit';
+
+type StoredExpenseData = {
+  expenses: Expense[] | null;
+  budgetLimit: number | null;
+};
+
+// Leitura sem efeitos de estado: usada na carga inicial e nas recargas.
+async function readStoredExpenseData(): Promise<StoredExpenseData> {
+  const jsonValue = await AsyncStorage.getItem(EXPENSES_STORAGE_KEY);
+  const expenses = jsonValue ? JSON.parse(jsonValue) : null;
+
+  const budgetValue = await AsyncStorage.getItem(BUDGET_LIMIT_STORAGE_KEY);
+  const budgetLimit = budgetValue ? parseFloat(budgetValue) : null;
+
+  return { expenses, budgetLimit };
+}
 
 export function useExpenseControl() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [budgetLimit, setBudgetLimit] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const applyStoredExpenseData = useCallback((data: StoredExpenseData) => {
+    if (data.expenses) {
+      setExpenses(data.expenses);
+    }
+    if (data.budgetLimit !== null) {
+      setBudgetLimit(data.budgetLimit);
+    }
+  }, []);
+
   const loadExpenses = useCallback(async () => {
     try {
       setIsLoading(true);
-      const jsonValue = await AsyncStorage.getItem(EXPENSES_STORAGE_KEY);
-      if (jsonValue) {
-        const loadedExpenses = JSON.parse(jsonValue);
-        setExpenses(loadedExpenses);
-      }
-      
-      const budgetValue = await AsyncStorage.getItem(BUDGET_LIMIT_STORAGE_KEY);
-      if (budgetValue) {
-        setBudgetLimit(parseFloat(budgetValue));
-      }
-    } catch (error) {
+      applyStoredExpenseData(await readStoredExpenseData());
+    } catch {
       // DEBUG: console.error('Erro ao carregar gastos:', error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [applyStoredExpenseData]);
 
   const addExpense = useCallback(async (expense: Expense) => {
     try {
       const newExpenses = [...expenses, expense];
       setExpenses(newExpenses);
       await AsyncStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(newExpenses));
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao adicionar gasto:', error);
     }
   }, [expenses]);
@@ -47,7 +63,7 @@ export function useExpenseControl() {
       const updatedExpenses = expenses.filter(expense => expense.id !== expenseId);
       setExpenses(updatedExpenses);
       await AsyncStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(updatedExpenses));
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao remover gasto:', error);
     }
   }, [expenses]);
@@ -59,7 +75,7 @@ export function useExpenseControl() {
       );
       setExpenses(updatedExpenses);
       await AsyncStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(updatedExpenses));
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao atualizar gasto:', error);
     }
   }, [expenses]);
@@ -94,7 +110,7 @@ export function useExpenseControl() {
     try {
       setExpenses([]);
       await AsyncStorage.removeItem(EXPENSES_STORAGE_KEY);
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao limpar gastos:', error);
     }
   }, []);
@@ -108,7 +124,7 @@ export function useExpenseControl() {
         setBudgetLimit(limit);
         await AsyncStorage.setItem(BUDGET_LIMIT_STORAGE_KEY, limit.toString());
       }
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao definir limite de orçamento:', error);
     }
   }, []);
@@ -119,9 +135,13 @@ export function useExpenseControl() {
     return Math.min((total / budgetLimit) * 100, 100);
   }, [budgetLimit, getTotalExpenses]);
 
+  // Carga inicial: `isLoading` já começa em true.
   useEffect(() => {
-    loadExpenses();
-  }, [loadExpenses]);
+    readStoredExpenseData()
+      .then(applyStoredExpenseData)
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, [applyStoredExpenseData]);
 
   return {
     expenses,

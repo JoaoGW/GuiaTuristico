@@ -8,7 +8,7 @@ type ButtonProps = {
   iconColor: string,
   buttonBgColor: string,
   buttonFunctionality: () => void,
-  styles?: Object
+  styles?: object
 }
 
 export function IconButton({ icon, iconSize, iconColor, buttonBgColor, buttonFunctionality, styles }: ButtonProps){

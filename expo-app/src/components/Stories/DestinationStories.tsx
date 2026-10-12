@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useEffectEvent } from 'react';
 import { Modal, StatusBar, TouchableOpacity, Dimensions, Pressable } from 'react-native';
 import { View, Text, Image, Progress, ProgressFilledTrack } from '@gluestack-ui/themed';
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
@@ -32,56 +32,26 @@ export function DestinationStories({ visible, onClose, destination }: Destinatio
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const STORY_DURATION = 5750;
   const PROGRESS_INTERVAL = 50;
 
-  useEffect(() => {
-    if (visible && destination && !isPaused) {
-      startStory();
-    } else if (isPaused) {
-      clearTimers();
-    } else {
-      resetStory();
+  const hasDestination = !!destination;
+  const isPlaying = visible && hasDestination && !isPaused;
+
+  // Cada story (ou retomada após pausa) começa com a barra zerada; ao fechar sem
+  // estar pausado, volta para o primeiro story.
+  const storyKey = isPlaying ? currentIndex : null;
+  const [prevStoryKey, setPrevStoryKey] = useState<number | null>(null);
+  if (storyKey !== prevStoryKey) {
+    setPrevStoryKey(storyKey);
+    if (storyKey !== null) {
+      setProgress(0);
+    } else if (!isPaused) {
+      setCurrentIndex(0);
+      setProgress(0);
     }
-
-    return () => {
-      clearTimers();
-    };
-  }, [visible, currentIndex, isPaused]);
-
-  const clearTimers = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-  };
-
-  const startStory = () => {
-    clearTimers();
-    setProgress(0);
-
-    progressIntervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        const increment = (PROGRESS_INTERVAL / STORY_DURATION) * 100;
-        const newProgress = prev + increment;
-        if (newProgress >= 100) {
-          return 100;
-        }
-        return newProgress;
-      });
-    }, PROGRESS_INTERVAL);
-
-    timerRef.current = setTimeout(() => {
-      handleNext();
-    }, STORY_DURATION);
-  };
-
-  const resetStory = () => {
-    clearTimers();
-    setCurrentIndex(0);
-    setProgress(0);
-  };
+  }
 
   const handleNext = () => {
     if (!destination) return;
@@ -92,6 +62,34 @@ export function DestinationStories({ visible, onClose, destination }: Destinatio
       onClose();
     }
   };
+
+  const onStoryEnd = useEffectEvent(() => {
+    handleNext();
+  });
+
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        const increment = (PROGRESS_INTERVAL / STORY_DURATION) * 100;
+        const newProgress = prev + increment;
+        if (newProgress >= 100) {
+          return 100;
+        }
+        return newProgress;
+      });
+    }, PROGRESS_INTERVAL);
+
+    const storyTimer = setTimeout(() => {
+      onStoryEnd();
+    }, STORY_DURATION);
+
+    return () => {
+      clearInterval(progressInterval);
+      clearTimeout(storyTimer);
+    };
+  }, [isPlaying, currentIndex]);
 
   const handlePrevious = () => {
     if (currentIndex > 0) {

@@ -36,6 +36,7 @@ import { AuthNavigationProp } from '@routes/auth.routes';
 import { Edit } from 'lucide-react-native';
 
 export function EditProfile() {
+  const navigation = useNavigation<AuthNavigationProp>();
   const [avatar, setAvatar] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -67,10 +68,6 @@ export function EditProfile() {
   };
 
   const handleSave = () => {
-    const navigation = useNavigation<AuthNavigationProp>();
-    const finalGender = gender === 'outro' ? otherGender : gender;
-    const userData = { name, age, gender: finalGender, bio, email, city, country, phone, occupation };
-
     Alert.alert('Sucesso', 'Informações salvas com sucesso!');
     navigation.navigate("Home");
   };

@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { Alert } from "react-native";
+import { useRef, useState, useEffect, useEffectEvent } from "react";
+import { Alert, Platform } from "react-native";
 
 import Constants from 'expo-constants';
 
@@ -9,9 +9,6 @@ import {
   AlertDialogBody, 
   AlertDialogContent,
   AlertDialogHeader,
-  Button, 
-  ButtonIcon,
-  ButtonText,
   Text,
   View,
   Pressable
@@ -55,16 +52,16 @@ export function ItineraryActionsDialog({
   const [adLoaded, setAdLoaded] = useState<boolean>(false);
 
   const getCorrectIdForPlatform = () => {
-    const Platform = require('react-native').Platform;
     if(Platform.OS === "android"){
       return process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID;
     }
     return process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID;
   };
 
+  // Sem módulo de anúncios (Expo Go ou indisponível), `rewardedRef` fica vazio e
+  // as ações seguem sem anúncio; `adLoaded` só importa para um anúncio real carregado.
   const loadAd = () => {
     if (isExpoGo || !RewardedAd || !RewardedAdEventType || !TestIds) {
-      setAdLoaded(true);
       return;
     }
 
@@ -90,7 +87,7 @@ export function ItineraryActionsDialog({
       };
     } catch (error) {
       console.log('Error loading ad:', error);
-      setAdLoaded(true);
+      rewardedRef.current = null;
     }
   };
 
@@ -172,9 +169,13 @@ export function ItineraryActionsDialog({
     }
   };
 
+  const onDialogOpened = useEffectEvent(() => {
+    loadAd();
+  });
+
   useEffect(() => {
     if (showAlertDialog) {
-      loadAd();
+      onDialogOpened();
     }
   }, [showAlertDialog]);
   

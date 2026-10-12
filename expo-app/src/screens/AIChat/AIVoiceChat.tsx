@@ -38,7 +38,6 @@ export function AIVoiceChat(){
     toggleRecording,
     stopSpeaking,
     repeatMessage,
-    respondWithAI,
     clearMessages,
     canRecord,
   } = useVoiceChat();
@@ -172,7 +171,7 @@ export function AIVoiceChat(){
       bubbleFloat5.value = withTiming(0);
       buttonScale.value = withTiming(1);
     }
-  }, [voiceState.isRecording, messages.length]);
+  }, [voiceState.isRecording, messages.length, scale, rotation, innerScale, glowScale, bubbleFloat1, bubbleFloat2, bubbleFloat3, bubbleFloat4, bubbleFloat5, buttonScale]);
 
   // Claude Sonnet 3.5: Animated style for outer bubble
   const animatedOuterStyle = useAnimatedStyle(() => {

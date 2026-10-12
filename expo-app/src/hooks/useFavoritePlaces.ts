@@ -4,6 +4,12 @@ import { FavoritePlace } from '../../@types/FavoritePlacesTypes';
 
 const FAVORITE_PLACES_STORAGE_KEY = '@eztripai_userFavoritePlaces';
 
+// Leitura sem efeitos de estado: usada na carga inicial e nas recargas.
+async function readStoredFavoritePlaces(): Promise<FavoritePlace[] | null> {
+  const jsonValue = await AsyncStorage.getItem(FAVORITE_PLACES_STORAGE_KEY);
+  return jsonValue ? JSON.parse(jsonValue) : null;
+}
+
 export function useFavoritePlaces() {
   const [favoritePlaces, setFavoritePlaces] = useState<FavoritePlace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,12 +18,11 @@ export function useFavoritePlaces() {
   const loadFavoritePlaces = useCallback(async () => {
     try {
       setIsLoading(true);
-      const jsonValue = await AsyncStorage.getItem(FAVORITE_PLACES_STORAGE_KEY);
-      if (jsonValue) {
-        const places = JSON.parse(jsonValue);
+      const places = await readStoredFavoritePlaces();
+      if (places) {
         setFavoritePlaces(places);
       }
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao carregar locais favoritos:', error);
     } finally {
       setIsLoading(false);
@@ -37,7 +42,7 @@ export function useFavoritePlaces() {
         setFavoritePlaces(newFavorites);
         await AsyncStorage.setItem(FAVORITE_PLACES_STORAGE_KEY, JSON.stringify(newFavorites));
       }
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao adicionar local aos favoritos:', error);
     }
   }, [favoritePlaces]);
@@ -48,7 +53,7 @@ export function useFavoritePlaces() {
       const updatedFavorites = favoritePlaces.filter(place => place.id !== placeId);
       setFavoritePlaces(updatedFavorites);
       await AsyncStorage.setItem(FAVORITE_PLACES_STORAGE_KEY, JSON.stringify(updatedFavorites));
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao remover local dos favoritos:', error);
     }
   }, [favoritePlaces]);
@@ -63,14 +68,22 @@ export function useFavoritePlaces() {
     try {
       setFavoritePlaces([]);
       await AsyncStorage.removeItem(FAVORITE_PLACES_STORAGE_KEY);
-    } catch (error) {
+    } catch {
       // DEBUG: console.error('Erro ao limpar favoritos:', error);
     }
   }, []);
 
+  // Carga inicial: `isLoading` já começa em true.
   useEffect(() => {
-    loadFavoritePlaces();
-  }, [loadFavoritePlaces]);
+    readStoredFavoritePlaces()
+      .then((places) => {
+        if (places) {
+          setFavoritePlaces(places);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, []);
 
   return {
     favoritePlaces,

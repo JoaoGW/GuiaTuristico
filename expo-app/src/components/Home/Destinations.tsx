@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 
-import { Box, Text, View, HStack, Image } from '@gluestack-ui/themed';
+import { Box, Text, View, Image } from '@gluestack-ui/themed';
 
 import { API_URL } from '../../config';
 

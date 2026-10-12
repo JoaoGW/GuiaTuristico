@@ -6,7 +6,7 @@ type PersonalInfoTypes = {
   icon: LucideIcon,
   topic: string,
   information: string
-  style?: Object
+  style?: object
 }
 
 export function PersonalInfoProfile({ icon: Icon, topic, information, style }: PersonalInfoTypes){

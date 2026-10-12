@@ -108,14 +108,14 @@ export const clearAllChatsHistory = async () => {
  *
  * @throws Will display an alert and log an error to the console if there is an issue retrieving or parsing the data.
  */
-export const loadChatHistory = async (chatId: string, setMessages: React.Dispatch<React.SetStateAction<MessageTypes[]>>, setLastModified: React.Dispatch<React.SetStateAction<string>>) => {
+export const loadChatHistory = async (chatId: string, setMessages: React.Dispatch<React.SetStateAction<MessageTypes[]>>, setLastModified?: React.Dispatch<React.SetStateAction<string>>) => {
   try {
     const jsonValue = await AsyncStorage.getItem(`@eztripai_chatHistory_${chatId}`);
 
     if (jsonValue != null) {
       const { messages, lastModified } = JSON.parse(jsonValue);
       setMessages(messages);
-      setLastModified(lastModified || "Data indisponível");
+      setLastModified?.(lastModified || "Data indisponível");
     }
   } catch (error) {
     Alert.alert("Erro ao carregar histórico de mensagens");
@@ -137,7 +137,7 @@ export const storeChatHistory = async (data: { messages: MessageTypes[]; lastMod
   try {
     const jsonValue = JSON.stringify(data);
     await AsyncStorage.setItem(`@eztripai_chatHistory_${chatId}`, jsonValue);
-  } catch (e) {
+  } catch {
     Alert.alert('Erro', 'Não foi possível salvar as informações de sua última conversa com seu Guia Turístico!');
   }
 };

@@ -1,5 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { LoginScreen } from "@screens/Credentials/Login";
 import { SignUpScreen } from "@screens/Credentials/SignUp";

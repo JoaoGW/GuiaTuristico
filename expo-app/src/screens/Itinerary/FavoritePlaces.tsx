@@ -69,10 +69,6 @@ export function FavoritePlaces() {
     }
   };
 
-  const formatCoordinates = (coordinates: string) => {
-    const [lat, lng] = coordinates.split(',').map(coord => coord.trim());
-    return `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`;
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
