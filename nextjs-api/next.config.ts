@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
     // https://github.com/vercel/next.js/issues/issues
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
 };
 
 export default nextConfig;

@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "checkup": "expo-doctor"
+    "checkup": "expo-doctor",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo-google-fonts/libre-bodoni": "^0.4.1",
@@ -83,6 +84,8 @@
     "@types/react-native-html-to-pdf": "^0.8.3",
     "@types/react-native-indicators": "^0.16.6",
     "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
     "metro-react-native-babel-transformer": "^0.77.0",
     "react-native-svg-transformer": "^1.5.0",
     "typescript": "~6.0.3"

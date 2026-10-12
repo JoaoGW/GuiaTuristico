@@ -77,12 +77,11 @@ GuiaTuristico/ <br/>
 
 ---
 
-## Testes
+## Qualidade de Código
 
-No bash: <br/><br/>
-npm run test <br/>
-ou <br/>
-yarn test <br/>
+O projeto ainda não tem testes automatizados. Para verificar o código, rode dentro de cada pacote (`expo-app` ou `nextjs-api`): <br/><br/>
+npm run lint <br/>
+npx tsc --noEmit <br/>
 
 ---
 

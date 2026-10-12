@@ -47,13 +47,15 @@ touch .env.local
 Edite o arquivo `.env.local` e adicione suas chaves de API:
 
 ```env
+OPEN_AI_KEY=sua_chave_openai_aqui
 GOOGLE_PLACES_API_KEY=sua_chave_google_places_aqui
-OPENAI_API_KEY=sua_chave_openai_aqui
+WEATHER=sua_chave_weatherapi_aqui
 ```
 
 **Onde obter as chaves:**
 - **Google Places API**: [Google Cloud Console](https://console.cloud.google.com/)
 - **OpenAI API**: [OpenAI Platform](https://platform.openai.com/api-keys)
+- **WeatherAPI**: [WeatherAPI.com](https://www.weatherapi.com/)
 
 ### 2.2 Configurar Firebase (Expo App)
 
@@ -189,16 +191,20 @@ npx expo doctor
 
 ---
 
-## 8. Executar Testes
+## 8. Verificar a Qualidade do Código
+
+O projeto ainda não tem testes automatizados. Use o lint e a verificação de tipos em cada pacote:
 
 ```bash
-# Testes do Expo App
+# Expo App
 cd expo-app
-npm run test
+npm run lint
+npx tsc --noEmit
 
-# Testes da API Next.js
+# API Next.js
 cd nextjs-api
-npm run test
+npm run lint
+npx tsc --noEmit
 ```
 
 ---

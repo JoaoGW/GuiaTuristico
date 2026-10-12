@@ -1,0 +1,82 @@
+{
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2"
+  },
+  "permissions": {
+    "defaultMode": "default",
+    "disableAutoMode": "disable",
+    "disableBypassPermissionsMode": "disable",
+    "blockReadsOutsideWorkingDirectories": true,
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npm run checkup)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm update *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(npx eas *)",
+      "Bash(eas *)",
+      "Bash(vercel *)",
+      "Bash(docker-compose *)",
+      "Bash(docker compose *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.npmrc)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(./.npmrc)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Write(./.npmrc)",
+      "Read(./expo-app/.env)",
+      "Read(./expo-app/.env.*)",
+      "Read(./expo-app/.npmrc)",
+      "Edit(./expo-app/.env)",
+      "Edit(./expo-app/.env.*)",
+      "Edit(./expo-app/.npmrc)",
+      "Write(./expo-app/.env)",
+      "Write(./expo-app/.env.*)",
+      "Write(./expo-app/.npmrc)",
+      "Read(./nextjs-api/.env)",
+      "Read(./nextjs-api/.env.*)",
+      "Read(./nextjs-api/.npmrc)",
+      "Edit(./nextjs-api/.env)",
+      "Edit(./nextjs-api/.env.*)",
+      "Edit(./nextjs-api/.npmrc)",
+      "Write(./nextjs-api/.env)",
+      "Write(./nextjs-api/.env.*)",
+      "Write(./nextjs-api/.npmrc)",
+      "Read(./expo-app/src/*.plist)",
+      "Bash(printenv)",
+      "Bash(env)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(npm publish *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/validate-base.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
