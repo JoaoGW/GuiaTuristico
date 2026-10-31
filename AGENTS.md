@@ -67,18 +67,31 @@ Aliases do app (em `tsconfig.json` e `babel.config.js`): `@assets`, `@components
 | `GET /api/googlePhotoProxy` | `photo_reference` | Google Place Photo (`maxwidth=400`) | bytes da imagem | `components/Home/Destinations.tsx` |
 | `GET /api/weather` | `latitude`, `longitude` (validados) | WeatherAPI.com `current.json` (HTTPS) | JSON da WeatherAPI | `screens/AIChat/AIChat.tsx` |
 | `GET /api/passportVisa` | `origin`, `destination` (ISO alfa-2) | `rough-sun-2523.fly.dev/visa/{origin}/{destination}` | JSON do serviço com `category.code` validado; falha → 503 `VISA_UNAVAILABLE` | `screens/Itinerary/ItineraryVisaCheck.tsx` |
-| `POST /api/generateItinerary` | preferências estruturadas (`dateBegin`, `dateEnd`, `days`, `continent?`, `countries?`, `originCountry`, `budget`, `peopleQuantity`, `accompanying`, `tripStyles`, `locomotionMethods`, `specialWish?`, `userPreferences?`) | OpenAI Chat Completions com JSON Schema | `{ itinerary: { continent, countries, days[] } }`; incompleto → 502 `ITINERARY_INCOMPLETE`. `peopleQuantity` é o total de viajantes, incluindo quem cria o roteiro. Transição: `{ prompt }` (app anterior ao FE-20) ainda devolve `{ message }` em texto | `utils/gptRequests.ts` → `generateItinerary` |
+| `POST /api/generateItinerary` | preferências estruturadas (`dateBegin`, `dateEnd`, `days`, `continent?`, `countries?`, `originCountry`, `budget`, `peopleQuantity`, `accompanying`, `tripStyles`, `locomotionMethods`, `specialWish?`, `userPreferences?`) | OpenAI Chat Completions com JSON Schema | `{ itinerary: { continent, countries, days[] }, plan, credits: { required, charged }, missingDays }`; nada gerado → 502 `ITINERARY_INCOMPLETE`. Nova tentativa de blocos: mesmas preferências + `plan` + `blocks`. `peopleQuantity` é o total de viajantes, incluindo quem cria o roteiro. Transição: `{ prompt }` (app anterior ao FE-20) ainda devolve `{ message }` em texto | `utils/gptRequests.ts` → `generateItinerary` |
 | `POST /api/justchat` | `{ messages: [{ role, content }] }` ou `{ prompt }` (legado) | OpenAI Chat Completions | `{ message }` | `utils/gptRequests.ts` → `generateChatAnswers` (histórico: migração FE-12) |
 | `POST /api/chat` | `{ message }` | OpenAI Chat Completions | `{ success, response, usage }` | sem consumidor atual no app |
 | `POST /api/voiceChat` | multipart, campo `audio` com mimetype `audio/*` (≤ 2 MB, ~15 s) | OpenAI Whisper + Chat Completions | `{ success, transcription, response, audioInfo, usage }` | `services/voiceService.ts` |
 | `GET` / `DELETE /api/cacheStats` | — | — | estatísticas / limpeza do cache (DELETE só fora de produção; 403 em produção) | depuração |
+| `GET /api/itineraryQuote` | `days` (1 a 28) | — | `{ days, credits, daysPerCredit, maxDays }` | tela de preferências do roteiro (FE) |
 | `GET /api/version` | — | — | `{ commit, branch, environment }` (variáveis de sistema da Vercel) | verificação de deploy |
 
 A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`.
 
-Contrato comum: método errado → 405 com `Allow`; entrada inválida → 400; erros sempre em JSON `{ error: "Mensagem em pt-BR.", code? }`, sem `message`/`details` internos. Chave ausente → 503; falha do provedor externo → 502 (visto: 503 `VISA_UNAVAILABLE`); OpenAI 401 → 500 `AI_AUTH_ERROR`, 429 → 429, tempo limite → 504 `AI_TIMEOUT`.
+Contrato comum: método errado → 405 com `Allow`; entrada inválida → 400; erros sempre em JSON `{ error: "Mensagem em pt-BR.", code? }`, sem `message`/`details` internos. Chave ausente → 503; falha do provedor externo → 502 (visto: 503 `VISA_UNAVAILABLE`); OpenAI 401 → 500 `AI_AUTH_ERROR`, 429 → 429, tempo limite → 504 `AI_TIMEOUT`, conta sem saldo → 503 `AI_QUOTA_EXCEEDED`.
 
-Tempo máximo na Vercel (`export const config.maxDuration`): `generateItinerary` 120 s; `chat`, `justchat` e `voiceChat` 60 s. Cada chamada à OpenAI tem timeout menor que o da rota (roteiro: 110 s, ou 30 s + 80 s no Modo Surpresa, sem retentativa; chat: 25 s com 1 retentativa; voz: 15 s de transcrição + 25 s de resposta, sem retentativa), para que a falha saia em JSON. Os 120 s exigem Fluid compute ou plano Pro na Vercel.
+Tempo máximo na Vercel (`export const config.maxDuration`): `generateItinerary` 120 s; `chat`, `justchat` e `voiceChat` 60 s. Cada chamada à OpenAI tem timeout menor que o da rota (roteiro: 110 s em um bloco, ou 30 s do destino/plano + 80 s dos blocos em paralelo, sem retentativa; chat: 25 s com 1 retentativa; voz: 15 s de transcrição + 25 s de resposta, sem retentativa), para que a falha saia em JSON. Os 120 s exigem Fluid compute ou plano Pro na Vercel.
+
+### Créditos de IA no roteiro
+
+Regra do Produto (01/11/2026): cada bloco de até 7 dias consome 1 crédito (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4); o máximo é 28 dias. A regra fica em `src/contexts/itinerary/domain/credits.ts`.
+
+- Até 7 dias: uma chamada à OpenAI (mais a escolha do destino no Modo Surpresa).
+- Acima de 7 dias: uma chamada planeja a rota da viagem inteira (`plan`: data e cidade de cada dia) e os blocos são gerados em paralelo, cada um preso ao plano. Número, data e cidade de cada dia vêm do plano.
+- Só os blocos gerados com sucesso são cobrados (`credits.charged`); os dias dos blocos que falharam vêm em `missingDays`. Se nenhum bloco sair, a resposta é um erro e nada é cobrado. O plano não consome crédito.
+- Nova tentativa: o app reenvia as preferências com o `plan` recebido e `blocks` (números dos blocos que faltaram); cada bloco gerado consome 1 crédito.
+- `GET /api/itineraryQuote?days=N` informa o custo antes da geração. O formato antigo `{ prompt }` não calcula créditos.
+- O saldo e o débito ficarão no RevenueCat (moeda virtual). A API só calcula; o débito deve ser feito pelo servidor, com a chave secreta do RevenueCat e o uid do Firebase como cliente, o que depende de `AI_AUTH_REQUIRED=true`.
+- Cada chamada estruturada registra no log `Uso da IA (<schema>)` com tokens de entrada, saída e raciocínio e a duração, sem dados do usuário, para acompanhar o custo por crédito.
 
 As rotas de IA (`chat`, `justchat`, `generateItinerary`, `voiceChat`) passam por `src/shared/aiRouteGuard.ts`: limite de 20 requisições por minuto por usuário (ou IP), em memória de cada instância, e, com `AI_AUTH_REQUIRED=true` + `FIREBASE_PROJECT_ID`, exigem `Authorization: Bearer <ID token do Firebase>` (401 `UNAUTHENTICATED`). A verificação do token usa `node:crypto` e os certificados públicos do Google, sem `firebase-admin`. A autenticação fica desligada até o app enviar o token (FE-10).
 

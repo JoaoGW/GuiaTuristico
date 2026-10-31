@@ -32,7 +32,7 @@ export default function SwaggerAccordion() {
     "429": { description: "Limite de uso da rota ou da OpenAI atingido", example: { error: "Muitas solicitações em pouco tempo. Tente novamente em instantes.", code: "RATE_LIMITED" } },
     "500": { description: "Falha de autenticação com a OpenAI ou erro interno", example: { error: "Erro de autenticação no serviço de IA.", code: "AI_AUTH_ERROR" } },
     "502": { description: "OpenAI indisponível (rede ou 5xx)", example: { error: "Serviço de IA indisponível no momento.", code: "AI_UNAVAILABLE" } },
-    "503": { description: "OPEN_AI_KEY não configurada", example: { error: "Serviço de IA indisponível.", code: "AI_UNAVAILABLE" } },
+    "503": { description: "OPEN_AI_KEY não configurada (AI_UNAVAILABLE) ou conta da OpenAI sem saldo (AI_QUOTA_EXCEEDED)", example: { error: "Serviço de IA indisponível.", code: "AI_UNAVAILABLE" } },
     "504": { description: "A OpenAI passou do tempo limite da chamada", example: { error: "O serviço de IA demorou para responder. Tente novamente.", code: "AI_TIMEOUT" } }
   };
 
@@ -100,11 +100,11 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países antes (Modo Surpresa). Nenhum dia é descartado em silêncio: roteiro truncado ou inválido gera 502 ITINERARY_INCOMPLETE. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). Acima de 7 dias, a API planeja a rota da viagem inteira (plan) e gera os blocos em paralelo; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. O saldo fica no RevenueCat; a API só calcula. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
-        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 7)" },
+        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 28)" },
         { name: "continent", type: "string", required: false, description: "Continente (ignorado no Modo Surpresa)" },
         { name: "countries", type: "string[]", required: false, description: "Países (0 a 10); vazio ativa o Modo Surpresa" },
         { name: "originCountry", type: "string", required: true, description: "País de origem do grupo" },
@@ -114,7 +114,9 @@ export default function SwaggerAccordion() {
         { name: "tripStyles", type: "string[]", required: true, description: "Estilos de viagem (1 a 10)" },
         { name: "locomotionMethods", type: "string[]", required: true, description: "Meios de locomoção (1 a 10)" },
         { name: "specialWish", type: "string", required: false, description: "Desejo especial (até 300 caracteres)" },
-        { name: "userPreferences", type: "string[]", required: false, description: "Preferências do usuário (até 30)" }
+        { name: "userPreferences", type: "string[]", required: false, description: "Preferências do usuário (até 30)" },
+        { name: "plan", type: "{ continent, countries[], days: [{ date, location }] }", required: false, description: "Nova tentativa: o plan devolvido pela API para este roteiro (obrigatório junto com blocks)" },
+        { name: "blocks", type: "integer[]", required: false, description: "Nova tentativa: números dos blocos a gerar (1 = dias 1–7, 2 = dias 8–14...)" }
       ],
       responses: {
         "200": {
@@ -131,10 +133,13 @@ export default function SwaggerAccordion() {
                 suggestedActivities: ["Atividade extra recomendada"],
                 pixabayTags: "lisboa, portugal"
               }]
-            }
+            },
+            plan: { continent: "Europa", countries: ["Portugal", "Espanha"], days: [{ date: "2026-12-01", location: "Lisboa, Portugal" }] },
+            credits: { required: 2, charged: 1 },
+            missingDays: [8, 9, 10, 11, 12, 13, 14]
           }
         },
-        "400": { description: "Preferências ausentes ou inválidas", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 7.", code: "INVALID_INPUT" } },
+        "400": { description: "Preferências, plan ou blocks inválidos", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 28.", code: "INVALID_INPUT" } },
         ...aiErrors,
         "502": { description: "Roteiro truncado, inválido ou OpenAI indisponível", example: { error: "O roteiro gerado veio incompleto. Tente gerar novamente.", code: "ITINERARY_INCOMPLETE" } }
       }
@@ -241,6 +246,20 @@ export default function SwaggerAccordion() {
         "400": { description: "Código de país ausente ou fora do padrão ISO alfa-2", example: { error: "origin deve ser um código de país ISO com 2 letras (ex.: BR).", code: "INVALID_INPUT" } },
         "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } },
         "503": { description: "Serviço de vistos indisponível ou resposta inválida", example: { error: "Não foi possível consultar o visto agora.", code: "VISA_UNAVAILABLE" } }
+      }
+    },
+    {
+      method: "GET",
+      path: "/api/itineraryQuote",
+      summary: "Créditos de um roteiro",
+      description: "Calcula quantos créditos de IA um roteiro consome antes de gerá-lo (1 a cada 7 dias). Não chama a IA nem consulta saldo; o saldo fica no RevenueCat.",
+      parameters: [
+        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 28)" }
+      ],
+      responses: {
+        "200": { description: "Cotação", example: { days: 10, credits: 2, daysPerCredit: 7, maxDays: 28 } },
+        "400": { description: "days ausente ou fora do intervalo", example: { error: "O parâmetro \"days\" deve ser um número inteiro entre 1 e 28.", code: "INVALID_INPUT" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } }
       }
     },
     {
