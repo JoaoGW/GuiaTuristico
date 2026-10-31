@@ -18,7 +18,7 @@ export async function answerChat(rawMessage: unknown) {
       ],
       // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
       max_completion_tokens: 600,
-    });
+    }, { timeout: 25_000, maxRetries: 1 });
 
     return {
       response: completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.',

@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import formidable from 'formidable';
 import { readFile, unlink } from 'node:fs/promises';
 import { answerVoiceMessage } from '@/contexts/concierge/application/answerVoiceMessage';
@@ -9,11 +9,12 @@ import { responseCache } from '../../utils/responseCache';
 
 const MAX_AUDIO_BYTES = 2 * 1024 * 1024;
 
-// Configuração para permitir upload de arquivos
-export const config = {
+// Configuração para permitir upload de arquivos. Transcrição (15 s) + resposta (25 s) cabem em 60 s.
+export const config: PageConfig = {
   api: {
     bodyParser: false,
   },
+  maxDuration: 60,
 };
 
 function parseUpload(req: NextApiRequest): Promise<formidable.Files> {

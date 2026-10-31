@@ -28,7 +28,8 @@ export async function generateItinerary(body: unknown): Promise<Itinerary> {
       systemPrompt: SURPRISE_DESTINATION_SYSTEM_PROMPT,
       userPrompt: buildSurpriseDestinationPrompt(preferences),
       schemaName: 'surprise_destination',
-      schema: SURPRISE_DESTINATION_SCHEMA
+      schema: SURPRISE_DESTINATION_SCHEMA,
+      timeoutMs: 30_000
     }));
     continent = destination.continent;
     countries = destination.countries;
@@ -38,7 +39,9 @@ export async function generateItinerary(body: unknown): Promise<Itinerary> {
     systemPrompt: ITINERARY_SYSTEM_PROMPT,
     userPrompt: buildItineraryPrompt(preferences, continent, countries),
     schemaName: 'itinerary',
-    schema: ITINERARY_DAYS_SCHEMA
+    schema: ITINERARY_DAYS_SCHEMA,
+    // No Modo Surpresa, 30 s já foram reservados para a escolha do destino.
+    timeoutMs: preferences.countries.length === 0 ? 80_000 : 110_000
   }), preferences.days);
 
   return { continent, countries, days };

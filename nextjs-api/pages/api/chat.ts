@@ -1,7 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import { answerChat } from '@/contexts/concierge/application/answerChat';
 import { guardAiRoute } from '@/shared/aiRouteGuard';
 import { ensureMethod, sendError } from '@/shared/http';
+
+// Até 2 tentativas de 25 s na OpenAI.
+export const config: PageConfig = { maxDuration: 60 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!ensureMethod(req, res, ['POST'])) return;

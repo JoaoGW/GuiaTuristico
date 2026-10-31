@@ -37,7 +37,7 @@ export async function transcribeAudio(openai: OpenAI, audio: Buffer): Promise<st
         language: 'pt',
         response_format: 'text',
         temperature: 0,
-      });
+      }, { timeout: 15_000, maxRetries: 0 });
     } catch (error) {
       if (!isFormatError(error)) {
         // Outros 400 da transcrição vêm do conteúdo enviado (áudio corrompido ou vazio), não do servidor.

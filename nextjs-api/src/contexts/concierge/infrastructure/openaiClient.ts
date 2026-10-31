@@ -17,6 +17,11 @@ export function createOpenAIClient(): OpenAI {
 export function toAiError(error: unknown): unknown {
   if (error instanceof AppError) return error;
 
+  // Os timeouts por chamada ficam abaixo do maxDuration da rota, para a resposta sair em JSON.
+  if (error instanceof OpenAI.APIConnectionTimeoutError) {
+    return new AppError(504, 'O serviço de IA demorou para responder. Tente novamente.', 'AI_TIMEOUT', { cause: error });
+  }
+
   if (error instanceof OpenAI.APIConnectionError) {
     return new AppError(502, 'Serviço de IA indisponível no momento.', 'AI_UNAVAILABLE', { cause: error });
   }

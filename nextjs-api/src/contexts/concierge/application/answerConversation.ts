@@ -13,7 +13,7 @@ export async function answerConversation(body: unknown): Promise<string> {
       messages: [{ role: 'system', content: FELIPE_TEXT_CHAT_PROMPT }, ...conversation],
       // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
       max_completion_tokens: 1500
-    });
+    }, { timeout: 25_000, maxRetries: 1 });
 
     return response.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
   } catch (error) {

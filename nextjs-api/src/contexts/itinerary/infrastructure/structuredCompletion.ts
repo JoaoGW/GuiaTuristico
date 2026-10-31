@@ -7,6 +7,8 @@ interface StructuredRequest {
   userPrompt: string;
   schemaName: string;
   schema: Record<string, unknown>;
+  /** Sem retentativas: a soma das chamadas precisa caber no maxDuration de 120 s da rota. */
+  timeoutMs: number;
 }
 
 /**
@@ -28,7 +30,7 @@ export async function requestStructuredJson(openai: OpenAI, request: StructuredR
       },
       // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
       max_completion_tokens: 6000
-    });
+    }, { timeout: request.timeoutMs, maxRetries: 0 });
   } catch (error) {
     throw toAiError(error);
   }
