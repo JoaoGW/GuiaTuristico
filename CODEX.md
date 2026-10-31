@@ -8,7 +8,7 @@ Por estar na raiz, o `AGENTS.md` é carregado automaticamente pelo Codex. Não h
 
 - **GuiaTuristico — EZ Trip AI**: guia turístico com IA (TCC), com o guia virtual Felipe.
 - `expo-app/`: Expo SDK 57, React Native 0.86, React 19.2, TypeScript ~6.0, React Navigation 7, Gluestack UI v1, Firebase Auth.
-- `nextjs-api/`: Next.js 16 com rotas em `pages/api/`, OpenAI (`gpt-5.6-luna`, `whisper-1`), Google Places, WeatherAPI e serviço de vistos; produção na Vercel.
+- `nextjs-api/`: Next.js 16 com rotas em `pages/api/`, OpenAI (`gpt-6-luna`, `whisper-1`), Google Places, WeatherAPI e serviço de vistos; produção na Vercel.
 - Pacotes npm independentes: instale e execute comandos dentro de cada um.
 
 ## Convenções Ativas
@@ -25,10 +25,10 @@ O `AGENTS.md` orienta o agente a:
 
 ## Proteções de Comandos
 
-Não há configuração do Codex versionada. As proteções equivalentes do Claude ficam em `.claude/settings.json` e `.claude/hooks/validate-base.sh` (bloqueiam `git reset --hard`, `git clean`, exclusão recursiva, force push, push direto para `main`/`master` e `npm publish`). Siga as mesmas restrições descritas em `AGENTS.md`.
+Não há configuração do Codex versionada. As proteções equivalentes do Claude ficam em `.claude/settings.json` e `.claude/hooks/validate-base.sh` (bloqueiam `git reset --hard`, `git clean`, exclusão recursiva, force push, push direto para `main`/`master`, `npm publish`, `vercel deploy`/`--prod` e `eas build|submit|update`). Siga as mesmas restrições descritas em `AGENTS.md`.
 
 ## Workflows Reutilizáveis
 
-Os workflows de interface, prontidão local, revisão de código, auditoria de segurança e correção de defeitos estão em `.claude/skills/`, `.claude/commands/` e `.claude/agents/`. Eles podem ser lidos como procedimento pelo Codex.
+Os workflows de interface, prontidão local, validação, revisão de código, auditoria de segurança, revisão de verificação e de documentação, avaliação de agentes e correção de defeitos estão em `.claude/skills/`, `.claude/commands/`, `.claude/agents/` e `.claude/guides/` (critérios de conclusão e responsabilidades). Eles podem ser lidos como procedimento pelo Codex. Em design, `docs/DesignIA_Regras.md` prevalece sobre `docs/DESIGN.md`.
 
 Não há conectores ou serviços remotos configurados para agentes neste repositório.

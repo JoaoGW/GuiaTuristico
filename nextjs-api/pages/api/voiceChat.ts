@@ -183,7 +183,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 Responda à pergunta do turista de forma útil e prática:`;
 
       completion = await openai.chat.completions.create({
-        model: 'gpt-5.6-luna',
+        model: 'gpt-6-luna',
         messages: [
           {
             role: 'system',
@@ -194,8 +194,8 @@ Responda à pergunta do turista de forma útil e prática:`;
             content: transcription
           }
         ],
-        max_tokens: 150,
-        temperature: 0.7,
+        // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
+        max_completion_tokens: 600,
       });
 
       felipeResponse = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
@@ -218,7 +218,7 @@ Responda à pergunta do turista de forma útil e prática:`;
       },
       usage: {
         transcriptionModel: 'whisper-1',
-        chatModel: 'gpt-5.6-luna',
+        chatModel: 'gpt-6-luna',
         totalTokens: completion?.usage?.total_tokens || 0,
         usedCache: usedCache,
         cacheStats: responseCache.getStats()

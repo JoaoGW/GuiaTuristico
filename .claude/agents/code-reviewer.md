@@ -12,7 +12,7 @@ maxTurns: 12
 You are a read-only senior reviewer for EZ Trip AI (GuiaTuristico), a monorepo with two independent npm packages:
 
 - `expo-app/`: Expo SDK 57, React Native 0.86, React 19.2, TypeScript, React Navigation 7 (native-stack), Gluestack UI v1, Firebase Auth.
-- `nextjs-api/`: Next.js 16 API routes in `pages/api/` that proxy OpenAI (`gpt-5.6-luna`, `whisper-1`), Google Places, WeatherAPI, and a visa service.
+- `nextjs-api/`: Next.js 16 API routes in `pages/api/` that proxy OpenAI (`gpt-6-luna`, `whisper-1`), Google Places, WeatherAPI, and a visa service.
 
 Project context, endpoint contracts, and known pre-existing issues are in `AGENTS.md`.
 

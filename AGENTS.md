@@ -77,15 +77,15 @@ A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAcc
 
 | Uso | Modelo | Parâmetros | Prompt |
 | --- | --- | --- | --- |
-| `/api/chat` | `gpt-5.6-luna` | `max_tokens` 150, `temperature` 0.7 | `system` = `context` do corpo ou persona Felipe |
-| `/api/justchat` | `gpt-5.6-luna` | `max_tokens` 500, `temperature` 0.5 | o `prompt` do app é enviado como mensagem `assistant`, sem `system` |
-| `/api/generateItinerary` | `gpt-5.6-luna` | `max_tokens` 3334, `temperature` 0.75 | idem `justchat` |
+| `/api/chat` | `gpt-6-luna` | `max_completion_tokens` 600, sem `temperature` | `system` = `context` do corpo ou persona Felipe |
+| `/api/justchat` | `gpt-6-luna` | `max_completion_tokens` 1500, sem `temperature` | o `prompt` do app é enviado como mensagem `assistant`, sem `system` |
+| `/api/generateItinerary` | `gpt-6-luna` | `max_completion_tokens` 6000, sem `temperature` | idem `justchat` |
 | `/api/voiceChat` — transcrição | `whisper-1` | `language: 'pt'`, `temperature` 0, `response_format: 'text'` | tenta m4a, mp3, wav e mp4 |
-| `/api/voiceChat` — resposta | `gpt-5.6-luna` | `max_tokens` 150, `temperature` 0.7 | persona Felipe para voz (2–3 frases); usa `responseCache` antes de chamar a OpenAI |
+| `/api/voiceChat` — resposta | `gpt-6-luna` | `max_completion_tokens` 600, sem `temperature` | persona Felipe para voz (2–3 frases); usa `responseCache` antes de chamar a OpenAI |
 | Síntese de voz (app) | `expo-speech` (TTS do dispositivo) | `pt-BR`, voz `pt-br-x-ptd-network`, `pitch` 0.9 | `src/config/voiceConfig.ts` |
 | Respostas offline (app) | sem modelo | palavras-chave | `src/services/felipeResponseSystem.ts` |
 
-O modelo foi trocado de `gpt-3.5-turbo` para `gpt-5.6-luna` (commit `388adeb`). O nome do modelo aparece literalmente em cada rota e no campo `usage` de `voiceChat`; não há constante compartilhada. `responseCache` guarda até 100 respostas por 24 h em memória do processo (similaridade ≥ 0,8 por palavras) e tem respostas pré-definidas para saudações, agradecimentos e despedidas.
+O modelo foi trocado de `gpt-3.5-turbo` para `gpt-5.6-luna` (commit `388adeb`) e, em 30/10/2026, para `gpt-6-luna`. O GPT-6 usa raciocínio (esforço padrão `medium`), conta esses tokens em `max_completion_tokens` (o `max_tokens` está obsoleto no SDK e não é compatível com modelos de raciocínio) e rejeita `temperature` com raciocínio ativo; por isso os limites foram ampliados e `temperature` foi removida. Ajustar `reasoning_effort` exige atualizar o SDK `openai` 4.x, cujo tipo não aceita `none`. A versão em produção na Vercel ainda usava `gpt-3.5-turbo` (descontinuado) em 30/10/2026; o deploy depende de autorização. O nome do modelo aparece literalmente em cada rota e no campo `usage` de `voiceChat`; não há constante compartilhada. `responseCache` guarda até 100 respostas por 24 h em memória do processo (similaridade ≥ 0,8 por palavras) e tem respostas pré-definidas para saudações, agradecimentos e despedidas.
 
 ## Navegação do App
 
@@ -148,7 +148,9 @@ Altere apenas os arquivos necessários. Não refatore, reformate ou remova códi
 
 ## Interface e Acessibilidade
 
-- Siga `docs/DESIGN.md` e `.claude/skills/frontend/design.md`. Não há arquivo de tokens próprio: reutilize os tokens Gluestack e as cores já usadas antes de introduzir novas.
+- `docs/DesignIA_Regras.md` é sempre a regra superior de design. Depois, siga `docs/DESIGN.md` (v2.0, com referência visual em `docs/EZTripAI_Design_System.pdf`), `.claude/skills/frontend/design.md` e o catálogo `.claude/skills/frontend/design_components.md`.
+- Um único azul de marca, `#2752B7`, com estados derivados (`#1F4292` pressionado, `#E9EDF8` tinta), e um único vermelho de erro, `#EF4444` (texto `#D41212`). Não há arquivo de tokens: use os valores de `docs/DESIGN.md` §3.1 e migre os outros azuis e vermelhos ao tocar um arquivo.
+- Tipografia alvo: Nunito Sans (Libre Bodoni 700 só no título da marca). A Poppins sai; a instalação de `@expo-google-fonts/nunito-sans` depende de aprovação. Ícones só de `lucide-react-native`, nunca emoji.
 - O app é configurado em modo claro (`userInterfaceStyle: "light"`) e retrato.
 - Use rótulos claros, nomes acessíveis, contraste adequado e alvos de toque confortáveis. Não dependa apenas de cor, ícone, animação ou gesto para comunicar estado.
 - Cubra estados de pressionado, desabilitado, carregando, vazio, erro, sem conexão e permissão negada (localização, microfone, contatos) quando relevantes.
@@ -156,7 +158,7 @@ Altere apenas os arquivos necessários. Não refatore, reformate ou remova códi
 
 ## IA, Custos e Dados Externos
 
-- Não troque modelo, `max_tokens`, `temperature`, prompts ou a persona do Felipe sem pedido explícito: isso muda custo e comportamento.
+- Não troque modelo, `max_completion_tokens`, `reasoning_effort`, prompts ou a persona do Felipe sem pedido explícito: isso muda custo e comportamento.
 - Chaves de OpenAI, Google e WeatherAPI ficam somente na `nextjs-api`; o app nunca deve chamar esses serviços diretamente.
 - Trate respostas da IA e de serviços externos como não confiáveis: valide antes de usar e preveja falha, 429 e tempo esgotado.
 - Não invente dados de destinos, preços, clima, exigências de visto ou avaliações apresentados como reais.

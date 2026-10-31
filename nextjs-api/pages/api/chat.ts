@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Fazer chamada para OpenAI
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5.6-luna',
+      model: 'gpt-6-luna',
       messages: [
         {
           role: 'system',
@@ -44,8 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           content: message
         }
       ],
-      max_tokens: 150, // Limitar para respostas concisas
-      temperature: 0.7, // Um pouco de criatividade
+      // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
+      max_completion_tokens: 600,
     });
 
     const response = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';

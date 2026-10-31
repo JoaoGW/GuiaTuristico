@@ -28,8 +28,9 @@ paths:
 
 ## LLM Usage
 
-- Chat model: `gpt-5.6-luna` in `chat.ts`, `justchat.ts`, `generateItinerary.ts`, and `voiceChat.ts`; transcription: `whisper-1` (`language: 'pt'`). The model name is a literal in each file.
-- Do not change the model, `max_tokens`, `temperature`, system prompts, the Felipe persona, or `utils/responseCache.ts` behavior without an explicit request: each affects cost, latency, and tone.
+- Chat model: `gpt-6-luna` in `chat.ts`, `justchat.ts`, `generateItinerary.ts`, and `voiceChat.ts`; transcription: `whisper-1` (`language: 'pt'`). The model name is a literal in each file.
+- GPT-6 is a reasoning model (default effort `medium`): send `max_completion_tokens` (reasoning tokens count against it; `max_tokens` is deprecated and incompatible with reasoning models) and do not send `temperature`, which is rejected while reasoning is active. Setting `reasoning_effort` to `none` requires upgrading the `openai` 4.x SDK (approval needed).
+- Do not change the model, `max_completion_tokens`, `reasoning_effort`, system prompts, the Felipe persona, or `utils/responseCache.ts` behavior without an explicit request: each affects cost, latency, and tone.
 - `justchat` and `generateItinerary` send the app-built prompt as an `assistant` message without a system prompt; itinerary prompts are assembled in the app. Preserve this unless asked to change it.
 - Treat model output as untrusted text. When the app parses it (for example, `parseAnswerPatternToItinerary` in `ItineraryMapMenu.tsx` converts the structured plain-text itinerary into objects), handle malformed output and show a recoverable error.
 - Keep `expo-app/src/config/voiceConfig.ts` consistent with the server transcription settings when either side changes.

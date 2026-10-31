@@ -9,10 +9,10 @@ export default async function JustChatHandler(req: NextApiRequest, res: NextApiR
 
     try {
       const response = await openai.chat.completions.create({
-        model: 'gpt-5.6-luna',
+        model: 'gpt-6-luna',
         messages: [{ role: 'assistant', content: prompt }],
-        max_tokens: 500,
-        temperature: 0.5
+        // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
+        max_completion_tokens: 1500
       });
 
       const message = response.choices[0].message.content;

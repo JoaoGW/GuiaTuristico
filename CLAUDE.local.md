@@ -6,7 +6,8 @@ Estas preferências complementam `CLAUDE.md` somente neste projeto.
 
 - Baseie a decisão no código e na configuração existentes, não em suposições sobre o produto.
 - Declare uma suposição somente quando ela afetar o resultado. Se a escolha alterar escopo, contrato da API, modelo ou prompt de IA, custo, permissões do dispositivo ou dados do usuário, peça direção antes de seguir.
-- Para uma tarefa com várias etapas, defina critérios observáveis de sucesso e mantenha o plano curto.
+- Se houver mais de uma interpretação, apresente-as em vez de escolher em silêncio. Se existir um caminho mais simples, diga.
+- Para uma tarefa com várias etapas, defina critérios observáveis de sucesso e mantenha o plano curto, no formato `[passo] → verificar: [checagem]`.
 
 ## Mudanças Enxutas
 

@@ -9,10 +9,10 @@ export default async function generateItineraryHandler(req: NextApiRequest, res:
 
     try {
       const response = await openai.chat.completions.create({
-        model: 'gpt-5.6-luna',
+        model: 'gpt-6-luna',
         messages: [{ role: 'assistant', content: prompt }],
-        max_tokens: 3334,
-        temperature: 0.75
+        // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
+        max_completion_tokens: 6000
       });
 
       const message = response.choices[0].message.content;
