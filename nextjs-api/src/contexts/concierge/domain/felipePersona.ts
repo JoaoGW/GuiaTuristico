@@ -21,3 +21,8 @@ export const FELIPE_VOICE_PROMPT = `Você é Felipe, um guia turístico virtual 
 - Seja sempre positivo e entusiasmado sobre viagens
 
 Responda à pergunta do turista de forma útil e prática:`;
+
+// Regra que o app prefixava em cada pergunta do chat de texto; agora fica no system prompt do servidor.
+const TOURISM_ONLY_RULE = 'Apenas responda perguntas que sejam minimamente relacionadas a turismo ou sugestões de algo a se fazer em algum lugar. Caso não sejam, diga que não pode respondê-las por não serem de turismo. Não seja tão restrito também.';
+
+export const FELIPE_TEXT_CHAT_PROMPT = `${TOURISM_ONLY_RULE}\n\n${FELIPE_CHAT_PROMPT}`;
