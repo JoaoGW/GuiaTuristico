@@ -27,7 +27,7 @@ paths:
 ## Next.js API (`nextjs-api/`)
 
 - One default-exported handler per file in `pages/api/`, typed with `NextApiRequest` and `NextApiResponse`.
-- Shared server helpers live in `nextjs-api/utils/`. The App Router in `app/` (next to `pages/`, as Next 16 requires) only serves the documentation page; keep API code out of it.
+- API code is organized by Bounded Context in `nextjs-api/src/contexts/<context>/{domain,application,infrastructure}` with shared helpers in `nextjs-api/src/shared/` (imported via `@/`); `nextjs-api/utils/` keeps only `responseCache.ts`. The App Router in `app/` (next to `pages/`, as Next 16 requires) only serves the documentation page; keep API code out of it.
 - Tailwind CSS 4 is used only for the documentation page.
 
 ## Comments

@@ -22,16 +22,18 @@ paths:
 - Check the HTTP method first and return 405 (with `Allow` when the file already does so).
 - Validate required query or body fields and return 400 with a short message before calling an external service.
 - Read keys only from `process.env`; never log keys, full upstream URLs containing keys, or raw upstream payloads with personal data.
-- Map known upstream failures as existing handlers do: OpenAI 401 → 500 "Erro de autenticação", 429 → 429, other failures → 500 with a generic message.
-- `voiceChat` disables the body parser and uses `formidable` (2 MB limit, audio only). Keep temporary files cleaned up in `finally` blocks.
-- There is no authentication or rate limiting on these routes. Do not add either without an explicit request; do flag new cost or abuse exposure in reviews.
+- Map known upstream failures as `toAiError` does: OpenAI 401 → 500 `AI_AUTH_ERROR`, 429 → 429, connection or 5xx → 502, missing key → 503; other providers: missing key → 503, upstream failure → 502 (visa → 503 `VISA_UNAVAILABLE`).
+- `voiceChat` disables the body parser and uses `formidable` (2 MB limit, `audio/*` mimetype only), reads the upload into memory and removes the temporary file in `finally`. Another transcription format is tried only when the OpenAI rejects the format.
+- Handlers are thin adapters: check the method with `ensureMethod` (405 + `Allow`), call one use case from `src/contexts/<context>/application/`, and answer failures with `sendError` (`src/shared/http.ts`). Errors are always JSON `{ error: "pt-BR message", code? }`; throw `AppError` for expected failures and keep provider details in `cause` (log only).
+- Bounded Contexts live in `src/contexts/{catalog,concierge,itinerary,profile}/{domain,application,infrastructure}`. Domain code never imports an external SDK; external payloads are mapped in `infrastructure/` (for example, the Google Places DTO).
+- AI routes (`chat`, `justchat`, `generateItinerary`, `voiceChat`) call `guardAiRoute` before validation: in-memory rate limit per user or IP (per serverless instance only) and Firebase ID token verification when `AI_AUTH_REQUIRED=true` with `FIREBASE_PROJECT_ID`. A global limit needs external storage (not approved); flag new cost or abuse exposure in reviews.
 
 ## LLM Usage
 
-- Chat model: `gpt-6-luna` in `chat.ts`, `justchat.ts`, `generateItinerary.ts`, and `voiceChat.ts`; transcription: `whisper-1` (`language: 'pt'`). The model name is a literal in each file.
-- GPT-6 is a reasoning model (default effort `medium`): send `max_completion_tokens` (reasoning tokens count against it; `max_tokens` is deprecated and incompatible with reasoning models) and do not send `temperature`, which is rejected while reasoning is active. Setting `reasoning_effort` to `none` requires upgrading the `openai` 4.x SDK (approval needed).
+- Chat model: `gpt-6-luna`, a literal in each use case (`src/contexts/concierge/application/*`, `src/contexts/itinerary/infrastructure/structuredCompletion.ts`) and in the `usage` field of `voiceChat.ts`; transcription: `whisper-1` (`language: 'pt'`).
+- GPT-6 is a reasoning model (default effort `medium`): send `max_completion_tokens` (reasoning tokens count against it; `max_tokens` is deprecated and incompatible with reasoning models) and do not send `temperature`, which is rejected while reasoning is active. The `openai` SDK is 7.x (Node 22+); choosing a `reasoning_effort` per route still needs approval.
 - Do not change the model, `max_completion_tokens`, `reasoning_effort`, system prompts, the Felipe persona, or `utils/responseCache.ts` behavior without an explicit request: each affects cost, latency, and tone.
-- `justchat` and `generateItinerary` send the app-built prompt as an `assistant` message without a system prompt; itinerary prompts are assembled in the app. Preserve this unless asked to change it.
+- Prompts live on the server: the Felipe persona and tourism rule in `src/contexts/concierge/domain/felipePersona.ts`, itinerary prompts in `src/contexts/itinerary/domain/itineraryPrompt.ts`. `justchat` accepts `{ messages }` (last 10 sent) or the legacy `{ prompt }`; `generateItinerary` receives structured preferences and returns JSON validated by a `strict` JSON Schema, answering 502 `ITINERARY_INCOMPLETE` when output is truncated or invalid.
 - Treat model output as untrusted text. When the app parses it (for example, `parseAnswerPatternToItinerary` in `ItineraryMapMenu.tsx` converts the structured plain-text itinerary into objects), handle malformed output and show a recoverable error.
 - Keep `expo-app/src/config/voiceConfig.ts` consistent with the server transcription settings when either side changes.
 

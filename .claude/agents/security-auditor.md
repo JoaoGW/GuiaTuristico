@@ -27,8 +27,8 @@ Audit only the delegated scope and directly related security boundaries.
 
 ## Project-Specific Boundaries
 
-- Third-party keys (`OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`) must stay server-side; check responses, logs, and URLs returned to the client (for example, `photo_url` in `googlePlacesApi`).
-- API routes have no authentication or rate limiting; assess cost abuse of OpenAI endpoints and open proxying (`googlePhotoProxy`, `passportVisa`, `DELETE /api/cacheStats`).
+- Third-party keys (`OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`) must stay server-side; check responses, logs, and URLs returned to the client (`googlePlacesApi` returns only `photo_reference`; photos go through `googlePhotoProxy`).
+- AI routes have a per-instance rate limit and optional Firebase ID token auth (`AI_AUTH_REQUIRED`, off until the app sends the token); assess cost abuse of OpenAI endpoints and open proxying (`googlePhotoProxy`, `passportVisa`). `DELETE /api/cacheStats` returns 403 in production.
 - Unvalidated query parameters interpolated into upstream URLs.
 - `voiceChat` file upload: size and type limits, temporary-file cleanup.
 - App side: `EXPO_PUBLIC_*` values are public by design; flag only real secrets shipped in the bundle, plus `AsyncStorage` data (chat history, itineraries) and requested permissions (location, microphone, contacts, ad tracking).

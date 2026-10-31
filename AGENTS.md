@@ -13,7 +13,7 @@ O repositório é um monorepo com dois pacotes npm **independentes** (sem worksp
 | Pacote | Papel | Stack principal |
 | --- | --- | --- |
 | `expo-app/` | App mobile Android e iOS (web via `react-native-web`, sem uso ativo) | Expo SDK 57, React Native 0.86 (New Architecture), React 19.2, TypeScript ~6.0 `strict`, React Navigation 7 (native-stack), Gluestack UI v1 (`@gluestack-ui/themed`), Firebase Auth 12 |
-| `nextjs-api/` | Backend/proxy que guarda as chaves de OpenAI, Google Places e WeatherAPI; página de documentação dos endpoints | Next.js 16 (API em `pages/api/`, App Router só para a página `/`), SDK `openai` 4.x, `formidable`, Tailwind CSS 4 |
+| `nextjs-api/` | Backend/proxy que guarda as chaves de OpenAI, Google Places e WeatherAPI; página de documentação dos endpoints | Next.js 16 (API em `pages/api/`, App Router só para a página `/`), SDK `openai` 7.x (exige Node 22+), `formidable`, Tailwind CSS 4 |
 
 A API de produção está na Vercel: `https://guiaturisticoeztripai.vercel.app/api`. O app escolhe a URL em `expo-app/src/config.ts`: no Expo Go com `DEV_API_URL` definido usa a API local; em qualquer build standalone usa a Vercel.
 
@@ -48,7 +48,9 @@ GuiaTuristico/
 │       ├── services/         # login/*, voiceService, storageManager, felipeResponseSystem, admob, AppPreloader
 │       └── utils/            # gptRequests, geoDecoder, stores Zustand, validators, loaders
 └── nextjs-api/
-    ├── pages/api/            # endpoints (ver tabela abaixo)
+    ├── pages/api/            # endpoints (ver tabela abaixo): adaptadores HTTP finos
+    ├── src/contexts/         # Bounded Contexts (DDD): catalog, concierge, itinerary, profile, cada um com domain/application/infrastructure
+    ├── src/shared/           # núcleo compartilhado: AppError, respostas de erro, validação, guarda das rotas de IA
     ├── utils/responseCache.ts# cache em memória das respostas do Felipe
     ├── app/                  # página "Documentação APIs - EZ Trip AI" (mesmo nível de pages/, exigido pelo Next 16)
     ├── src/components/SwaggerAccordion.tsx
@@ -61,31 +63,36 @@ Aliases do app (em `tsconfig.json` e `babel.config.js`): `@assets`, `@components
 
 | Método e rota | Entrada | Serviço externo | Saída | Consumidor no app |
 | --- | --- | --- | --- | --- |
-| `GET /api/googlePlacesApi` | `latitude`, `longitude` | Google Places Nearby Search (raio 1500 m, `tourist_attraction`) | `{ results }` com `photos[0].photo_url` | `screens/HomePage/Home.tsx`, `components/Maps/Maps.tsx` |
+| `GET /api/googlePlacesApi` | `latitude`, `longitude` (validados) | Google Places Nearby Search (raio 1500 m, `tourist_attraction`) | `{ results }` com DTO próprio (`place_id`, `name`, `vicinity`, `rating`, `icon`, `geometry.location`, `opening_hours.open_now`, `photos[0].photo_reference`); sem `photo_url` | `screens/HomePage/Home.tsx`, `components/Maps/Maps.tsx` (Home ainda lê `photo_url`: migração FE-10) |
 | `GET /api/googlePhotoProxy` | `photo_reference` | Google Place Photo (`maxwidth=400`) | bytes da imagem | `components/Home/Destinations.tsx` |
-| `GET /api/weather` | `latitude`, `longitude` | WeatherAPI.com `current.json` | JSON da WeatherAPI | `screens/AIChat/AIChat.tsx` |
-| `GET /api/passportVisa` | `origin`, `destination` | `rough-sun-2523.fly.dev/visa/{origin}/{destination}` | JSON do serviço | `screens/Itinerary/ItineraryVisaCheck.tsx` |
-| `POST /api/generateItinerary` | `{ prompt }` | OpenAI Chat Completions | `{ message }` | `utils/gptRequests.ts` → `generateItinerary` |
-| `POST /api/justchat` | `{ prompt }` | OpenAI Chat Completions | `{ message }` | `utils/gptRequests.ts` → `generateChatAnswers` |
-| `POST /api/chat` | `{ message, context? }` | OpenAI Chat Completions | `{ success, response, usage }` | sem consumidor atual no app |
-| `POST /api/voiceChat` | multipart, campo `audio` (≤ 2 MB, ~15 s) | OpenAI Whisper + Chat Completions | `{ success, transcription, response, audioInfo, usage }` | `services/voiceService.ts` |
-| `GET` / `DELETE /api/cacheStats` | — | — | estatísticas / limpeza do cache | depuração |
+| `GET /api/weather` | `latitude`, `longitude` (validados) | WeatherAPI.com `current.json` (HTTPS) | JSON da WeatherAPI | `screens/AIChat/AIChat.tsx` |
+| `GET /api/passportVisa` | `origin`, `destination` (ISO alfa-2) | `rough-sun-2523.fly.dev/visa/{origin}/{destination}` | JSON do serviço com `category.code` validado; falha → 503 `VISA_UNAVAILABLE` | `screens/Itinerary/ItineraryVisaCheck.tsx` |
+| `POST /api/generateItinerary` | preferências estruturadas (`dateBegin`, `dateEnd`, `days`, `continent?`, `countries?`, `originCountry`, `budget`, `peopleQuantity`, `accompanying`, `tripStyles`, `locomotionMethods`, `specialWish?`, `userPreferences?`) | OpenAI Chat Completions com JSON Schema | `{ itinerary: { continent, countries, days[] } }`; incompleto → 502 `ITINERARY_INCOMPLETE` | `utils/gptRequests.ts` → `generateItinerary` (ainda envia `{ prompt }`: migração FE-20) |
+| `POST /api/justchat` | `{ messages: [{ role, content }] }` ou `{ prompt }` (legado) | OpenAI Chat Completions | `{ message }` | `utils/gptRequests.ts` → `generateChatAnswers` (histórico: migração FE-12) |
+| `POST /api/chat` | `{ message }` | OpenAI Chat Completions | `{ success, response, usage }` | sem consumidor atual no app |
+| `POST /api/voiceChat` | multipart, campo `audio` com mimetype `audio/*` (≤ 2 MB, ~15 s) | OpenAI Whisper + Chat Completions | `{ success, transcription, response, audioInfo, usage }` | `services/voiceService.ts` |
+| `GET` / `DELETE /api/cacheStats` | — | — | estatísticas / limpeza do cache (DELETE só fora de produção; 403 em produção) | depuração |
+| `GET /api/version` | — | — | `{ commit, branch, environment }` (variáveis de sistema da Vercel) | verificação de deploy |
 
-A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`. As rotas não têm autenticação nem limite de taxa.
+A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`.
+
+Contrato comum: método errado → 405 com `Allow`; entrada inválida → 400; erros sempre em JSON `{ error: "Mensagem em pt-BR.", code? }`, sem `message`/`details` internos. Chave ausente → 503; falha do provedor externo → 502 (visto: 503 `VISA_UNAVAILABLE`); OpenAI 401 → 500 `AI_AUTH_ERROR`, 429 → 429.
+
+As rotas de IA (`chat`, `justchat`, `generateItinerary`, `voiceChat`) passam por `src/shared/aiRouteGuard.ts`: limite de 20 requisições por minuto por usuário (ou IP), em memória de cada instância, e, com `AI_AUTH_REQUIRED=true` + `FIREBASE_PROJECT_ID`, exigem `Authorization: Bearer <ID token do Firebase>` (401 `UNAUTHENTICATED`). A verificação do token usa `node:crypto` e os certificados públicos do Google, sem `firebase-admin`. A autenticação fica desligada até o app enviar o token (FE-10).
 
 ## Modelos de LLM e Voz
 
 | Uso | Modelo | Parâmetros | Prompt |
 | --- | --- | --- | --- |
-| `/api/chat` | `gpt-6-luna` | `max_completion_tokens` 600, sem `temperature` | `system` = `context` do corpo ou persona Felipe |
-| `/api/justchat` | `gpt-6-luna` | `max_completion_tokens` 1500, sem `temperature` | o `prompt` do app é enviado como mensagem `assistant`, sem `system` |
-| `/api/generateItinerary` | `gpt-6-luna` | `max_completion_tokens` 6000, sem `temperature` | idem `justchat` |
-| `/api/voiceChat` — transcrição | `whisper-1` | `language: 'pt'`, `temperature` 0, `response_format: 'text'` | tenta m4a, mp3, wav e mp4 |
+| `/api/chat` | `gpt-6-luna` | `max_completion_tokens` 600, sem `temperature` | `system` = persona Felipe (o `context` do corpo não é mais aceito) |
+| `/api/justchat` | `gpt-6-luna` | `max_completion_tokens` 1500, sem `temperature` | `system` = regra de turismo + persona Felipe (no servidor); últimas 10 mensagens como `user`/`assistant`; `{ prompt }` legado vira uma mensagem `user` |
+| `/api/generateItinerary` | `gpt-6-luna` | `max_completion_tokens` 6000 por chamada, sem `temperature`, `response_format` JSON Schema `strict` | prompts `system`/`user` montados em `src/contexts/itinerary/domain/itineraryPrompt.ts`; Modo Surpresa faz 2 chamadas (destino e roteiro) |
+| `/api/voiceChat` — transcrição | `whisper-1` | `language: 'pt'`, `temperature` 0, `response_format: 'text'` | começa por m4a; tenta mp3, wav e mp4 só quando a OpenAI recusa o formato |
 | `/api/voiceChat` — resposta | `gpt-6-luna` | `max_completion_tokens` 600, sem `temperature` | persona Felipe para voz (2–3 frases); usa `responseCache` antes de chamar a OpenAI |
 | Síntese de voz (app) | `expo-speech` (TTS do dispositivo) | `pt-BR`, voz `pt-br-x-ptd-network`, `pitch` 0.9 | `src/config/voiceConfig.ts` |
 | Respostas offline (app) | sem modelo | palavras-chave | `src/services/felipeResponseSystem.ts` |
 
-O modelo foi trocado de `gpt-3.5-turbo` para `gpt-5.6-luna` (commit `388adeb`) e, em 30/10/2026, para `gpt-6-luna`. O GPT-6 usa raciocínio (esforço padrão `medium`), conta esses tokens em `max_completion_tokens` (o `max_tokens` está obsoleto no SDK e não é compatível com modelos de raciocínio) e rejeita `temperature` com raciocínio ativo; por isso os limites foram ampliados e `temperature` foi removida. Ajustar `reasoning_effort` exige atualizar o SDK `openai` 4.x, cujo tipo não aceita `none`. A versão em produção na Vercel ainda usava `gpt-3.5-turbo` (descontinuado) em 30/10/2026; o deploy depende de autorização. O nome do modelo aparece literalmente em cada rota e no campo `usage` de `voiceChat`; não há constante compartilhada. `responseCache` guarda até 100 respostas por 24 h em memória do processo (similaridade ≥ 0,8 por palavras) e tem respostas pré-definidas para saudações, agradecimentos e despedidas.
+O modelo foi trocado de `gpt-3.5-turbo` para `gpt-5.6-luna` (commit `388adeb`) e, em 30/10/2026, para `gpt-6-luna`. O GPT-6 usa raciocínio (esforço padrão `medium`), conta esses tokens em `max_completion_tokens` (o `max_tokens` está obsoleto no SDK e não é compatível com modelos de raciocínio) e rejeita `temperature` com raciocínio ativo; por isso os limites foram ampliados e `temperature` foi removida. O SDK foi atualizado para `openai` 7.x em 30/10/2026 (tipo de `reasoning_effort` já aceita `none`); a escolha de `reasoning_effort` por rota ainda depende do responsável. A versão em produção na Vercel ainda usava `gpt-3.5-turbo` (descontinuado) em 30/10/2026; o deploy depende de autorização. O nome do modelo aparece literalmente em cada caso de uso (`src/contexts/concierge/application/*`, `src/contexts/itinerary/infrastructure/structuredCompletion.ts`) e no campo `usage` de `voiceChat`; não há constante compartilhada. A persona do Felipe fica em `src/contexts/concierge/domain/felipePersona.ts`. `responseCache` guarda até 100 respostas por 24 h em memória do processo (similaridade ≥ 0,8 por palavras) e tem respostas pré-definidas para saudações, agradecimentos e despedidas.
 
 ## Navegação do App
 
@@ -120,7 +127,7 @@ React Navigation 7 com `NavigationContainer` em `src/routes/index.tsx`, que alte
 | Mapas | `expo-maps`, `react-native-maps`, `expo-location` | permissões de localização |
 | Hospedagem e build | Vercel (API), EAS (projeto `080ff03d-…`), GHCR (imagens Docker) | segredos fora do repositório |
 
-Variáveis lidas pelo código (somente nomes; nunca leia ou registre valores): API — `OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`; app — `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID`, `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`, `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID`, `EXPO_PUBLIC_WEB_CLIENT_ID`, `EXPO_PUBLIC_IOS_CLIENT_ID`, `EXPO_PUBLIC_ADMOB_ANDROID_APP_ID`, `EXPO_PUBLIC_ADMOB_IOS_APP_ID` e `DEV_API_URL` (via `@env`, `react-native-dotenv`, arquivo `.env.local`). Cada pacote lê o próprio `.env.local`.
+Variáveis lidas pelo código (somente nomes; nunca leia ou registre valores): API — `OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`, `AI_AUTH_REQUIRED`, `FIREBASE_PROJECT_ID` e as de sistema da Vercel `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_COMMIT_REF`, `VERCEL_ENV`; app — `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID`, `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`, `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID`, `EXPO_PUBLIC_WEB_CLIENT_ID`, `EXPO_PUBLIC_IOS_CLIENT_ID`, `EXPO_PUBLIC_ADMOB_ANDROID_APP_ID`, `EXPO_PUBLIC_ADMOB_IOS_APP_ID` e `DEV_API_URL` (via `@env`, `react-native-dotenv`, arquivo `.env.local`). Cada pacote lê o próprio `.env.local`.
 
 ## Prioridade e Escopo
 
@@ -190,10 +197,10 @@ Altere apenas os arquivos necessários. Não refatore, reformate ou remova códi
 
 Fatos observados no código em 12/10/2026; não os corrija sem pedido.
 
-1. `next.config.ts` usa `typescript.ignoreBuildErrors: true`, embora `npx tsc --noEmit` passe. A build marca `pages/api/voiceChat.ts` com avisos de rastreamento de sistema de arquivos dinâmico (Turbopack).
+1. Resolvida em 30/10/2026 (BE-11): `ignoreBuildErrors` removido, `turbopack.root` definido e sem avisos de rastreamento no `voiceChat`. A página de documentação ainda usa `next/font/google` (Geist), que exige rede na build.
 2. Não há testes automatizados em nenhum pacote.
-3. `nextjs-api`: `npm run clean` usa `rimraf`, que não está nas dependências.
-4. `googlePlacesApi` devolve `photo_url` com a chave do Google embutida; `googlePhotoProxy` já existe como alternativa. As rotas não têm autenticação, e `DELETE /api/cacheStats` é público.
+3. Resolvida em 30/10/2026: `npm run clean` usa `fs.rmSync` via `node -e`.
+4. Parcialmente resolvida em 30/10/2026: `googlePlacesApi` não devolve mais `photo_url` (a chave exposta ainda precisa ser rotacionada), `DELETE /api/cacheStats` é bloqueado em produção e as rotas de IA têm limite por instância e autenticação opcional (`AI_AUTH_REQUIRED`). Falta o limite global (armazenamento externo, sem aprovação) e ligar a autenticação depois do FE-10.
 5. `expo-app` declara `next` e `openai` como dependências, mas o código de `src/` não os importa. `config/gluestack-ui.config.ts` não é usado (o App importa `@gluestack-ui/config`).
 6. `app.json` → `extra` contém placeholders `${FIREBASE_*}` que não são interpolados; o código usa `process.env.EXPO_PUBLIC_*`.
 7. `expo-app/Docker/Dockerfile.eas` usa a imagem inexistente `node20:slim` e um `CMD` inválido.

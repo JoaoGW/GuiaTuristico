@@ -24,233 +24,232 @@ export default function SwaggerAccordion() {
     }
     setOpenAccordions(newOpenAccordions);
   };
+  // Erros seguem sempre { error: "Mensagem em pt-BR.", code?: "CODIGO" }. As rotas de IA aplicam limite de uso
+  // (429 RATE_LIMITED) e, com AI_AUTH_REQUIRED=true, exigem "Authorization: Bearer <ID token do Firebase>" (401 UNAUTHENTICATED).
+  const aiErrors = {
+    "401": { description: "Token ausente ou inválido (somente com AI_AUTH_REQUIRED=true)", example: { error: "Entre na sua conta para usar este recurso.", code: "UNAUTHENTICATED" } },
+    "405": { description: "Método não permitido (apenas POST)", example: { error: "Método não permitido. Use POST." } },
+    "429": { description: "Limite de uso da rota ou da OpenAI atingido", example: { error: "Muitas solicitações em pouco tempo. Tente novamente em instantes.", code: "RATE_LIMITED" } },
+    "500": { description: "Falha de autenticação com a OpenAI ou erro interno", example: { error: "Erro de autenticação no serviço de IA.", code: "AI_AUTH_ERROR" } },
+    "502": { description: "OpenAI indisponível (rede ou 5xx)", example: { error: "Serviço de IA indisponível no momento.", code: "AI_UNAVAILABLE" } },
+    "503": { description: "OPEN_AI_KEY não configurada", example: { error: "Serviço de IA indisponível.", code: "AI_UNAVAILABLE" } }
+  };
+
   const apiEndpoints: ApiEndpoint[] = [
     {
       method: "POST",
       path: "/api/voiceChat",
       summary: "Chat por voz unificado",
-      description: "Endpoint unificado que combina transcrição de áudio (Whisper) + resposta da IA (GPT-5.6-luna) em uma única chamada. Inclui sistema de cache inteligente para reduzir custos com a OpenAI.",
+      description: "Transcrição de áudio (whisper-1) + resposta do Felipe (gpt-6-luna) em uma única chamada, com cache de respostas similares. Outro formato de áudio só é tentado quando a OpenAI recusa o formato.",
       parameters: [
-        { name: "audio", type: "file", required: true, description: "Arquivo de áudio (máx. 2MB, ~15 segundos). Formatos: WAV, MP3, M4A, etc." }
+        { name: "audio", type: "file", required: true, description: "Arquivo com mimetype audio/* (máx. 2 MB, ~15 segundos). Formatos aceitos pela OpenAI: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm." }
       ],
       responses: {
         "200": {
           description: "Processamento completo realizado com sucesso",
           example: {
-            transcribedText: "Quais são as melhores atrações do Rio de Janeiro?",
-            response: "O Rio de Janeiro oferece diversas atrações incríveis como Cristo Redentor, Pão de Açúcar...",
-            fromCache: false,
-            audioInfo: {
-              originalName: "audio.m4a",
-              size: 1024000
-            }
+            success: true,
+            transcription: "Quais são as melhores atrações do Rio de Janeiro?",
+            response: "O Rio de Janeiro oferece diversas atrações...",
+            audioInfo: { originalName: "recording.m4a", size: 1024000, duration: "Estimado: ~15 segundos máximo" },
+            usage: { transcriptionModel: "whisper-1", chatModel: "gpt-6-luna", totalTokens: 0, usedCache: false }
           }
         },
-        "400": { 
-          description: "Arquivo inválido ou muito grande",
-          example: {
-            error: "Arquivo de áudio é obrigatório",
-            details: "Envie o arquivo com o campo 'audio'"
-          }
-        },
-        "413": { 
-          description: "Arquivo muito grande (>2MB)",
-          example: {
-            error: "Arquivo muito grande",
-            details: "O arquivo deve ter no máximo 2MB (equivale a ~15 segundos)",
-            maxSize: "2MB"
-          }
-        },
-        "500": { description: "Erro interno ou falha na API da OpenAI" }
+        "400": { description: "Sem arquivo de áudio, arquivo vazio ou formato não reconhecido", example: { error: "Envie um arquivo de áudio no campo \"audio\".", code: "AUDIO_REQUIRED" } },
+        "413": { description: "Arquivo acima de 2 MB", example: { error: "Arquivo muito grande. O áudio deve ter no máximo 2 MB (cerca de 15 segundos).", code: "AUDIO_TOO_LARGE" } },
+        "422": { description: "Transcrição vazia", example: { error: "Não foi possível entender o áudio. Tente gravar novamente.", code: "EMPTY_TRANSCRIPTION" } },
+        ...aiErrors
       }
     },
     {
-      method: "POST", 
+      method: "POST",
       path: "/api/chat",
-      summary: "Chat com IA (texto)",
-      description: "Endpoint de chat baseado em texto usando OpenAI GPT-5.6-luna. Integrado com sistema de cache inteligente para otimizar custos e performance.",
+      summary: "Chat com IA (texto, resposta única)",
+      description: "Pergunta isolada ao Felipe (gpt-6-luna) com o system prompt do servidor. O campo context não é mais aceito. Sem consumidor atual no app.",
       parameters: [
-        { name: "message", type: "string", required: true, description: "Mensagem ou pergunta para a IA sobre turismo" }
+        { name: "message", type: "string", required: true, description: "Pergunta sobre turismo (até 2000 caracteres)" }
       ],
       responses: {
         "200": {
           description: "Resposta da IA gerada com sucesso",
-          example: {
-            response: "Baseado na sua localização, recomendo visitar o museu histórico local...",
-            fromCache: true
-          }
+          example: { success: true, response: "Recomendo começar pelo centro histórico...", usage: { total_tokens: 0 } }
         },
-        "400": { 
-          description: "Mensagem não fornecida",
-          example: {
-            error: "Mensagem é obrigatória"
-          }
-        },
-        "405": { description: "Método não permitido (apenas POST)" },
-        "500": { description: "Falha ao gerar resposta da IA" }
+        "400": { description: "message ausente, vazio ou acima do limite", example: { error: "O campo \"message\" é obrigatório e deve ser um texto.", code: "INVALID_INPUT" } },
+        ...aiErrors
       }
     },
     {
       method: "GET",
       path: "/api/cacheStats",
       summary: "Estatísticas do cache",
-      description: "Retorna estatísticas detalhadas do sistema de cache, incluindo taxa de acertos, economia de custos e total de requisições processadas.",
+      description: "Estatísticas do cache de respostas do chat por voz. DELETE limpa o cache apenas em desenvolvimento (403 em produção).",
       responses: {
         "200": {
           description: "Estatísticas do cache retornadas com sucesso",
           example: {
-            totalRequests: 150,
-            cacheHits: 45,
-            cacheMisses: 105,
-            hitRate: "30.00%",
-            estimatedSavings: "$2.25",
-            cacheSize: 12,
-            oldestEntry: "2025-01-20T10:30:00.000Z",
-            newestEntry: "2025-01-20T14:45:00.000Z"
+            success: true,
+            stats: { size: 12, hitRate: 0.3, predefinedCount: 16, estimatedSavings: "0.001560 USD", description: "Cache de respostas similares para economia de recursos" }
           }
         },
-        "405": { description: "Método não permitido (apenas GET)" },
-        "500": { description: "Erro ao obter estatísticas do cache" }
+        "403": { description: "DELETE em produção", example: { error: "Limpeza do cache disponível apenas em desenvolvimento." } },
+        "405": { description: "Método não permitido (apenas GET ou DELETE)", example: { error: "Método não permitido. Use GET ou DELETE." } }
       }
     },
     {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Gera um itinerário personalizado usando OpenAI GPT-5.6-luna baseado nas preferências pessoais setadas pelo usuário, localização desejada e budget máximo estipulado.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países antes (Modo Surpresa). Nenhum dia é descartado em silêncio: roteiro truncado ou inválido gera 502 ITINERARY_INCOMPLETE.",
       parameters: [
-        { name: "prompt", type: "string", required: true, description: "Prompt com preferências e detalhes da viagem desejada" }
+        { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
+        { name: "dateEnd", type: "string", required: true, description: "Data de término" },
+        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 30)" },
+        { name: "continent", type: "string", required: false, description: "Continente (ignorado no Modo Surpresa)" },
+        { name: "countries", type: "string[]", required: false, description: "Países (0 a 10); vazio ativa o Modo Surpresa" },
+        { name: "originCountry", type: "string", required: true, description: "País de origem do grupo" },
+        { name: "budget", type: "number", required: true, description: "Orçamento (≥ 0)" },
+        { name: "peopleQuantity", type: "integer", required: true, description: "Quantidade de pessoas (1 a 50)" },
+        { name: "accompanying", type: "string", required: true, description: "Companhia da viagem" },
+        { name: "tripStyles", type: "string[]", required: true, description: "Estilos de viagem (1 a 10)" },
+        { name: "locomotionMethods", type: "string[]", required: true, description: "Meios de locomoção (1 a 10)" },
+        { name: "specialWish", type: "string", required: false, description: "Desejo especial (até 300 caracteres)" },
+        { name: "userPreferences", type: "string[]", required: false, description: "Preferências do usuário (até 30)" }
       ],
       responses: {
         "200": {
-          description: "Itinerário gerado com sucesso",
+          description: "Itinerário gerado e validado",
           example: {
-            message: "Dia 1: Visite o Cristo Redentor pela manhã..."
+            itinerary: {
+              continent: "Europa",
+              countries: ["Portugal"],
+              days: [{
+                day: 1,
+                date: "2026-12-01",
+                location: "Lisboa, Portugal",
+                timeline: [{ time: "09:00", title: "Visita ao local", description: "Descrição detalhada da atividade...", coordinates: { latitude: 38.7, longitude: -9.1 }, category: "Ponto Turístico" }],
+                suggestedActivities: ["Atividade extra recomendada"],
+                pixabayTags: "lisboa, portugal"
+              }]
+            }
           }
         },
-        "405": { description: "Método não permitido (apenas POST)" },
-        "500": { description: "Falha ao gerar resposta da IA" }
+        "400": { description: "Preferências ausentes ou inválidas", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 30.", code: "INVALID_INPUT" } },
+        ...aiErrors,
+        "502": { description: "Roteiro truncado, inválido ou OpenAI indisponível", example: { error: "O roteiro gerado veio incompleto. Tente gerar novamente.", code: "ITINERARY_INCOMPLETE" } }
       }
     },
     {
       method: "GET",
       path: "/api/googlePhotoProxy",
       summary: "Proxy para fotos do Google Places",
-      description: "Busca e retorna imagens de lugares através da API do Google Places usando photo_reference",
+      description: "Busca a imagem do lugar no Google Places (maxwidth=400) sem expor a chave ao app.",
       parameters: [
-        { name: "photo_reference", type: "string", required: true, description: "Referência da foto obtida via Google Places API" }
+        { name: "photo_reference", type: "string", required: true, description: "photos[0].photo_reference devolvido por /api/googlePlacesApi" }
       ],
       responses: {
-        "200": { description: "Imagem retornada com sucesso (content-type: image/jpeg)" },
-        "400": { description: "photo_reference é obrigatório ou erro ao buscar imagem" }
+        "200": { description: "Bytes da imagem (content-type image/*)" },
+        "400": { description: "photo_reference ausente ou inválido", example: { error: "photo_reference ausente ou inválido.", code: "INVALID_INPUT" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } },
+        "502": { description: "Falha ao obter a imagem no Google", example: { error: "Não foi possível carregar a foto agora.", code: "PHOTO_UNAVAILABLE" } },
+        "503": { description: "GOOGLE_PLACES_API_KEY não configurada", example: { error: "Serviço de lugares indisponível.", code: "PLACES_UNAVAILABLE" } }
       }
     },
     {
       method: "GET",
       path: "/api/googlePlacesApi",
       summary: "Buscar lugares próximos",
-      description: "Busca restaurantes próximos usando a API do Google Places baseado em coordenadas geográficas",
+      description: "Pontos turísticos (tourist_attraction) num raio de 1500 m, mapeados para um DTO próprio. A foto vem só como photo_reference: o app monta /api/googlePhotoProxy?photo_reference=...",
       parameters: [
-        { name: "latitude", type: "number", required: true, description: "Latitude da localização" },
-        { name: "longitude", type: "number", required: true, description: "Longitude da localização" }
+        { name: "latitude", type: "number", required: true, description: "Latitude entre -90 e 90" },
+        { name: "longitude", type: "number", required: true, description: "Longitude entre -180 e 180" }
       ],
       responses: {
         "200": {
-          description: "Lista de lugares próximos retornada com sucesso",
+          description: "Lista de lugares próximos",
           example: {
-            places: [
-              { name: "Restaurante Exemplo", rating: 4.5, vicinity: "Rua das Flores, 123" }
-            ]
+            results: [{
+              place_id: "ChIJ...",
+              name: "Nome do lugar",
+              vicinity: "Endereço",
+              rating: 4.5,
+              icon: "https://maps.gstatic.com/...png",
+              geometry: { location: { lat: -23.58, lng: -46.65 } },
+              opening_hours: { open_now: true },
+              photos: [{ photo_reference: "AbCd..." }]
+            }]
           }
         },
-        "400": { description: "Latitude e longitude são obrigatórios" },
-        "405": { description: "Método não permitido (apenas GET)" },
-        "500": { description: "Falha ao buscar lugares próximos" }
+        "400": { description: "Coordenadas ausentes ou fora do intervalo", example: { error: "Latitude e longitude são obrigatórias.", code: "INVALID_INPUT" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } },
+        "502": { description: "Falha no Google Places", example: { error: "Não foi possível buscar lugares próximos agora.", code: "PLACES_UNAVAILABLE" } },
+        "503": { description: "GOOGLE_PLACES_API_KEY não configurada", example: { error: "Serviço de lugares indisponível.", code: "PLACES_UNAVAILABLE" } }
       }
     },
     {
       method: "POST",
       path: "/api/justchat",
-      summary: "Chat simples com IA",
-      description: "Endpoint de chat simples usando OpenAI GPT-5.6-luna para conversas gerais sobre turismo",
+      summary: "Chat do Felipe com histórico",
+      description: "Chat de texto do app. A persona do Felipe e a regra de responder só sobre turismo ficam no system prompt do servidor. Envia as últimas 10 mensagens à OpenAI (gpt-6-luna).",
       parameters: [
-        { name: "prompt", type: "string", required: true, description: "Mensagem ou pergunta para a IA" }
+        { name: "messages", type: "{ role: \"user\" | \"assistant\", content: string }[]", required: false, description: "Histórico (1 a 50 itens, até 4000 caracteres cada); a última mensagem deve ser do usuário" },
+        { name: "prompt", type: "string", required: false, description: "Formato antigo, mantido até o app migrar: uma pergunta isolada (até 2000 caracteres)" }
       ],
       responses: {
         "200": {
           description: "Resposta da IA gerada com sucesso",
-          example: {
-            message: "Olá! Posso ajudar você com dicas de viagem..."
-          }
+          example: { message: "Olá! Posso ajudar você com dicas de viagem..." }
         },
-        "405": { description: "Método não permitido (apenas POST)" },
-        "500": { description: "Falha ao gerar resposta da IA" }
+        "400": { description: "Sem messages nem prompt, ou mensagens inválidas", example: { error: "A última mensagem deve ser do usuário.", code: "INVALID_INPUT" } },
+        ...aiErrors
       }
     },
     {
       method: "GET",
       path: "/api/weather",
       summary: "Obter condições meteorológicas",
-      description: "Retorna informações meteorológicas atuais para uma localização específica usando WeatherAPI",
+      description: "Clima atual da WeatherAPI (current.json, via HTTPS), repassado sem alterações.",
       parameters: [
-        { name: "latitude", type: "number", required: true, description: "Latitude da localização" },
-        { name: "longitude", type: "number", required: true, description: "Longitude da localização" }
+        { name: "latitude", type: "number", required: true, description: "Latitude entre -90 e 90" },
+        { name: "longitude", type: "number", required: true, description: "Longitude entre -180 e 180" }
       ],
       responses: {
         "200": {
-          description: "Informações meteorológicas retornadas com sucesso",
-          example: {
-            current: {
-              temp_c: 25,
-              condition: { text: "Partly cloudy" },
-              humidity: 65
-            }
-          }
+          description: "JSON da WeatherAPI",
+          example: { location: { name: "Cidade" }, current: { temp_c: 25, condition: { text: "Partly cloudy" }, humidity: 65 } }
         },
-        "400": { description: "Latitude e longitude são obrigatórios" },
-        "405": { description: "Método não permitido (apenas GET)" },
-        "500": { description: "Falha ao buscar informações meteorológicas" }
+        "400": { description: "Coordenadas ausentes ou fora do intervalo", example: { error: "Latitude e longitude são obrigatórias.", code: "INVALID_INPUT" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } },
+        "502": { description: "Falha na WeatherAPI", example: { error: "Não foi possível consultar o clima agora.", code: "WEATHER_UNAVAILABLE" } },
+        "503": { description: "WEATHER não configurada", example: { error: "Serviço de clima indisponível.", code: "WEATHER_UNAVAILABLE" } }
       }
     },
     {
       method: "GET",
       path: "/api/passportVisa",
       summary: "Consultar informações de visto",
-      description: "Consulta informações sobre requisitos de visto entre países específicos, incluindo se é necessário visto, tipo de documento requerido e outras informações relevantes para viagem.",
+      description: "Consulta o serviço externo rough-sun-2523.fly.dev (sem SLA). Só devolve 200 quando a resposta traz category.code; qualquer falha vira 503 VISA_UNAVAILABLE.",
       parameters: [
-        { name: "origin", type: "string", required: true, description: "País de origem do viajante (código ou nome do país)" },
-        { name: "destination", type: "string", required: true, description: "País de destino da viagem (código ou nome do país)" }
+        { name: "origin", type: "string", required: true, description: "País de origem, código ISO 3166-1 alfa-2 (ex.: BR)" },
+        { name: "destination", type: "string", required: true, description: "País de destino, código ISO 3166-1 alfa-2 (ex.: PT)" }
       ],
       responses: {
         "200": {
-          description: "Informações de visto retornadas com sucesso",
-          example: {
-            origin: "Brazil",
-            destination: "United States",
-            visaRequired: true,
-            visaType: "Tourist Visa (B1/B2)",
-            requirements: ["Valid passport", "Visa application form", "Interview at consulate"],
-            estimatedProcessingTime: "2-4 weeks"
-          }
+          description: "Resposta do serviço externo, com category.code validado (demais campos repassados)",
+          example: { category: { code: "VR" } }
         },
-        "400": { 
-          description: "Parâmetros obrigatórios ausentes",
-          example: {
-            error: "Missing query information for this request (Origin or Destination)"
-          }
-        },
-        "405": { 
-          description: "Método não permitido",
-          example: {
-            error: "Method POST not allowed"
-          }
-        },
-        "500": { 
-          description: "Erro interno ou falha na API externa",
-          example: {
-            error: "Something went wrong on fetch process of this Visa Information request"
-          }
-        }
+        "400": { description: "Código de país ausente ou fora do padrão ISO alfa-2", example: { error: "origin deve ser um código de país ISO com 2 letras (ex.: BR).", code: "INVALID_INPUT" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } },
+        "503": { description: "Serviço de vistos indisponível ou resposta inválida", example: { error: "Não foi possível consultar o visto agora.", code: "VISA_UNAVAILABLE" } }
+      }
+    },
+    {
+      method: "GET",
+      path: "/api/version",
+      summary: "Versão publicada",
+      description: "Commit, branch e ambiente do deploy atual (variáveis de sistema da Vercel). Fora da Vercel, commit e branch são null.",
+      responses: {
+        "200": { description: "Versão publicada", example: { commit: "9b514b2...", branch: "master", environment: "production" } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } }
       }
     }
   ];

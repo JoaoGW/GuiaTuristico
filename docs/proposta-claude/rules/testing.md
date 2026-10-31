@@ -31,7 +31,7 @@ Run the narrowest available check in the affected package:
 | Type check (app) | `cd expo-app && npx tsc --noEmit` | passes |
 | Type check (API) | `cd nextjs-api && npx tsc --noEmit` | passes |
 | Expo diagnostics | `cd expo-app && npm run checkup` | `npx expo-doctor` (needs network; known dependency findings in `AGENTS.md`) |
-| API build | `cd nextjs-api && npm run build` | type errors ignored by `ignoreBuildErrors` |
+| API build | `cd nextjs-api && npm run build` | type-checks (no `ignoreBuildErrors`), no tracing warnings; needs network for `next/font/google` |
 | API manual check | `cd nextjs-api && npm run dev` | endpoints listed at `/` |
 
 Use [validate](../commands/validate.md) for the full local sequence and the `test-reviewer` agent to judge verification evidence. Lint and type checks are clean (measured on 2026-10-12; re-checked on 30/10/2026), so any error or warning is new and must be fixed; never disable rules to make lint pass. Use `npm run android` or `npm run ios` only when the changed platform and a local target are available. If a command is unavailable, fails because of unrelated existing work, or cannot run locally, say so and state what remains unverified.
