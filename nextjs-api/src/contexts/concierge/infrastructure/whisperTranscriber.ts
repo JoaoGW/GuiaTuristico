@@ -3,6 +3,8 @@ import { AppError } from '@/shared/errors';
 import { toAiError } from './openaiClient';
 
 // O app grava m4a; os demais formatos cobrem gravações em que a extensão não bate com o conteúdo.
+const UNSUPPORTED_AUDIO_MESSAGE = 'Formato de áudio não reconhecido. Use flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav ou webm.';
+
 const FORMATS = [
   { ext: 'm4a', mime: 'audio/m4a' },
   { ext: 'mp3', mime: 'audio/mp3' },
@@ -37,14 +39,16 @@ export async function transcribeAudio(openai: OpenAI, audio: Buffer): Promise<st
         temperature: 0,
       });
     } catch (error) {
-      if (!isFormatError(error)) throw toAiError(error);
+      if (!isFormatError(error)) {
+        // Outros 400 da transcrição vêm do conteúdo enviado (áudio corrompido ou vazio), não do servidor.
+        if (error instanceof OpenAI.APIError && error.status === 400) {
+          throw new AppError(400, UNSUPPORTED_AUDIO_MESSAGE, 'UNSUPPORTED_AUDIO', { cause: error });
+        }
+        throw toAiError(error);
+      }
       console.log(`Formato ${format.ext.toUpperCase()} recusado pela transcrição, tentando o próximo.`);
     }
   }
 
-  throw new AppError(
-    400,
-    'Formato de áudio não reconhecido. Use flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav ou webm.',
-    'UNSUPPORTED_AUDIO'
-  );
+  throw new AppError(400, UNSUPPORTED_AUDIO_MESSAGE, 'UNSUPPORTED_AUDIO');
 }

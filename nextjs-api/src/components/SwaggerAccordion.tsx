@@ -103,7 +103,7 @@ export default function SwaggerAccordion() {
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
-        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 30)" },
+        { name: "days", type: "integer", required: true, description: "Quantidade de dias (1 a 7)" },
         { name: "continent", type: "string", required: false, description: "Continente (ignorado no Modo Surpresa)" },
         { name: "countries", type: "string[]", required: false, description: "Países (0 a 10); vazio ativa o Modo Surpresa" },
         { name: "originCountry", type: "string", required: true, description: "País de origem do grupo" },
@@ -133,7 +133,7 @@ export default function SwaggerAccordion() {
             }
           }
         },
-        "400": { description: "Preferências ausentes ou inválidas", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 30.", code: "INVALID_INPUT" } },
+        "400": { description: "Preferências ausentes ou inválidas", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 7.", code: "INVALID_INPUT" } },
         ...aiErrors,
         "502": { description: "Roteiro truncado, inválido ou OpenAI indisponível", example: { error: "O roteiro gerado veio incompleto. Tente gerar novamente.", code: "ITINERARY_INCOMPLETE" } }
       }

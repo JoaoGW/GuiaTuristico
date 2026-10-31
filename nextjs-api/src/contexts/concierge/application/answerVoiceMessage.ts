@@ -4,6 +4,9 @@ import { FELIPE_VOICE_PROMPT } from '../domain/felipePersona';
 import { createOpenAIClient, toAiError } from '../infrastructure/openaiClient';
 import { transcribeAudio } from '../infrastructure/whisperTranscriber';
 
+// O app grava até ~15 s; transcrições maiores indicam áudio fora do uso esperado e encareceriam a resposta e o cache.
+const MAX_TRANSCRIPTION_LENGTH = 2000;
+
 /** Transcreve o áudio e responde como Felipe, reaproveitando o cache de respostas similares. */
 export async function answerVoiceMessage(audio: Buffer) {
   const openai = createOpenAIClient();
@@ -11,6 +14,9 @@ export async function answerVoiceMessage(audio: Buffer) {
 
   if (!transcription.trim()) {
     throw new AppError(422, 'Não foi possível entender o áudio. Tente gravar novamente.', 'EMPTY_TRANSCRIPTION');
+  }
+  if (transcription.length > MAX_TRANSCRIPTION_LENGTH) {
+    throw new AppError(400, 'O áudio ficou longo demais. Grave uma pergunta de até 15 segundos.', 'AUDIO_TOO_LONG');
   }
 
   let felipeResponse = responseCache.getCachedResponse(transcription);

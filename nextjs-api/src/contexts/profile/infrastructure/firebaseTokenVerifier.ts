@@ -29,18 +29,28 @@ async function getGoogleCerts(): Promise<Record<string, string>> {
     });
   }
 
-  const certs = (await response.json()) as Record<string, string>;
+  const certs: unknown = await response.json().catch(() => null);
+  if (!certs || typeof certs !== 'object') {
+    throw new AppError(503, 'Não foi possível validar a sessão agora.', 'AUTH_UNAVAILABLE', {
+      cause: 'Certificados do Firebase em formato inesperado'
+    });
+  }
   const maxAge = Number(/max-age=(\d+)/.exec(response.headers.get('cache-control') ?? '')?.[1] ?? 3600);
-  certsCache = { certs, expiresAt: Date.now() + maxAge * 1000 };
-  return certs;
+  certsCache = { certs: certs as Record<string, string>, expiresAt: Date.now() + maxAge * 1000 };
+  return certsCache.certs;
 }
 
 function decodeSegment(segment: string): Record<string, unknown> {
+  let decoded: unknown;
   try {
-    return JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
+    decoded = JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
   } catch {
     throw invalidToken('segmento do token não é JSON válido');
   }
+  if (!decoded || typeof decoded !== 'object') {
+    throw invalidToken('segmento do token não é um objeto');
+  }
+  return decoded as Record<string, unknown>;
 }
 
 /** Valida assinatura e claims do ID token e devolve o uid do usuário. */
@@ -63,15 +73,21 @@ export async function verifyFirebaseIdToken(token: string, projectId: string): P
   if (typeof payload.iat !== 'number' || payload.iat > now + CLOCK_SKEW_SECONDS) throw invalidToken('iat no futuro');
   if (typeof payload.auth_time !== 'number' || payload.auth_time > now + CLOCK_SKEW_SECONDS) throw invalidToken('auth_time inválido');
 
-  const certificate = (await getGoogleCerts())[header.kid];
-  if (!certificate) throw invalidToken('kid sem certificado correspondente');
+  const certs = await getGoogleCerts();
+  const certificate = Object.hasOwn(certs, header.kid) ? certs[header.kid] : undefined;
+  if (typeof certificate !== 'string') throw invalidToken('kid sem certificado correspondente');
 
-  const isValid = verify(
-    'RSA-SHA256',
-    Buffer.from(`${headerSegment}.${payloadSegment}`),
-    new X509Certificate(certificate).publicKey,
-    Buffer.from(signatureSegment, 'base64url')
-  );
+  let isValid = false;
+  try {
+    isValid = verify(
+      'RSA-SHA256',
+      Buffer.from(`${headerSegment}.${payloadSegment}`),
+      new X509Certificate(certificate).publicKey,
+      Buffer.from(signatureSegment, 'base64url')
+    );
+  } catch (error) {
+    throw invalidToken(`falha ao verificar a assinatura: ${error instanceof Error ? error.message : 'desconhecida'}`);
+  }
   if (!isValid) throw invalidToken('assinatura inválida');
 
   return { uid: payload.sub };

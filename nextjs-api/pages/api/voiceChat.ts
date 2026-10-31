@@ -16,18 +16,18 @@ export const config = {
   },
 };
 
-function parseAudioUpload(req: NextApiRequest): Promise<formidable.File | undefined> {
-  // Só arquivos com mimetype de áudio são gravados; o resto é descartado pelo filtro.
+function parseUpload(req: NextApiRequest): Promise<formidable.Files> {
+  // Só o campo "audio" com mimetype de áudio é gravado; o resto é descartado pelo filtro.
   const form = formidable({
     maxFileSize: MAX_AUDIO_BYTES,
-    filter: ({ mimetype }) => mimetype?.startsWith('audio/') ?? false,
+    filter: ({ name, mimetype }) => name === 'audio' && (mimetype?.startsWith('audio/') ?? false),
     allowEmptyFiles: false,
   });
 
   return new Promise((resolve, reject) => {
     form.parse(req, (err, _fields, files) => {
       if (err) reject(err);
-      else resolve(Array.isArray(files.audio) ? files.audio[0] : files.audio);
+      else resolve(files);
     });
   });
 }
@@ -46,12 +46,15 @@ function toUploadError(error: unknown): unknown {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!ensureMethod(req, res, ['POST'])) return;
 
-  let audioFile: formidable.File | undefined;
+  let uploadedFiles: formidable.File[] = [];
 
   try {
     await guardAiRoute(req, res);
 
-    audioFile = await parseAudioUpload(req).catch((error) => { throw toUploadError(error); });
+    const files = await parseUpload(req).catch((error) => { throw toUploadError(error); });
+    // Todos os arquivos gravados pelo formidable são apagados no finally, não só o campo "audio".
+    uploadedFiles = Object.values(files).flat().filter((file): file is formidable.File => !!file);
+    const audioFile = files.audio?.[0];
 
     if (!audioFile) {
       throw new AppError(400, 'Envie um arquivo de áudio no campo "audio".', 'AUDIO_REQUIRED');
@@ -84,10 +87,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     return sendError(res, error, 'Erro no processamento de voz');
   } finally {
-    if (audioFile) {
-      await unlink(audioFile.filepath).catch((cleanupError) => {
-        console.warn('Erro ao limpar arquivo temporário:', cleanupError);
-      });
-    }
+    await Promise.all(uploadedFiles.map((file) => unlink(file.filepath).catch((cleanupError) => {
+      console.warn('Erro ao limpar arquivo temporário:', cleanupError);
+    })));
   }
 }

@@ -59,19 +59,23 @@ export const ITINERARY_DAYS_SCHEMA = {
           location: stringField,
           timeline: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               additionalProperties: false,
               required: ['time', 'title', 'description', 'coordinates', 'category'],
               properties: {
-                time: stringField,
+                time: { type: 'string', pattern: '^\\d{1,2}:\\d{2}$' },
                 title: stringField,
                 description: stringField,
                 coordinates: {
                   type: 'object',
                   additionalProperties: false,
                   required: ['latitude', 'longitude'],
-                  properties: { latitude: { type: 'number' }, longitude: { type: 'number' } }
+                  properties: {
+                    latitude: { type: 'number', minimum: -90, maximum: 90 },
+                    longitude: { type: 'number', minimum: -180, maximum: 180 }
+                  }
                 },
                 category: { type: 'string', enum: [...ACTIVITY_CATEGORIES] }
               }

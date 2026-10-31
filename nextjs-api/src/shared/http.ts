@@ -33,8 +33,15 @@ export function sendError(res: NextApiResponse, error: unknown, logLabel: string
   return res.status(500).json({ error: 'Erro interno do servidor.' } satisfies ErrorBody);
 }
 
-/** Primeiro IP de `x-forwarded-for` (definido pela Vercel) ou o endereço do socket. */
+/**
+ * Na Vercel, o primeiro IP de `x-forwarded-for` (a plataforma sobrescreve o cabeçalho).
+ * Fora dela (local, Docker) o cabeçalho vem do cliente, então vale só o endereço do socket.
+ */
 export function getClientIp(req: NextApiRequest): string {
+  if (!process.env.VERCEL) {
+    return req.socket.remoteAddress || 'desconhecido';
+  }
+
   const forwarded = req.headers['x-forwarded-for'];
   const first = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0]?.trim();
   return first || req.socket.remoteAddress || 'desconhecido';

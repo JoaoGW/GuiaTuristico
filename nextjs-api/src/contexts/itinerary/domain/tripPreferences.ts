@@ -19,7 +19,9 @@ export interface TripPreferences {
   userPreferences: string[];
 }
 
-export const MAX_TRIP_DAYS = 30;
+// Com max_completion_tokens 6000 (sem aprovação para mudar), roteiros maiores tendem a ser truncados
+// e a chamada é paga mesmo assim. 7 dias é o maior caso do aceite do BE-09; revisar após medir em preview.
+export const MAX_TRIP_DAYS = 7;
 const MAX_TEXT_LENGTH = 100;
 const MAX_SPECIAL_WISH_LENGTH = 300;
 

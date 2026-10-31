@@ -5,15 +5,21 @@ import { getClientIp } from './http';
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 20;
+const MAX_TRACKED_KEYS = 10_000;
 
 // Limite por instância: em serverless cada instância tem o próprio contador, então isto
 // só contém abuso de uma origem só. O limite global depende de armazenamento externo (sem aprovação).
 const windows = new Map<string, { count: number; resetAt: number }>();
 
 function consume(key: string, now: number): { allowed: boolean; retryAfterSeconds: number } {
-  if (windows.size > 5000) {
+  if (windows.size >= MAX_TRACKED_KEYS) {
     for (const [storedKey, window] of windows) {
       if (window.resetAt <= now) windows.delete(storedKey);
+    }
+    // Se ainda estiver cheio, descarta as chaves mais antigas (o Map mantém a ordem de inserção).
+    for (const storedKey of windows.keys()) {
+      if (windows.size < MAX_TRACKED_KEYS) break;
+      windows.delete(storedKey);
     }
   }
 
