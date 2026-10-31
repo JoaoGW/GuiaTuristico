@@ -30,6 +30,10 @@ export function toAiError(error: unknown): unknown {
     if (error.status === 401) {
       return new AppError(500, 'Erro de autenticação no serviço de IA.', 'AI_AUTH_ERROR', { cause: error });
     }
+    // Conta sem saldo também chega como 429, mas não passa com o tempo: é indisponibilidade nossa.
+    if (error.status === 429 && error.code === 'insufficient_quota') {
+      return new AppError(503, 'Serviço de IA indisponível no momento.', 'AI_QUOTA_EXCEEDED', { cause: error });
+    }
     if (error.status === 429) {
       return new AppError(429, 'Limite de uso da IA atingido. Tente novamente em instantes.', 'AI_RATE_LIMITED', { cause: error });
     }
