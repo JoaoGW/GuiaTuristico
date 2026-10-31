@@ -32,7 +32,8 @@ export default function SwaggerAccordion() {
     "429": { description: "Limite de uso da rota ou da OpenAI atingido", example: { error: "Muitas solicitações em pouco tempo. Tente novamente em instantes.", code: "RATE_LIMITED" } },
     "500": { description: "Falha de autenticação com a OpenAI ou erro interno", example: { error: "Erro de autenticação no serviço de IA.", code: "AI_AUTH_ERROR" } },
     "502": { description: "OpenAI indisponível (rede ou 5xx)", example: { error: "Serviço de IA indisponível no momento.", code: "AI_UNAVAILABLE" } },
-    "503": { description: "OPEN_AI_KEY não configurada", example: { error: "Serviço de IA indisponível.", code: "AI_UNAVAILABLE" } }
+    "503": { description: "OPEN_AI_KEY não configurada", example: { error: "Serviço de IA indisponível.", code: "AI_UNAVAILABLE" } },
+    "504": { description: "A OpenAI passou do tempo limite da chamada", example: { error: "O serviço de IA demorou para responder. Tente novamente.", code: "AI_TIMEOUT" } }
   };
 
   const apiEndpoints: ApiEndpoint[] = [
@@ -99,7 +100,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países antes (Modo Surpresa). Nenhum dia é descartado em silêncio: roteiro truncado ou inválido gera 502 ITINERARY_INCOMPLETE.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países antes (Modo Surpresa). Nenhum dia é descartado em silêncio: roteiro truncado ou inválido gera 502 ITINERARY_INCOMPLETE. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
@@ -108,7 +109,7 @@ export default function SwaggerAccordion() {
         { name: "countries", type: "string[]", required: false, description: "Países (0 a 10); vazio ativa o Modo Surpresa" },
         { name: "originCountry", type: "string", required: true, description: "País de origem do grupo" },
         { name: "budget", type: "number", required: true, description: "Orçamento (≥ 0)" },
-        { name: "peopleQuantity", type: "integer", required: true, description: "Quantidade de pessoas (1 a 50)" },
+        { name: "peopleQuantity", type: "integer", required: true, description: "Total de viajantes, incluindo quem cria o roteiro (1 a 50); viajante solo = 1" },
         { name: "accompanying", type: "string", required: true, description: "Companhia da viagem" },
         { name: "tripStyles", type: "string[]", required: true, description: "Estilos de viagem (1 a 10)" },
         { name: "locomotionMethods", type: "string[]", required: true, description: "Meios de locomoção (1 a 10)" },
