@@ -1,35 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getCurrentWeather } from "@/contexts/catalog/application/getCurrentWeather";
+import { ensureMethod, readQueryParam, sendError } from "@/shared/http";
 
 export default async function CurrentWeather(req: NextApiRequest, res: NextApiResponse){
-  const weatherApi = process.env.WEATHER;
-  const { latitude, longitude } = req.query;
+  if (!ensureMethod(req, res, ["GET"])) return;
 
-  if (req.method === "GET") {
-    if (!latitude || !longitude) {
-      return res.status(400).json({ error: "Latitude e longitude são obrigatórios" });
-    }
-
-    if (!weatherApi) {
-      console.error("WEATHER API key is not configured");
-      return res.status(500).json({ error: "Weather API key not configured" });
-    }
-    
-    try {
-      const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=${weatherApi}&q=${latitude},${longitude}&aqi=no`)
-
-      if(!response.ok){
-        throw new Error ("Failed to fetch weather information");
-      }
-
-      const data = await response.json();
-
-      res.status(200).json(data);
-    } catch (error) {
-      console.error("Error fetching weather information: ", error);
-      res.status(500).json({ error: "Failed to fetch a response from weather" });
-    }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+  try {
+    const data = await getCurrentWeather(readQueryParam(req.query.latitude), readQueryParam(req.query.longitude));
+    return res.status(200).json(data);
+  } catch (error) {
+    return sendError(res, error, "Erro ao consultar o clima");
   }
 }
