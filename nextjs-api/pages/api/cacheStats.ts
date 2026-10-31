@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { responseCache } from '../../utils/responseCache';
+import { ensureMethod } from '@/shared/http';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (!ensureMethod(req, res, ['GET', 'DELETE'])) return;
+
   if (req.method === 'GET') {
     // Retornar estatísticas do cache
     const stats = responseCache.getStats();
@@ -14,15 +17,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
   }
-  
-  if (req.method === 'DELETE') {
-    // Limpar cache (para desenvolvimento/debug)
-    responseCache.clear();
-    return res.status(200).json({
-      success: true,
-      message: 'Cache limpo com sucesso'
-    });
+
+  // Limpar o cache é só para desenvolvimento/debug; em produção (inclusive previews da Vercel) fica bloqueado.
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Limpeza do cache disponível apenas em desenvolvimento.' });
   }
-  
-  return res.status(405).json({ error: 'Método não permitido' });
+
+  responseCache.clear();
+  return res.status(200).json({
+    success: true,
+    message: 'Cache limpo com sucesso'
+  });
 }

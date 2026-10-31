@@ -1,84 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import OpenAI from 'openai';
-
-// Configurar o OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_KEY,
-});
+import { answerChat } from '@/contexts/concierge/application/answerChat';
+import { ensureMethod, sendError } from '@/shared/http';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido. Use POST.' });
-  }
+  if (!ensureMethod(req, res, ['POST'])) return;
 
   try {
-    const { message, context } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ 
-        error: 'Mensagem é obrigatória',
-        details: 'Envie o campo "message" no corpo da requisição'
-      });
-    }
-
-    // Criar prompt contextualizado para Felipe, o guia turístico
-    const systemPrompt = context || `Você é Felipe, um guia turístico virtual brasileiro especializado e experiente. Suas características:
-      - Você é simpático, prestativo e conhece muito sobre turismo
-      - Você fala de forma natural e amigável, como um guia humano
-      - Você fornece informações práticas e úteis sobre destinos, atrações, hospedagem, transporte, gastronomia
-      - Você sugere roteiros personalizados baseados nos interesses do turista
-      - Você responde em português
-      - Seja sempre positivo e entusiasmado sobre viagens
-      Responda à pergunta do turista de forma útil e prática:`;
-
-    // Fazer chamada para OpenAI
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-6-luna',
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt
-        },
-        {
-          role: 'user',
-          content: message
-        }
-      ],
-      // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
-      max_completion_tokens: 600,
-    });
-
-    const response = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
+    // `context` não é mais aceito: o system prompt é sempre o do servidor.
+    const { response, usage } = await answerChat(req.body?.message);
 
     return res.status(200).json({
       success: true,
       response: response,
-      usage: completion.usage
+      usage: usage
     });
-
-  } catch (error: unknown) {
-    console.error('Erro ao gerar resposta do chat:', error);
-
-    const status = error instanceof OpenAI.APIError ? error.status : undefined;
-
-    if (status === 401) {
-      return res.status(500).json({
-        error: 'Erro de autenticação',
-        details: 'API key da OpenAI inválida ou expirada'
-      });
-    }
-
-    if (status === 429) {
-      return res.status(429).json({
-        error: 'Limite de taxa excedido',
-        details: 'Muitas requisições. Tente novamente em alguns segundos.'
-      });
-    }
-
-    return res.status(500).json({
-      error: 'Erro interno do servidor',
-      details: 'Falha ao gerar resposta do chat',
-      message: (error instanceof Error && error.message) || 'Erro desconhecido'
-    });
+  } catch (error) {
+    return sendError(res, error, 'Erro ao gerar resposta do chat');
   }
 }
