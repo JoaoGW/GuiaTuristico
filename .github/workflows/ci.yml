@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   expo-app:
-    name: Expo App - Lint, Typecheck e Testes
+    name: Expo App - Lint e Typecheck
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,30 +42,19 @@ jobs:
         with:
           working-directory: expo-app
 
-      - name: Expo Doctor (opcional)
-        run: npx expo-doctor || true
-
       - name: Lint
-        run: npm run -s lint --if-present
+        run: npm run lint
 
       - name: Typecheck
-        run: npm run -s typecheck --if-present
+        run: npx tsc --noEmit
 
-      - name: Testes
-        run: npm run -s test --if-present
-
-      - name: Build (web) - opcional
-        run: npm run -s build --if-present
-
-      - name: Artefatos do build web (se existir)
-        if: success() && hashFiles('expo-app/web-build/**') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: expo-web-build
-          path: expo-app/web-build
+      # Não bloqueia enquanto as pendências conhecidas do expo-doctor (AGENTS.md, FE-23) existirem.
+      - name: Expo Doctor (não bloqueante)
+        continue-on-error: true
+        run: npx expo-doctor
 
   nextjs-api:
-    name: Next.js API - Typecheck e Testes
+    name: Next.js API - Lint, Typecheck e Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -80,18 +69,19 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: nextjs-api/package.json
+          cache-dependency-path: nextjs-api/package-lock.json
 
       - name: Instalar dependências
         uses: bahmutov/npm-install@v1
         with:
           working-directory: nextjs-api
 
+      - name: Lint
+        run: npm run lint
+
       - name: Typecheck
-        run: npm run -s typecheck --if-present
+        run: npx tsc --noEmit
 
-      - name: Testes
-        run: npm run -s test --if-present
-
+      # Sem testes automatizados ainda (pendência 2): quando houver framework aprovado, entram aqui como etapa obrigatória.
       - name: Build Next.js
-        run: npm run -s build --if-present
+        run: npm run build
