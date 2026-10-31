@@ -2,10 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  typescript: {
-    // Ignora erros de tipo durante a build devido a bug no Next.js 15.5.7
-    // https://github.com/vercel/next.js/issues/issues
-    ignoreBuildErrors: true,
+  // O package-lock.json vazio na raiz do monorepo faria o Turbopack adotá-la como raiz.
+  turbopack: {
+    root: __dirname,
   },
 };
 
