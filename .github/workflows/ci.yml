@@ -67,7 +67,8 @@ jobs:
       - name: Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # O SDK openai 7.x exige Node 22 ou superior.
+          node-version: 22
           cache: npm
           cache-dependency-path: nextjs-api/package-lock.json
 
