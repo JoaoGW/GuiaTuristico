@@ -31,7 +31,8 @@ export function toAiError(error: unknown): unknown {
       return new AppError(500, 'Erro de autenticação no serviço de IA.', 'AI_AUTH_ERROR', { cause: error });
     }
     // Conta sem saldo também chega como 429, mas não passa com o tempo: é indisponibilidade nossa.
-    if (error.status === 429 && error.code === 'insufficient_quota') {
+    // A OpenAI manda `type: insufficient_quota` com `code` variável (ex.: credit_balance_exhausted).
+    if (error.status === 429 && (error.type === 'insufficient_quota' || error.code === 'insufficient_quota')) {
       return new AppError(503, 'Serviço de IA indisponível no momento.', 'AI_QUOTA_EXCEEDED', { cause: error });
     }
     if (error.status === 429) {
