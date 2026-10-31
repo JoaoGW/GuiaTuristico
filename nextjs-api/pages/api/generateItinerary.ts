@@ -19,8 +19,8 @@ export default async function generateItineraryHandler(req: NextApiRequest, res:
       return res.status(200).json({ message });
     }
 
-    const itinerary = await generateItinerary(req.body);
-    return res.status(200).json({ itinerary });
+    const { itinerary, plan, credits, missingDays } = await generateItinerary(req.body);
+    return res.status(200).json({ itinerary, plan, credits, missingDays });
   } catch (error) {
     return sendError(res, error, 'Erro ao gerar roteiro');
   }

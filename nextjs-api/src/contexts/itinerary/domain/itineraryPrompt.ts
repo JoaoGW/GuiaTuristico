@@ -1,4 +1,6 @@
+import type { DayBlock } from './credits';
 import { ACTIVITY_CATEGORIES } from './itinerary';
+import type { TripPlan } from './tripPlan';
 import type { TripPreferences } from './tripPreferences';
 
 // Instruções trazidas de ItineraryMapMenu.tsx (generateDetailed/generateSurprise), agora no
@@ -14,6 +16,12 @@ As opções de categorias são (retorne apenas 1 por atividade): ${ACTIVITY_CATE
 
 export const SURPRISE_DESTINATION_SYSTEM_PROMPT = `Você é um especialista em viagens. Baseado nas preferências do viajante, escolha UM continente específico e de 1 a 3 países que sejam perfeitos para esta viagem surpresa.
 Escolha destinos que combinem com o orçamento, estilo de viagem e preferências mencionadas. Seja específico e criativo na escolha.`;
+
+export const TRIP_PLAN_SYSTEM_PROMPT = `Você é um especialista em viagens. Planeje a rota de uma viagem dia a dia, respondendo no formato JSON pedido.
+Para cada dia informe date (YYYY-MM-DD, a partir da data de início) e location (Cidade, País onde o viajante estará naquele dia).
+Distribua as cidades de forma realista, considerando deslocamentos, o meio de locomoção e o ritmo da viagem.
+Se os países forem informados, use somente eles (não acrescente outros locais) e repita em continent o continente informado.
+Se nenhum país for informado, escolha UM continente específico e de 1 a 3 países que combinem com o orçamento, o estilo de viagem e as preferências (viagem surpresa).`;
 
 function travellerProfile(preferences: TripPreferences): string {
   const wish = preferences.specialWish ? ` e temos um desejo para a viagem: ${preferences.specialWish}` : '';
@@ -39,4 +47,25 @@ export function buildItineraryPrompt(preferences: TripPreferences, continent: st
 
   return `${tripDates(preferences)} ${destination} ${travellerProfile(preferences)} ` +
     `Gere exatamente ${preferences.days} dias.`;
+}
+
+export function buildTripPlanPrompt(preferences: TripPreferences): string {
+  const destination = preferences.countries.length > 0
+    ? `Iremos ${preferences.continent ? `para ${preferences.continent} e ` : ''}aos países ${preferences.countries.join(', ')}.`
+    : 'Destino surpresa: escolha o continente e os países.';
+
+  return `${tripDates(preferences)} ${destination} ${travellerProfile(preferences)} Planeje exatamente ${preferences.days} dias.`;
+}
+
+/** Prompt de um bloco de dias, preso à rota já planejada para a viagem inteira. */
+export function buildItineraryBlockPrompt(preferences: TripPreferences, plan: TripPlan, block: DayBlock): string {
+  const route = plan.days
+    .slice(block.firstDay - 1, block.lastDay)
+    .map((day, i) => `Dia ${block.firstDay + i} (${day.date}): ${day.location}`)
+    .join('; ');
+  const blockDays = block.lastDay - block.firstDay + 1;
+
+  return `${tripDates(preferences)} Viagem por ${plan.continent}, países ${plan.countries.join(', ')}. ${travellerProfile(preferences)} ` +
+    `Gere somente os dias ${block.firstDay} a ${block.lastDay} desta viagem, seguindo exatamente esta rota: ${route}. ` +
+    `Gere exatamente ${blockDays} dias, numerados de ${block.firstDay} a ${block.lastDay}.`;
 }
