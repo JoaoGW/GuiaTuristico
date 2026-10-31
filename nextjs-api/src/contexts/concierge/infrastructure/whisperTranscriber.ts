@@ -2,9 +2,9 @@ import OpenAI, { toFile } from 'openai';
 import { AppError } from '@/shared/errors';
 import { toAiError } from './openaiClient';
 
-// O app grava m4a; os demais formatos cobrem gravações em que a extensão não bate com o conteúdo.
 const UNSUPPORTED_AUDIO_MESSAGE = 'Formato de áudio não reconhecido. Use flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav ou webm.';
 
+// O app grava m4a; os demais formatos cobrem gravações em que a extensão não bate com o conteúdo.
 const FORMATS = [
   { ext: 'm4a', mime: 'audio/m4a' },
   { ext: 'mp3', mime: 'audio/mp3' },
