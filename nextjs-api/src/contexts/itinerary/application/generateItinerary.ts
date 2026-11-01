@@ -4,6 +4,7 @@ import { createOpenAIClient } from '@/contexts/concierge/infrastructure/openaiCl
 import { creditsForDays, splitIntoBlocks, type CreditUsage, type DayBlock } from '../domain/credits';
 import {
   ITINERARY_DAYS_SCHEMA,
+  isChargeableFailure,
   itineraryIncomplete,
   validateItineraryDays,
   withExactDayCount,
@@ -27,12 +28,12 @@ export interface ItineraryGeneration {
   /** Rota dia a dia (data, dia da semana, cidade e destaques) que os blocos seguiram. */
   plan: TripPlan;
   /**
+   * `charged`: blocos gerados + `forfeited` (blocos recusados pela IA por causa das preferências).
    * `debited`: `true` quando o saldo no RevenueCat ficou com `charged` debitado (reserva menos
-   * devolução); `false` se a devolução de blocos não gerados falhou (fica no log para conciliação);
-   * `null` com a cobrança desligada.
+   * devolução); `false` se a devolução falhou (fica no log para conciliação); `null` sem cobrança.
    */
-  credits: CreditUsage & { debited: boolean | null };
-  /** Dias dos blocos que falharam (não cobrados); vazio quando o roteiro veio completo. */
+  credits: CreditUsage & { forfeited: number; debited: boolean | null };
+  /** Dias dos blocos que falharam; vazio quando o roteiro veio completo. */
   missingDays: number[];
 }
 
@@ -41,7 +42,8 @@ export interface ItineraryGeneration {
  * Primeiro um plano da viagem inteira (no Modo Surpresa ele também escolhe o destino),
  * depois os blocos em paralelo, para caber no maxDuration da rota. O plano não é cobrado.
  * Com `wallet` (RevenueCat configurado), os créditos dos blocos pedidos são reservados (debitados)
- * antes de chamar a IA e os blocos que falharem são devolvidos no fim, inclusive quando nada é gerado.
+ * antes de chamar a IA. No fim, falhas de infraestrutura ou de formato são devolvidas; respostas
+ * cortadas ou recusadas por causa das preferências (ITINERARY_REJECTED) são cobradas.
  */
 export async function generateItinerary(body: unknown, wallet: CreditWallet | null): Promise<ItineraryGeneration> {
   const preferences = parseTripPreferences(body);
@@ -64,7 +66,9 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   try {
     plan = retry?.plan ?? await planTrip(openai, preferences, calendar);
   } catch (error) {
-    await wallet?.refund(blocks.length, `${reference} (devolução: plano falhou)`);
+    // Plano recusado por causa das preferências custa 1 crédito; qualquer outra falha devolve tudo.
+    const kept = isChargeableFailure(error) ? 1 : 0;
+    await wallet?.refund(blocks.length - kept, `${reference} (devolução: plano falhou)`);
     throw error;
   }
 
@@ -76,14 +80,16 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
     console.error(`Roteiro: bloco ${failure.block.index} falhou:`, failure.reason);
   }
 
-  const charged = generated.length;
-  const refunded = wallet && failures.length > 0
-    ? await wallet.refund(failures.length, `${reference} (devolução dos blocos ${failures.map(({ block }) => block.index).join(',')})`)
+  const forfeited = failures.filter(({ reason }) => isChargeableFailure(reason));
+  const refundable = failures.filter(({ reason }) => !isChargeableFailure(reason));
+  const charged = generated.length + forfeited.length;
+  const refunded = wallet && refundable.length > 0
+    ? await wallet.refund(refundable.length, `${reference} (devolução dos blocos ${refundable.map(({ block }) => block.index).join(',')})`)
     : true;
 
-  // Nenhum bloco gerado: tudo foi devolvido e o erro do primeiro bloco vai para o app (502, 504, 429...).
+  // Nenhum bloco gerado: o erro vai para o app; recusa por preferências tem prioridade, pois foi cobrada.
   if (generated.length === 0) {
-    throw failures[0].reason;
+    throw (forfeited[0] ?? failures[0]).reason;
   }
 
   const debited = wallet ? refunded : null;
@@ -91,7 +97,7 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   return {
     itinerary: { continent: plan.continent, countries: plan.countries, days: generated.flat() },
     plan,
-    credits: { required, charged, debited },
+    credits: { required, charged, forfeited: forfeited.length, debited },
     missingDays: failures.flatMap(({ block }) =>
       Array.from({ length: block.lastDay - block.firstDay + 1 }, (_, i) => block.firstDay + i))
   };

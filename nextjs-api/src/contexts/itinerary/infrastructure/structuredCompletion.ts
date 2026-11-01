@@ -1,6 +1,6 @@
 import type OpenAI from 'openai';
 import { toAiError } from '@/contexts/concierge/infrastructure/openaiClient';
-import { itineraryIncomplete } from '../domain/itinerary';
+import { itineraryIncomplete, itineraryRejected } from '../domain/itinerary';
 
 interface StructuredRequest {
   systemPrompt: string;
@@ -12,8 +12,8 @@ interface StructuredRequest {
 }
 
 /**
- * Pede JSON validado pelo schema (`strict`). Truncamento (`finish_reason = length`),
- * recusa ou JSON inválido viram 502 ITINERARY_INCOMPLETE.
+ * Pede JSON validado pelo schema (`strict`). Truncamento (`finish_reason = length`) ou recusa
+ * viram 422 ITINERARY_REJECTED (cobrado); resposta vazia ou JSON inválido, 502 ITINERARY_INCOMPLETE.
  */
 export async function requestStructuredJson(openai: OpenAI, request: StructuredRequest): Promise<unknown> {
   let completion: OpenAI.Chat.Completions.ChatCompletion;
@@ -48,11 +48,14 @@ export async function requestStructuredJson(openai: OpenAI, request: StructuredR
   );
 
   const choice = completion.choices[0];
-  if (!choice || choice.finish_reason === 'length') {
-    throw itineraryIncomplete(`finish_reason=${choice?.finish_reason ?? 'ausente'} usage=${JSON.stringify(completion.usage)}`);
+  if (!choice) {
+    throw itineraryIncomplete('resposta sem choices');
   }
-  if (choice.message.refusal || !choice.message.content) {
-    throw itineraryIncomplete('resposta vazia ou recusada pela IA');
+  if (choice.finish_reason === 'length' || choice.message.refusal) {
+    throw itineraryRejected(`finish_reason=${choice.finish_reason} recusa=${Boolean(choice.message.refusal)} usage=${JSON.stringify(completion.usage)}`);
+  }
+  if (!choice.message.content) {
+    throw itineraryIncomplete('resposta vazia');
   }
 
   try {

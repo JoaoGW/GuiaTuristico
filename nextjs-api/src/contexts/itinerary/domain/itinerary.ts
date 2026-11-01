@@ -30,6 +30,22 @@ export interface Itinerary {
   days: ItineraryDay[];
 }
 
+/**
+ * Resposta cortada pelo limite de tokens ou recusada pela IA. Com o prompt protegido e descrições
+ * curtas, isso só acontece quando as preferências tentam forçar a IA (ex.: "descrições de 3000
+ * palavras"); por isso é cobrado, ao contrário das falhas de infraestrutura e de formato.
+ */
+export function itineraryRejected(cause: string): AppError {
+  return new AppError(
+    422,
+    'A IA não conseguiu concluir o roteiro com as preferências informadas. Revise o desejo especial e tente de novo.',
+    'ITINERARY_REJECTED',
+    { cause }
+  );
+}
+
+export const isChargeableFailure = (error: unknown): boolean => error instanceof AppError && error.code === 'ITINERARY_REJECTED';
+
 export function itineraryIncomplete(cause: string): AppError {
   return new AppError(502, 'O roteiro gerado veio incompleto. Tente gerar novamente.', 'ITINERARY_INCOMPLETE', { cause });
 }
