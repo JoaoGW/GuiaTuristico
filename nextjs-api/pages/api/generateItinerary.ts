@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import { generateItinerary } from '@/contexts/itinerary/application/generateItinerary';
+import { MAX_TRIP_DAYS, creditsForDays } from '@/contexts/itinerary/domain/credits';
 import { creditWalletFor } from '@/contexts/billing/application/creditWallet';
 import { generateLegacyItineraryText } from '@/contexts/itinerary/application/generateLegacyItineraryText';
 import { guardAiRoute } from '@/shared/aiRouteGuard';
@@ -7,13 +8,17 @@ import { AppError } from '@/shared/errors';
 import { ensureMethod, sendError } from '@/shared/http';
 
 // O app espera até 120 s; as chamadas à OpenAI têm timeout menor para a resposta sair em JSON.
-export const config: PageConfig = { maxDuration: 120 };
+// 64 KB cobrem o prompt antigo e um plano de 28 dias reenviado; corpos maiores só serviriam para inflar o custo.
+export const config: PageConfig = { maxDuration: 120, api: { bodyParser: { sizeLimit: '64kb' } } };
 
 export default async function generateItineraryHandler(req: NextApiRequest, res: NextApiResponse) {
   if (!ensureMethod(req, res, ['POST'])) return;
 
   try {
-    const user = await guardAiRoute(req, res);
+    // Peso no limite de uso: o plano mais uma chamada por bloco de 7 dias.
+    const days = Number(req.body?.days);
+    const weight = Number.isInteger(days) && days >= 1 && days <= MAX_TRIP_DAYS ? creditsForDays(days) + 1 : 1;
+    const user = await guardAiRoute(req, res, weight);
     const wallet = creditWalletFor(user?.uid ?? null);
 
     // Período de transição: builds publicados antes do FE-20 ainda enviam `{ prompt }`.

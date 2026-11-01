@@ -16,8 +16,9 @@ import {
   buildItineraryBlockPrompt,
   buildTripPlanPrompt
 } from '../domain/itineraryPrompt';
-import { buildCalendar } from '../domain/tripCalendar';
-import { TRIP_PLAN_SCHEMA, parseBlockRetry, toTripPlan, type TripPlan } from '../domain/tripPlan';
+import { badRequest } from '@/shared/errors';
+import { buildCalendar, type CalendarDay } from '../domain/tripCalendar';
+import { TRIP_PLAN_SCHEMA, alignPlanWithPreferences, parseBlockRetry, toTripPlan, type TripPlan } from '../domain/tripPlan';
 import { parseTripPreferences, type TripPreferences } from '../domain/tripPreferences';
 import { requestStructuredJson } from '../infrastructure/structuredCompletion';
 
@@ -25,7 +26,11 @@ export interface ItineraryGeneration {
   itinerary: Itinerary;
   /** Rota dia a dia (data, dia da semana, cidade e destaques) que os blocos seguiram. */
   plan: TripPlan;
-  /** `debited`: débito feito no RevenueCat; `null` com a cobrança desligada. */
+  /**
+   * `debited`: `true` quando o saldo no RevenueCat ficou com `charged` debitado (reserva menos
+   * devolução); `false` se a devolução de blocos não gerados falhou (fica no log para conciliação);
+   * `null` com a cobrança desligada.
+   */
   credits: CreditUsage & { debited: boolean | null };
   /** Dias dos blocos que falharam (não cobrados); vazio quando o roteiro veio completo. */
   missingDays: number[];
@@ -35,20 +40,33 @@ export interface ItineraryGeneration {
  * Gera o roteiro e informa os créditos (1 por bloco de até 7 dias gerado com sucesso).
  * Primeiro um plano da viagem inteira (no Modo Surpresa ele também escolhe o destino),
  * depois os blocos em paralelo, para caber no maxDuration da rota. O plano não é cobrado.
- * Com `wallet` (RevenueCat configurado), confere o saldo dos blocos pedidos antes de chamar a IA
- * e debita só os blocos gerados.
+ * Com `wallet` (RevenueCat configurado), os créditos dos blocos pedidos são reservados (debitados)
+ * antes de chamar a IA e os blocos que falharem são devolvidos no fim, inclusive quando nada é gerado.
  */
 export async function generateItinerary(body: unknown, wallet: CreditWallet | null): Promise<ItineraryGeneration> {
   const preferences = parseTripPreferences(body);
+  // Data reconhecida antes de qualquer custo: o calendário (e o dia da semana) vem sempre do servidor.
+  const calendar = buildCalendar(preferences.dateBegin, preferences.days);
+  if (!calendar) {
+    throw badRequest('O campo "dateBegin" deve estar no formato DD/MM/AAAA.');
+  }
+
   const allBlocks = splitIntoBlocks(preferences.days);
-  const retry = parseBlockRetry(body, preferences.days, allBlocks);
+  const retry = parseBlockRetry(body, preferences, calendar, allBlocks);
   const required = creditsForDays(preferences.days);
   const blocks = retry?.blocks ?? allBlocks;
-
-  await wallet?.ensureAvailable(blocks.length);
+  const reference = `roteiro ${preferences.days} dias, blocos ${blocks.map((block) => block.index).join(',')}`;
   const openai = createOpenAIClient();
 
-  const plan = retry?.plan ?? await planTrip(openai, preferences);
+  await wallet?.reserve(blocks.length, reference);
+
+  let plan: TripPlan;
+  try {
+    plan = retry?.plan ?? await planTrip(openai, preferences, calendar);
+  } catch (error) {
+    await wallet?.refund(blocks.length, `${reference} (devolução: plano falhou)`);
+    throw error;
+  }
 
   const results = await Promise.allSettled(blocks.map((block) => generateBlock(openai, preferences, plan, block)));
   const generated = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
@@ -58,14 +76,17 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
     console.error(`Roteiro: bloco ${failure.block.index} falhou:`, failure.reason);
   }
 
-  // Nenhum bloco gerado: nada é cobrado e o erro do primeiro bloco vai para o app (502, 504, 429...).
+  const charged = generated.length;
+  const refunded = wallet && failures.length > 0
+    ? await wallet.refund(failures.length, `${reference} (devolução dos blocos ${failures.map(({ block }) => block.index).join(',')})`)
+    : true;
+
+  // Nenhum bloco gerado: tudo foi devolvido e o erro do primeiro bloco vai para o app (502, 504, 429...).
   if (generated.length === 0) {
     throw failures[0].reason;
   }
 
-  const charged = generated.length;
-  const generatedBlocks = blocks.filter((_, i) => results[i].status === 'fulfilled').map((block) => block.index);
-  const debited = wallet ? await wallet.charge(charged, `roteiro ${preferences.days} dias, blocos ${generatedBlocks.join(',')}`) : null;
+  const debited = wallet ? refunded : null;
 
   return {
     itinerary: { continent: plan.continent, countries: plan.countries, days: generated.flat() },
@@ -76,8 +97,7 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   };
 }
 
-async function planTrip(openai: OpenAI, preferences: TripPreferences): Promise<TripPlan> {
-  const calendar = buildCalendar(preferences.dateBegin, preferences.days);
+async function planTrip(openai: OpenAI, preferences: TripPreferences, calendar: CalendarDay[]): Promise<TripPlan> {
   const plan = toTripPlan(await requestStructuredJson(openai, {
     systemPrompt: TRIP_PLAN_SYSTEM_PROMPT,
     userPrompt: buildTripPlanPrompt(preferences, calendar),
@@ -89,12 +109,7 @@ async function planTrip(openai: OpenAI, preferences: TripPreferences): Promise<T
   if (!plan) {
     throw itineraryIncomplete('plano da viagem inválido');
   }
-
-  // Com países informados, o plano não pode trocar o destino escolhido pelo usuário.
-  if (preferences.countries.length > 0) {
-    return { ...plan, continent: preferences.continent || plan.continent, countries: preferences.countries };
-  }
-  return plan;
+  return alignPlanWithPreferences(plan, preferences);
 }
 
 async function generateBlock(openai: OpenAI, preferences: TripPreferences, plan: TripPlan, block: DayBlock): Promise<ItineraryDay[]> {
@@ -104,8 +119,9 @@ async function generateBlock(openai: OpenAI, preferences: TripPreferences, plan:
     userPrompt: buildItineraryBlockPrompt(preferences, plan, block),
     schemaName: 'itinerary',
     schema: withExactDayCount(ITINERARY_DAYS_SCHEMA, blockDays),
-    // 30 s do plano + 80 s dos blocos em paralelo cabem nos 120 s da rota.
-    timeoutMs: 80_000
+    // Orçamento de 120 s: token (5) + reserva (2×5) + plano (30) + blocos em paralelo (60)
+    // + devolução (2×5) = 115 s. O maior bloco medido com reasoning low levou ~40 s.
+    timeoutMs: 60_000
   }), blockDays);
 
   // Número, data e cidade vêm do plano, que é a referência comum a todos os blocos.

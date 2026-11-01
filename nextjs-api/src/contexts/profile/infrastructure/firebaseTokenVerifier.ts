@@ -68,7 +68,10 @@ export async function verifyFirebaseIdToken(token: string, projectId: string): P
   if (header.alg !== 'RS256' || typeof header.kid !== 'string') throw invalidToken('alg/kid inválidos');
   if (payload.aud !== projectId) throw invalidToken('aud diferente do projeto');
   if (payload.iss !== `https://securetoken.google.com/${projectId}`) throw invalidToken('iss inválido');
-  if (typeof payload.sub !== 'string' || payload.sub === '' || payload.sub.length > 128) throw invalidToken('sub inválido');
+  // `.` e `..` virariam segmentos de caminho na URL do RevenueCat.
+  if (typeof payload.sub !== 'string' || payload.sub === '' || payload.sub === '.' || payload.sub === '..' || payload.sub.length > 128) {
+    throw invalidToken('sub inválido');
+  }
   if (typeof payload.exp !== 'number' || payload.exp <= now - CLOCK_SKEW_SECONDS) throw invalidToken('token expirado');
   if (typeof payload.iat !== 'number' || payload.iat > now + CLOCK_SKEW_SECONDS) throw invalidToken('iat no futuro');
   if (typeof payload.auth_time !== 'number' || payload.auth_time > now + CLOCK_SKEW_SECONDS) throw invalidToken('auth_time inválido');

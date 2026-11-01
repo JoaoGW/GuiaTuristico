@@ -1,13 +1,26 @@
 import { randomUUID } from 'node:crypto';
 import { AppError } from '@/shared/errors';
-import { getCreditBalance, readRevenueCatConfig, spendCredits } from '../infrastructure/revenueCatClient';
+import { adjustCredits, readRevenueCatConfig, type AdjustmentResult, type RevenueCatConfig } from '../infrastructure/revenueCatClient';
 
-/** Carteira de créditos de IA de um usuário, com saldo e débito no RevenueCat. */
+/**
+ * Carteira de créditos de IA de um usuário no RevenueCat. Os créditos são reservados (debitados)
+ * antes da geração e os blocos que falharem são devolvidos: assim, pedidos simultâneos não
+ * conseguem gerar roteiros além do saldo, e o saldo final reflete só os blocos gerados.
+ */
 export interface CreditWallet {
-  /** Lança 402 INSUFFICIENT_CREDITS quando o saldo não cobre `credits`. */
-  ensureAvailable(credits: number): Promise<void>;
-  /** Debita os créditos consumidos; `false` quando o débito não foi feito (registrado no log para conciliação). */
-  charge(credits: number, reference: string): Promise<boolean>;
+  /** Debita `credits` antes da geração; lança 402 INSUFFICIENT_CREDITS se o saldo não cobrir. */
+  reserve(credits: number, reference: string): Promise<void>;
+  /** Devolve créditos de blocos não gerados; `false` quando a devolução falhou (registrada no log). */
+  refund(credits: number, reference: string): Promise<boolean>;
+}
+
+const BILLING_UNAVAILABLE = 'Não foi possível consultar seus créditos agora.';
+
+async function adjustWithRetry(config: RevenueCatConfig, uid: string, delta: number, reference: string): Promise<AdjustmentResult> {
+  // Mesma chave nas duas tentativas: o RevenueCat aplica o ajuste no máximo uma vez.
+  const idempotencyKey = randomUUID();
+  const first = await adjustCredits(config, uid, delta, idempotencyKey, reference);
+  return first === 'retryable' ? adjustCredits(config, uid, delta, idempotencyKey, reference) : first;
 }
 
 /**
@@ -26,32 +39,26 @@ export function creditWalletFor(uid: string | null): CreditWallet | null {
   }
 
   return {
-    async ensureAvailable(credits) {
-      const balance = await getCreditBalance(config, uid);
-      if (balance < credits) {
+    async reserve(credits, reference) {
+      const result = await adjustWithRetry(config, uid, -credits, reference);
+      if (result === 'ok') return;
+      if (result === 'insufficient') {
         throw new AppError(402, 'Créditos insuficientes para gerar este roteiro.', 'INSUFFICIENT_CREDITS');
       }
+      if (result === 'uncertain') {
+        console.error(`Créditos: reserva em estado incerto (409), conciliar (uid=${uid}, créditos=${credits}, ${reference}).`);
+      }
+      throw new AppError(502, BILLING_UNAVAILABLE, 'BILLING_UNAVAILABLE', { cause: `reserva de créditos: ${result}` });
     },
 
-    async charge(credits, reference) {
+    async refund(credits, reference) {
       if (credits <= 0) return true;
 
-      // Mesma chave nas duas tentativas: o RevenueCat executa o débito no máximo uma vez.
-      const idempotencyKey = randomUUID();
-      for (let attempt = 1; attempt <= 2; attempt++) {
-        try {
-          const debited = await spendCredits(config, uid, credits, idempotencyKey, reference);
-          if (!debited) {
-            console.error(`Créditos: saldo insuficiente no débito após a geração (uid=${uid}, créditos=${credits}, ${reference}).`);
-          }
-          return debited;
-        } catch (error) {
-          if (attempt === 2) {
-            console.error(`Créditos: débito não realizado (uid=${uid}, créditos=${credits}, ${reference}):`, error);
-          }
-        }
+      const result = await adjustWithRetry(config, uid, credits, reference);
+      if (result !== 'ok') {
+        console.error(`Créditos: devolução não confirmada (${result}), conciliar (uid=${uid}, créditos=${credits}, ${reference}).`);
       }
-      return false;
+      return result === 'ok';
     }
   };
 }

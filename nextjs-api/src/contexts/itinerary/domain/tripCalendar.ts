@@ -13,12 +13,15 @@ function toUtcDate(year: number, month: number, day: number): Date | null {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day ? date : null;
 }
 
-/** Aceita `DD/MM/AAAA` (o que o app envia) ou `AAAA-MM-DD`; qualquer outro formato devolve `null`. */
+/**
+ * Aceita `DD/MM/AAAA` (o que o app envia), `AAAA-MM-DD` ou ISO completo (usa só a parte da data);
+ * qualquer outro formato devolve `null`.
+ */
 function parseDate(value: string): Date | null {
   const br = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(value.trim());
   if (br) return toUtcDate(Number(br[3]), Number(br[2]), Number(br[1]));
 
-  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  const iso = /^(\d{4})-(\d{2})-(\d{2})(T[\d:.]+(Z|[+-]\d{2}:?\d{2})?)?$/.exec(value.trim());
   if (iso) return toUtcDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
 
   return null;
