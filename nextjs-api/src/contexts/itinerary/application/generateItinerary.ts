@@ -1,4 +1,5 @@
 import type OpenAI from 'openai';
+import type { CreditWallet } from '@/contexts/billing/application/creditWallet';
 import { createOpenAIClient } from '@/contexts/concierge/infrastructure/openaiClient';
 import { creditsForDays, splitIntoBlocks, type CreditUsage, type DayBlock } from '../domain/credits';
 import {
@@ -24,7 +25,8 @@ export interface ItineraryGeneration {
   itinerary: Itinerary;
   /** Rota dia a dia (data, dia da semana, cidade e destaques) que os blocos seguiram. */
   plan: TripPlan;
-  credits: CreditUsage;
+  /** `debited`: débito feito no RevenueCat; `null` com a cobrança desligada. */
+  credits: CreditUsage & { debited: boolean | null };
   /** Dias dos blocos que falharam (não cobrados); vazio quando o roteiro veio completo. */
   missingDays: number[];
 }
@@ -33,17 +35,20 @@ export interface ItineraryGeneration {
  * Gera o roteiro e informa os créditos (1 por bloco de até 7 dias gerado com sucesso).
  * Primeiro um plano da viagem inteira (no Modo Surpresa ele também escolhe o destino),
  * depois os blocos em paralelo, para caber no maxDuration da rota. O plano não é cobrado.
- * O saldo do usuário fica no RevenueCat; esta função só calcula o consumo.
+ * Com `wallet` (RevenueCat configurado), confere o saldo dos blocos pedidos antes de chamar a IA
+ * e debita só os blocos gerados.
  */
-export async function generateItinerary(body: unknown): Promise<ItineraryGeneration> {
+export async function generateItinerary(body: unknown, wallet: CreditWallet | null): Promise<ItineraryGeneration> {
   const preferences = parseTripPreferences(body);
   const allBlocks = splitIntoBlocks(preferences.days);
   const retry = parseBlockRetry(body, preferences.days, allBlocks);
   const required = creditsForDays(preferences.days);
+  const blocks = retry?.blocks ?? allBlocks;
+
+  await wallet?.ensureAvailable(blocks.length);
   const openai = createOpenAIClient();
 
   const plan = retry?.plan ?? await planTrip(openai, preferences);
-  const blocks = retry?.blocks ?? allBlocks;
 
   const results = await Promise.allSettled(blocks.map((block) => generateBlock(openai, preferences, plan, block)));
   const generated = results.flatMap((result) => (result.status === 'fulfilled' ? [result.value] : []));
@@ -58,10 +63,14 @@ export async function generateItinerary(body: unknown): Promise<ItineraryGenerat
     throw failures[0].reason;
   }
 
+  const charged = generated.length;
+  const generatedBlocks = blocks.filter((_, i) => results[i].status === 'fulfilled').map((block) => block.index);
+  const debited = wallet ? await wallet.charge(charged, `roteiro ${preferences.days} dias, blocos ${generatedBlocks.join(',')}`) : null;
+
   return {
     itinerary: { continent: plan.continent, countries: plan.countries, days: generated.flat() },
     plan,
-    credits: { required, charged: generated.length },
+    credits: { required, charged, debited },
     missingDays: failures.flatMap(({ block }) =>
       Array.from({ length: block.lastDay - block.firstDay + 1 }, (_, i) => block.firstDay + i))
   };

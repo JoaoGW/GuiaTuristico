@@ -36,8 +36,11 @@ function consume(key: string, now: number): { allowed: boolean; retryAfterSecond
   };
 }
 
-/** Autenticação (quando ligada) e limite de uso das rotas que chamam a OpenAI. */
-export async function guardAiRoute(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+/**
+ * Autenticação (quando ligada) e limite de uso das rotas que chamam a OpenAI.
+ * Devolve o usuário autenticado, ou `null` com AI_AUTH_REQUIRED desligado.
+ */
+export async function guardAiRoute(req: NextApiRequest, res: NextApiResponse): Promise<{ uid: string } | null> {
   const user = await authenticateRequest(req.headers.authorization);
   const key = user ? `uid:${user.uid}` : `ip:${getClientIp(req)}`;
   const { allowed, retryAfterSeconds } = consume(key, Date.now());
@@ -46,4 +49,6 @@ export async function guardAiRoute(req: NextApiRequest, res: NextApiResponse): P
     res.setHeader('Retry-After', String(retryAfterSeconds));
     throw new AppError(429, 'Muitas solicitações em pouco tempo. Tente novamente em instantes.', 'RATE_LIMITED');
   }
+
+  return user;
 }
