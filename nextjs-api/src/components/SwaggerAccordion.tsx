@@ -46,7 +46,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/voiceChat",
       summary: "Chat por voz unificado",
-      description: "Transcrição de áudio (whisper-1) + resposta do Felipe (gpt-6-luna) em uma única chamada, com cache de respostas similares. Outro formato de áudio só é tentado quando a OpenAI recusa o formato.",
+      description: "Transcrição de áudio (whisper-1) + resposta do Felipe (gpt-6-luna) em uma única chamada, com cache de respostas similares do próprio usuário (e respostas prontas para saudações). Outro formato de áudio só é tentado quando a OpenAI recusa o formato.",
       parameters: [
         { name: "audio", type: "file", required: true, description: "Arquivo com mimetype audio/* (máx. 2 MB, ~15 segundos). Formatos aceitos pela OpenAI: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm." }
       ],
