@@ -46,7 +46,8 @@ export async function grantAdReward(rawQuery: string): Promise<RewardOutcome> {
   );
 
   if (result === 'ok') return 'credited';
-  if (result === 'retryable') return 'retry';
+  // 409 pode significar ajuste em andamento: o AdMob reenvia com a mesma transação, sem crédito em dobro.
+  if (result === 'retryable' || result === 'uncertain') return 'retry';
   console.error(`Anúncio: crédito não confirmado (${result}), conciliar (cliente=${pseudonymousId(reward.userId)}, transação ${reward.transactionId}).`);
   return 'ignored';
 }

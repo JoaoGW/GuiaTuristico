@@ -1,8 +1,9 @@
+import { randomUUID } from 'node:crypto';
 import { withReservation, type CreditWallet } from '@/contexts/billing/application/creditWallet';
 import { requireText } from '@/shared/validation';
 import { FELIPE_CHAT_PROMPT } from '../domain/felipePersona';
 import { TEXT_MESSAGE_COST } from '../domain/messagePricing';
-import { createOpenAIClient, logAiUsage, toAiError } from '../infrastructure/openaiClient';
+import { createOpenAIClient, logAiUsage, requireAnswer, toAiError } from '../infrastructure/openaiClient';
 
 const MAX_MESSAGE_LENGTH = 2000;
 
@@ -11,7 +12,7 @@ export async function answerChat(rawMessage: unknown, wallet: CreditWallet | nul
   const message = requireText(rawMessage, 'message', MAX_MESSAGE_LENGTH);
   const openai = createOpenAIClient();
 
-  return withReservation(wallet, TEXT_MESSAGE_COST, 'chat', async () => {
+  return withReservation(wallet, TEXT_MESSAGE_COST, `chat ${randomUUID().slice(0, 8)}`, async () => {
     try {
       const startedAt = Date.now();
       const completion = await openai.chat.completions.create({
@@ -25,10 +26,7 @@ export async function answerChat(rawMessage: unknown, wallet: CreditWallet | nul
       }, { timeout: 25_000, maxRetries: 0 }); // Sem retentativa: token (5 s) + reserva (2×3 s) + IA (25 s) + devolução (2×3 s) < 60 s da rota.
 
       logAiUsage('chat', completion, startedAt);
-      return {
-        response: completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.',
-        usage: completion.usage
-      };
+      return { response: requireAnswer(completion), usage: completion.usage };
     } catch (error) {
       throw toAiError(error);
     }

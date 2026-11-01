@@ -70,6 +70,7 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   } catch (error) {
     // Plano recusado por causa das preferências custa 1 crédito; qualquer outra falha devolve tudo.
     const kept = isChargeableFailure(error) ? 1 : 0;
+    if (kept) console.error(`Roteiro (${reference}): plano recusado e cobrado:`, error);
     await wallet?.refund(blocks.length - kept, `${reference} (devolução: plano falhou)`);
     throw error;
   }

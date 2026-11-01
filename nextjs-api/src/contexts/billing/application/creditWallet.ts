@@ -73,9 +73,8 @@ export function creditWalletFor(uid: string | null, kind: WalletKind = 'itinerar
       const result = await adjustWithRetry(config, uid, currency, -amount, reference);
       if (result === 'ok') return;
       if (result === 'insufficient') throw INSUFFICIENT[kind]();
-      if (result === 'uncertain') {
-        console.error(`Créditos: reserva em estado incerto (409), conciliar (cliente=${logId}, ${currency}=${amount}, ${reference}).`);
-      }
+      // 409 ou duas tentativas sem resposta: o RevenueCat pode ter debitado; fica registrado para conciliar.
+      console.error(`Créditos: reserva não confirmada (${result}), conciliar (cliente=${logId}, ${currency}=${amount}, ${reference}).`);
       throw new AppError(502, BILLING_UNAVAILABLE, 'BILLING_UNAVAILABLE', { cause: `reserva de ${currency}: ${result}` });
     },
 

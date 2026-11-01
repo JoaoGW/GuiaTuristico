@@ -1,9 +1,10 @@
+import { randomUUID } from 'node:crypto';
 import { withReservation, type CreditWallet } from '@/contexts/billing/application/creditWallet';
 import { AppError } from '@/shared/errors';
 import { responseCache } from '../../../../utils/responseCache';
 import { FELIPE_VOICE_PROMPT } from '../domain/felipePersona';
 import { VOICE_MESSAGE_COST } from '../domain/messagePricing';
-import { createOpenAIClient, logAiUsage, toAiError } from '../infrastructure/openaiClient';
+import { createOpenAIClient, logAiUsage, requireAnswer, toAiError } from '../infrastructure/openaiClient';
 import { transcribeAudio } from '../infrastructure/whisperTranscriber';
 
 // O app grava até ~15 s; transcrições maiores indicam áudio fora do uso esperado e encareceriam a resposta e o cache.
@@ -17,7 +18,7 @@ const MAX_TRANSCRIPTION_LENGTH = 2000;
 export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | null) {
   const openai = createOpenAIClient();
 
-  return withReservation(wallet, VOICE_MESSAGE_COST, 'chat de voz', async () => {
+  return withReservation(wallet, VOICE_MESSAGE_COST, `chat de voz ${randomUUID().slice(0, 8)}`, async () => {
     const transcription = await transcribeAudio(openai, audio);
 
     if (!transcription.trim()) {
@@ -45,7 +46,7 @@ export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | n
         }, { timeout: 25_000, maxRetries: 0 });
 
         logAiUsage('voiceChat', completion, startedAt);
-        felipeResponse = completion.choices[0]?.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.';
+        felipeResponse = requireAnswer(completion);
         totalTokens = completion.usage?.total_tokens || 0;
       } catch (error) {
         throw toAiError(error);

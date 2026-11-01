@@ -9,7 +9,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // A assinatura cobre a query sem decodificar, exatamente na ordem recebida.
-    const rawQuery = (req.url ?? '').split('?')[1] ?? '';
+    const url = req.url ?? '';
+    const rawQuery = url.includes('?') ? url.slice(url.indexOf('?') + 1) : '';
     const outcome = await grantAdReward(rawQuery);
 
     if (outcome === 'retry') {

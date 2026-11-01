@@ -45,6 +45,13 @@ export async function requestStructuredJson(openai: OpenAI, request: StructuredR
   if (!choice) {
     throw itineraryIncomplete('resposta sem choices');
   }
+  // Corte só é cobrado quando o texto gerado ocupou o limite (indício de preferências forçando a IA);
+  // se o raciocínio consumiu a maior parte, o corte é do modelo e o bloco é devolvido.
+  const reasoning = completion.usage?.completion_tokens_details?.reasoning_tokens ?? 0;
+  const output = completion.usage?.completion_tokens ?? 0;
+  if (choice.finish_reason === 'length' && reasoning >= output / 2) {
+    throw itineraryIncomplete(`finish_reason=length dominado por raciocínio usage=${JSON.stringify(completion.usage)}`);
+  }
   if (choice.finish_reason === 'length' || choice.message.refusal) {
     throw itineraryRejected(`finish_reason=${choice.finish_reason} recusa=${Boolean(choice.message.refusal)} usage=${JSON.stringify(completion.usage)}`);
   }

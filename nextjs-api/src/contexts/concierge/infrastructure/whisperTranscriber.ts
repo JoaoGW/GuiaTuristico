@@ -40,8 +40,9 @@ export async function transcribeAudio(openai: OpenAI, audio: Buffer): Promise<st
       }, { timeout: 15_000, maxRetries: 0 });
     } catch (error) {
       if (!isFormatError(error)) {
-        // Outros 400 da transcrição vêm do conteúdo enviado (áudio corrompido ou vazio), não do servidor.
-        if (error instanceof OpenAI.APIError && error.status === 400) {
+        // 400 sobre o conteúdo do áudio é do usuário (cobrado); outros 400 (ex.: parâmetro nosso
+        // inválido) seguem como erro do servidor e são devolvidos.
+        if (error instanceof OpenAI.APIError && error.status === 400 && /audio|corrupt|decod|too short|duration/i.test(error.message)) {
           throw new AppError(400, UNSUPPORTED_AUDIO_MESSAGE, 'UNSUPPORTED_AUDIO', { cause: error });
         }
         throw toAiError(error);

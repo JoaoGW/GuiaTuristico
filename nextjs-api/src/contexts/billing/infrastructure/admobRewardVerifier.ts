@@ -11,6 +11,10 @@ const KEYS_TTL_MS = 12 * 60 * 60 * 1000;
 let keysCache: { keys: Map<string, KeyObject>; expiresAt: number } | null = null;
 // Recarga forçada (key_id desconhecido) no máximo 1 vez por minuto: callbacks forjados não viram rajadas ao Google.
 let lastForcedRefreshAt = 0;
+// Falha ao buscar as chaves também fica em cache por 1 minuto, para não repetir a busca a cada callback.
+let lastFetchFailureAt = 0;
+// Callbacks com mais de 24 h são recusados: a idempotência do RevenueCat pode não durar para sempre.
+const MAX_CALLBACK_AGE_MS = 24 * 60 * 60 * 1000;
 
 export interface AdReward {
   adUnit: string;
@@ -26,6 +30,9 @@ async function getVerifierKeys(forceRefresh: boolean): Promise<Map<string, KeyOb
   const canForce = forceRefresh && Date.now() - lastForcedRefreshAt > 60_000;
   if (keysCache && keysCache.expiresAt > Date.now() && !canForce) return keysCache.keys;
   if (canForce) lastForcedRefreshAt = Date.now();
+  if (Date.now() - lastFetchFailureAt < 60_000) {
+    throw new AppError(503, 'Verificação de anúncios indisponível.', 'REWARD_VERIFICATION_UNAVAILABLE', { cause: 'falha recente ao buscar as chaves' });
+  }
 
   let response: Response;
   try {
@@ -33,10 +40,12 @@ async function getVerifierKeys(forceRefresh: boolean): Promise<Map<string, KeyOb
     const keysUrl = (process.env.NODE_ENV !== 'production' && process.env.ADMOB_VERIFIER_KEYS_URL) || KEYS_URL;
     response = await fetch(keysUrl, { signal: AbortSignal.timeout(5000) });
   } catch (error) {
+    lastFetchFailureAt = Date.now();
     throw new AppError(503, 'Verificação de anúncios indisponível.', 'REWARD_VERIFICATION_UNAVAILABLE', { cause: error });
   }
   const data = (await response.json().catch(() => null)) as { keys?: { keyId?: number | string; base64?: string; pem?: string }[] } | null;
   if (!response.ok || !Array.isArray(data?.keys)) {
+    lastFetchFailureAt = Date.now();
     throw new AppError(503, 'Verificação de anúncios indisponível.', 'REWARD_VERIFICATION_UNAVAILABLE', {
       cause: `chaves do AdMob status=${response.status}`
     });
@@ -63,10 +72,14 @@ export async function verifyAdRewardCallback(rawQuery: string): Promise<AdReward
   if (signatureIndex <= 0) throw invalidCallback('sem signature');
 
   const message = rawQuery.slice(0, signatureIndex);
-  const params = new URLSearchParams(rawQuery);
-  const signature = params.get('signature');
-  const keyId = params.get('key_id');
-  if (!signature || !keyId) throw invalidCallback('sem signature ou key_id');
+  // Só `signature` e `key_id` vêm depois da parte assinada; os dados da recompensa são lidos apenas
+  // de `message`, para que parâmetros acrescentados no fim (ex.: outro user_id) não tenham efeito.
+  const trailer = new URLSearchParams(rawQuery.slice(signatureIndex + 1));
+  const signature = trailer.get('signature');
+  const keyId = trailer.get('key_id');
+  if (!signature || !keyId || [...trailer.keys()].join(',') !== 'signature,key_id') {
+    throw invalidCallback('a query deve terminar exatamente em signature e key_id');
+  }
 
   // Chave desconhecida pode ser rotação recente: recarrega uma vez antes de recusar.
   let publicKey = (await getVerifierKeys(false)).get(keyId);
@@ -81,6 +94,14 @@ export async function verifyAdRewardCallback(rawQuery: string): Promise<AdReward
     isValid = false;
   }
   if (!isValid) throw invalidCallback('assinatura inválida');
+
+  const params = new URLSearchParams(message);
+  // A documentação do AdMob diz milissegundos, mas o exemplo tem 16 dígitos: aceita também microssegundos.
+  const rawTimestamp = Number(params.get('timestamp'));
+  const timestampMs = rawTimestamp > 1e14 ? rawTimestamp / 1000 : rawTimestamp;
+  if (!Number.isFinite(timestampMs) || Date.now() - timestampMs > MAX_CALLBACK_AGE_MS || timestampMs - Date.now() > 60 * 60 * 1000) {
+    throw invalidCallback(`timestamp fora da janela (${params.get('timestamp')})`);
+  }
 
   const rewardAmount = Number(params.get('reward_amount'));
   const transactionId = params.get('transaction_id') ?? '';

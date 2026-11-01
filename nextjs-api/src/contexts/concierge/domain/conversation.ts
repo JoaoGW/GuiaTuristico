@@ -11,6 +11,8 @@ export const MAX_HISTORY_MESSAGES = 10;
 const MAX_RECEIVED_MESSAGES = 50;
 const MAX_MESSAGE_LENGTH = 4000;
 const MAX_LEGACY_PROMPT_LENGTH = 2000;
+// Teto do histórico somado: uma mensagem paga não pode levar ~10 mil tokens de contexto montado pelo cliente.
+const MAX_HISTORY_CHARACTERS = 12_000;
 
 /**
  * Aceita `{ messages: [{ role, content }] }` ou o formato antigo `{ prompt }`,
@@ -37,6 +39,11 @@ export function parseConversation(body: unknown): ChatMessage[] {
 
   if (conversation[conversation.length - 1].role !== 'user') {
     throw badRequest('A última mensagem deve ser do usuário.');
+  }
+
+  // Descarta as mensagens mais antigas até caber no teto, mantendo sempre a pergunta atual.
+  while (conversation.length > 1 && conversation.reduce((total, message) => total + message.content.length, 0) > MAX_HISTORY_CHARACTERS) {
+    conversation.shift();
   }
 
   return conversation;

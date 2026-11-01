@@ -23,6 +23,20 @@ export function logAiUsage(label: string, completion: OpenAI.Chat.Completions.Ch
   );
 }
 
+/**
+ * Texto da resposta. Resposta vazia (ex.: raciocínio consumiu todo o limite) vira 502, que é
+ * devolvido ao usuário e não entra no cache, em vez de cobrar por uma frase de desculpa.
+ */
+export function requireAnswer(completion: OpenAI.Chat.Completions.ChatCompletion): string {
+  const text = completion.choices[0]?.message?.content?.trim();
+  if (!text) {
+    throw new AppError(502, 'O Felipe não conseguiu responder agora. Tente de novo.', 'AI_EMPTY_RESPONSE', {
+      cause: `finish_reason=${completion.choices[0]?.finish_reason}`
+    });
+  }
+  return text;
+}
+
 /** Traduz falhas do SDK da OpenAI para mensagens em pt-BR, sem repassar o texto do provedor. */
 export function toAiError(error: unknown): unknown {
   if (error instanceof AppError) return error;

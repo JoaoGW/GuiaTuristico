@@ -27,7 +27,8 @@ const ENV_NAMES = ['REVENUECAT_SECRET_API_KEY', 'REVENUECAT_PROJECT_ID', 'REVENU
  */
 export function readRevenueCatConfig(): RevenueCatConfig | null {
   const [apiKey, projectId, currency] = ENV_NAMES.map((name) => process.env[name]);
-  if (!apiKey && !projectId && !currency) return null;
+  // A moeda de mensagens sozinha também é configuração parcial: não pode deixar chat e voz de graça em silêncio.
+  if (!apiKey && !projectId && !currency && !process.env.REVENUECAT_CHAT_CURRENCY) return null;
 
   if (!apiKey || !projectId || !currency) {
     throw new AppError(503, 'Serviço indisponível no momento.', 'BILLING_MISCONFIGURED', {
