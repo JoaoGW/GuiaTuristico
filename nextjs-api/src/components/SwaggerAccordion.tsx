@@ -36,6 +36,11 @@ export default function SwaggerAccordion() {
     "504": { description: "A OpenAI passou do tempo limite da chamada", example: { error: "O serviço de IA demorou para responder. Tente novamente.", code: "AI_TIMEOUT" } }
   };
 
+  // Chat, justchat e voz consomem "mensagens" (ganhas com anúncios recompensados) quando a cobrança está ligada.
+  const messageErrors = {
+    "402": { description: "Saldo de mensagens insuficiente (texto custa 1, voz custa 5); nada é enviado à IA", example: { error: "Assista a um anúncio para continuar conversando com o Felipe.", code: "NEEDS_REWARDED_AD" } }
+  };
+
   const apiEndpoints: ApiEndpoint[] = [
     {
       method: "POST",
@@ -59,6 +64,7 @@ export default function SwaggerAccordion() {
         "400": { description: "Sem arquivo de áudio, arquivo vazio ou formato não reconhecido", example: { error: "Envie um arquivo de áudio no campo \"audio\".", code: "AUDIO_REQUIRED" } },
         "413": { description: "Arquivo acima de 2 MB", example: { error: "Arquivo muito grande. O áudio deve ter no máximo 2 MB (cerca de 15 segundos).", code: "AUDIO_TOO_LARGE" } },
         "422": { description: "Transcrição vazia", example: { error: "Não foi possível entender o áudio. Tente gravar novamente.", code: "EMPTY_TRANSCRIPTION" } },
+        ...messageErrors,
         ...aiErrors
       }
     },
@@ -76,6 +82,7 @@ export default function SwaggerAccordion() {
           example: { success: true, response: "Recomendo começar pelo centro histórico...", usage: { total_tokens: 0 } }
         },
         "400": { description: "message ausente, vazio ou acima do limite", example: { error: "O campo \"message\" é obrigatório e deve ser um texto.", code: "INVALID_INPUT" } },
+        ...messageErrors,
         ...aiErrors
       }
     },
@@ -100,7 +107,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). A API planeja a viagem inteira (plan: data, dia da semana, cidade e atrações principais de cada dia) e gera os blocos de 7 dias em paralelo, sem repetir atrações entre eles; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. Cobrança (quando o RevenueCat está configurado): antes de chamar a IA, a API reserva (debita) no RevenueCat os créditos dos blocos pedidos (402 INSUFFICIENT_CREDITS se o saldo não cobrir) e, no fim, devolve os blocos que falharam, de modo que o saldo final desconta só credits.charged (credits.debited = true; false se a devolução falhou e ficou para conciliação; null com a cobrança desligada). A data de início precisa estar em DD/MM/AAAA (ou AAAA-MM-DD); outro formato responde 400. Corpo limitado a 64 KB (acima disso o Next.js responde 413 em texto). Com a cobrança ligada, o formato antigo { prompt } responde 426 APP_UPDATE_REQUIRED. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). A API planeja a viagem inteira (plan: data, dia da semana, cidade e atrações principais de cada dia) e gera os blocos de 7 dias em paralelo, sem repetir atrações entre eles; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. Cobrança (quando o RevenueCat está configurado): antes de chamar a IA, a API reserva (debita) no RevenueCat os créditos dos blocos pedidos (402 INSUFFICIENT_CREDITS se o saldo não cobrir) e, no fim, devolve os blocos que falharam, de modo que o saldo final desconta só credits.charged (credits.debited = true; false se a devolução falhou e ficou para conciliação; null com a cobrança desligada). A data de início precisa estar em DD/MM/AAAA (ou AAAA-MM-DD); outro formato responde 400. Corpo limitado a 64 KB (acima disso o Next.js responde 413 em texto). Respostas cortadas pelo limite ou recusadas por causa das preferências (ex.: desejo especial pedindo textos enormes) são cobradas: o bloco entra em credits.forfeited e, se nada sair, a resposta é 422 ITINERARY_REJECTED. Com a cobrança ligada, o formato antigo { prompt } responde 426 APP_UPDATE_REQUIRED. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início em DD/MM/AAAA (ou AAAA-MM-DD); define o calendário e os dias da semana" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
@@ -135,12 +142,13 @@ export default function SwaggerAccordion() {
               }]
             },
             plan: { continent: "Europa", countries: ["Portugal", "Espanha"], days: [{ date: "2026-12-01", weekday: "terça-feira", location: "Lisboa, Portugal", highlights: ["Mosteiro dos Jerónimos", "Torre de Belém"] }] },
-            credits: { required: 2, charged: 1, debited: true },
+            credits: { required: 2, charged: 1, forfeited: 0, debited: true },
             missingDays: [8, 9, 10, 11, 12, 13, 14]
           }
         },
         "400": { description: "Preferências, plan ou blocks inválidos", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 28.", code: "INVALID_INPUT" } },
         "402": { description: "Saldo de créditos no RevenueCat insuficiente para os blocos pedidos (nada é gerado nem cobrado)", example: { error: "Créditos insuficientes para gerar este roteiro.", code: "INSUFFICIENT_CREDITS" } },
+        "422": { description: "A IA recusou ou não concluiu nenhum bloco por causa das preferências; os créditos são consumidos", example: { error: "A IA não conseguiu concluir o roteiro com as preferências informadas. Revise o desejo especial e tente de novo.", code: "ITINERARY_REJECTED" } },
         "426": { description: "Formato antigo { prompt } com a cobrança ligada", example: { error: "Atualize o app para gerar novos roteiros.", code: "APP_UPDATE_REQUIRED" } },
         ...aiErrors,
         "502": { description: "Roteiro truncado, inválido ou OpenAI indisponível", example: { error: "O roteiro gerado veio incompleto. Tente gerar novamente.", code: "ITINERARY_INCOMPLETE" } }
@@ -208,6 +216,7 @@ export default function SwaggerAccordion() {
           example: { message: "Olá! Posso ajudar você com dicas de viagem..." }
         },
         "400": { description: "Sem messages nem prompt, ou mensagens inválidas", example: { error: "A última mensagem deve ser do usuário.", code: "INVALID_INPUT" } },
+        ...messageErrors,
         ...aiErrors
       }
     },
@@ -262,6 +271,30 @@ export default function SwaggerAccordion() {
         "200": { description: "Cotação", example: { days: 10, credits: 2, daysPerCredit: 7, maxDays: 28 } },
         "400": { description: "days ausente ou fora do intervalo", example: { error: "O parâmetro \"days\" deve ser um número inteiro entre 1 e 28.", code: "INVALID_INPUT" } },
         "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } }
+      }
+    },
+    {
+      method: "GET",
+      path: "/api/chatPricing",
+      summary: "Preço das mensagens com o Felipe",
+      description: "Quantas mensagens cada envio consome. As mensagens são uma moeda virtual no RevenueCat, ganha com anúncios recompensados (5 por anúncio, valor definido no bloco do AdMob).",
+      responses: {
+        "200": { description: "Custos", example: { textMessage: 1, voiceMessage: 5 } },
+        "405": { description: "Método não permitido (apenas GET)", example: { error: "Método não permitido. Use GET." } }
+      }
+    },
+    {
+      method: "GET",
+      path: "/api/adRewardCallback",
+      summary: "Recompensa de anúncio (AdMob SSV)",
+      description: "Chamado pelo Google quando o usuário termina um anúncio recompensado. A assinatura ECDSA é conferida com as chaves públicas do AdMob; o user_id (uid do Firebase) recebe reward_amount mensagens no RevenueCat, uma vez por transaction_id. Só blocos em ADMOB_REWARDED_AD_UNIT_IDS e reward_item igual a REVENUECAT_CHAT_CURRENCY creditam.",
+      parameters: [
+        { name: "ad_unit, reward_amount, reward_item, transaction_id, user_id, signature, key_id", type: "query", required: true, description: "Enviados pelo AdMob; a query não pode ser alterada" }
+      ],
+      responses: {
+        "200": { description: "Creditado ou ignorado (bloco, item ou usuário não configurados)", example: { ok: true, outcome: "credited" } },
+        "403": { description: "Assinatura ausente ou inválida", example: { error: "Callback de recompensa inválido.", code: "INVALID_REWARD_CALLBACK" } },
+        "503": { description: "RevenueCat indisponível (o AdMob reenvia até 5 vezes) ou recompensas desligadas", example: { error: "Não foi possível registrar a recompensa agora.", code: "REWARD_RETRY" } }
       }
     },
     {

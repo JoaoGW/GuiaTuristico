@@ -73,6 +73,8 @@ Aliases do app (em `tsconfig.json` e `babel.config.js`): `@assets`, `@components
 | `POST /api/voiceChat` | multipart, campo `audio` com mimetype `audio/*` (≤ 2 MB, ~15 s) | OpenAI Whisper + Chat Completions | `{ success, transcription, response, audioInfo, usage }` | `services/voiceService.ts` |
 | `GET` / `DELETE /api/cacheStats` | — | — | estatísticas / limpeza do cache (DELETE só fora de produção; 403 em produção) | depuração |
 | `GET /api/itineraryQuote` | `days` (1 a 28) | — | `{ days, credits, daysPerCredit, maxDays }` | tela de preferências do roteiro (FE) |
+| `GET /api/chatPricing` | — | — | `{ textMessage, voiceMessage }` (custo em mensagens) | chat e voz (FE) |
+| `GET /api/adRewardCallback` | query assinada do AdMob (SSV) | RevenueCat (crédito de mensagens) | `{ ok, outcome }`; 403 assinatura inválida; 503 para o AdMob reenviar | chamado pelo Google |
 | `GET /api/version` | — | — | `{ commit, branch, environment }` (variáveis de sistema da Vercel) | verificação de deploy |
 
 A página `/` (`app/page.tsx`) lista e documenta esses endpoints com `SwaggerAccordion`.
@@ -95,8 +97,20 @@ Regra do Produto (01/11/2026): cada bloco de até 7 dias consome 1 crédito (1�
 - `GET /api/itineraryQuote?days=N` informa o custo antes da geração. O formato antigo `{ prompt }` não calcula créditos.
 - Saldo e débito ficam no RevenueCat (moeda virtual), pelo contexto `src/contexts/billing` (Developer API v2, chave secreta, só no servidor). A cobrança fica desligada até existirem `REVENUECAT_SECRET_API_KEY` (chave v2 com `customer_information:purchases:read_write`), `REVENUECAT_PROJECT_ID` e `REVENUECAT_CREDITS_CURRENCY` (código da moeda criada no painel). `REVENUECAT_API_BASE_URL` só serve para testes locais com servidor simulado.
 - Com a cobrança ligada: o cliente no RevenueCat é o uid do Firebase (o app precisa chamar `Purchases.logIn(uid)`), então `AI_AUTH_REQUIRED=true` é obrigatório; sem uid a rota responde 503 `BILLING_MISCONFIGURED`. Antes da IA, a API **reserva** (debita) os créditos dos blocos pedidos (422 do RevenueCat → 402 `INSUFFICIENT_CREDITS`); no fim, **devolve** os blocos que falharam, inclusive quando o plano ou todos os blocos falham. Assim, pedidos simultâneos não geram além do saldo e o saldo final desconta só `credits.charged`. Cada ajuste usa `Idempotency-Key` e só é repetido em falha de rede, 429 ou 5xx; 409 é tratado como estado incerto e registrado. `credits.debited` é `false` quando a devolução falhou (fica no log para conciliação). Configuração parcial das `REVENUECAT_*` responde 503 `BILLING_MISCONFIGURED`, e `REVENUECAT_API_BASE_URL` é ignorada com `NODE_ENV=production`. O formato antigo `{ prompt }` responde 426 `APP_UPDATE_REQUIRED`.
+- Falhas provocadas pelas preferências (resposta cortada pelo limite de tokens ou recusada pela IA) são cobradas: o bloco entra em `credits.forfeited` e, se nada sair, a resposta é 422 `ITINERARY_REJECTED`; plano cortado custa 1 crédito. Falhas de infraestrutura (timeout, 5xx, 429) e de formato continuam devolvidas. Para que o corte só aconteça com abuso, o texto livre do usuário vai delimitado por « » e declarado como dado no prompt, e as descrições têm de 10 a 40 palavras.
 - Ajustes de saldo pela API do RevenueCat não geram webhooks; o app deve recarregar o saldo do SDK (`Purchases.getVirtualCurrencies()`, SDK 9.1.0+) depois de gerar um roteiro.
 - Cada chamada estruturada registra no log `Uso da IA (<schema>)` com tokens de entrada, saída e raciocínio e a duração, sem dados do usuário, para acompanhar o custo por crédito.
+
+### Mensagens com o Felipe e anúncios recompensados
+
+- Chat e voz consomem "mensagens", uma segunda moeda virtual no RevenueCat (`REVENUECAT_CHAT_CURRENCY`): texto (`justchat`, `chat`) = 1, voz = 5 (`src/contexts/concierge/domain/messagePricing.ts`). Sem saldo, 402 `NEEDS_REWARDED_AD` antes de chamar a IA. A reserva é feita antes da IA; falhas de infraestrutura são devolvidas, e áudio inválido ou vazio continua cobrado (a transcrição já foi paga). Sem `REVENUECAT_CHAT_CURRENCY`, chat e voz não são cobrados.
+- Cálculo (medição real em 01/11/2026, preços de agregadores): texto com histórico ≈ US$ 0,0002; voz de 13 s ≈ US$ 0,0015 (Whisper a ~US$ 0,006/min domina). Recompensa recomendada: 5 mensagens por anúncio (configurada no bloco do AdMob), ou seja, 1 anúncio = 5 textos ou 1 voz, com custo máximo de ~US$ 0,0017 em IA; o anúncio se paga com eCPM recompensado a partir de ~US$ 1,70 (conferir nos relatórios do AdMob).
+- As mensagens entram pelo callback de verificação server-side do AdMob (`GET /api/adRewardCallback`, contexto `billing`): assinatura ECDSA SHA-256 conferida com as chaves de `gstatic.com/admob/reward/verifier-keys.json` (cache de 12 h; recarga forçada no máximo 1×/min), crédito de `reward_amount` (teto 20) no `user_id` com `Idempotency-Key` = `admob-<transaction_id>`. Só credita blocos listados em `ADMOB_REWARDED_AD_UNIT_IDS` e `reward_item` igual a `REVENUECAT_CHAT_CURRENCY`; os demais callbacks autênticos recebem 200 e são ignorados. Falha temporária do RevenueCat responde 503 para o AdMob reenviar. `ADMOB_VERIFIER_KEYS_URL` só serve para testes locais e é ignorada em produção.
+- No app (FE): anúncio recompensado com `serverSideVerificationOptions: { userId: <uid do Firebase> }`; depois do `EARNED_REWARD`, recarregar o saldo de mensagens no SDK do RevenueCat antes de liberar o envio (o crédito chega pelo servidor, com alguns segundos de atraso).
+
+### Logs e LGPD
+
+- Logs não trazem uid, perguntas, transcrições nem chaves: a conciliação usa um id pseudônimo (`src/shared/privacy.ts`, hash SHA-256 do uid) e o id da requisição, que também vai no `reference` da transação no RevenueCat. O erro 401 da OpenAI é registrado só com o código, pois a mensagem dela repete parte da chave. Cada chamada à IA registra `Uso da IA (<rota>)` com tokens e duração.
 
 As rotas de IA (`chat`, `justchat`, `generateItinerary`, `voiceChat`) passam por `src/shared/aiRouteGuard.ts`: limite de 20 requisições por minuto por usuário (ou IP), em memória de cada instância, e, com `AI_AUTH_REQUIRED=true` + `FIREBASE_PROJECT_ID`, exigem `Authorization: Bearer <ID token do Firebase>` (401 `UNAUTHENTICATED`). A verificação do token usa `node:crypto` e os certificados públicos do Google, sem `firebase-admin`. A autenticação fica desligada até o app enviar o token (FE-10).
 
@@ -140,7 +154,8 @@ React Navigation 7 com `NavigationContainer` em `src/routes/index.tsx`, que alte
 | Google Places (Nearby Search, Place Photo) | `nextjs-api` | `GOOGLE_PLACES_API_KEY` |
 | WeatherAPI.com | `nextjs-api` | `WEATHER` |
 | Serviço de vistos `rough-sun-2523.fly.dev` | `nextjs-api` | nenhuma |
-| RevenueCat (moeda virtual dos créditos de IA, Developer API v2) | `nextjs-api` (`src/contexts/billing`) | `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_PROJECT_ID`, `REVENUECAT_CREDITS_CURRENCY` |
+| RevenueCat (moedas virtuais de créditos de roteiro e de mensagens, Developer API v2) | `nextjs-api` (`src/contexts/billing`) | `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_PROJECT_ID`, `REVENUECAT_CREDITS_CURRENCY`, `REVENUECAT_CHAT_CURRENCY` |
+| AdMob SSV (callback de anúncio recompensado) | `nextjs-api` (`pages/api/adRewardCallback.ts`) | chaves públicas do Google; `ADMOB_REWARDED_AD_UNIT_IDS` |
 | Nominatim / OpenStreetMap (geocodificação reversa) | `expo-app/src/utils/geoDecoder.ts` | nenhuma |
 | Firebase Auth | `expo-app/firebase.ts` | `EXPO_PUBLIC_FIREBASE_*` |
 | Google Sign-In | `expo-app/src/services/login/googleLogin.ts` | `EXPO_PUBLIC_WEB_CLIENT_ID`, `EXPO_PUBLIC_IOS_CLIENT_ID` |
@@ -148,7 +163,7 @@ React Navigation 7 com `NavigationContainer` em `src/routes/index.tsx`, que alte
 | Mapas | `expo-maps`, `react-native-maps`, `expo-location` | permissões de localização |
 | Hospedagem e build | Vercel (API), EAS (projeto `080ff03d-…`), GHCR (imagens Docker) | segredos fora do repositório |
 
-Variáveis lidas pelo código (somente nomes; nunca leia ou registre valores): API — `OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`, `AI_AUTH_REQUIRED`, `FIREBASE_PROJECT_ID`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_PROJECT_ID`, `REVENUECAT_CREDITS_CURRENCY` e as de sistema da Vercel `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_COMMIT_REF`, `VERCEL_ENV`; app — `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID`, `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`, `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID`, `EXPO_PUBLIC_WEB_CLIENT_ID`, `EXPO_PUBLIC_IOS_CLIENT_ID`, `EXPO_PUBLIC_ADMOB_ANDROID_APP_ID`, `EXPO_PUBLIC_ADMOB_IOS_APP_ID` e `DEV_API_URL` (via `@env`, `react-native-dotenv`, arquivo `.env.local`). Cada pacote lê o próprio `.env.local`.
+Variáveis lidas pelo código (somente nomes; nunca leia ou registre valores): API — `OPEN_AI_KEY`, `GOOGLE_PLACES_API_KEY`, `WEATHER`, `AI_AUTH_REQUIRED`, `FIREBASE_PROJECT_ID`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_PROJECT_ID`, `REVENUECAT_CREDITS_CURRENCY`, `REVENUECAT_CHAT_CURRENCY`, `ADMOB_REWARDED_AD_UNIT_IDS` e as de sistema da Vercel `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_COMMIT_REF`, `VERCEL_ENV`; app — `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID`, `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`, `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID`, `EXPO_PUBLIC_WEB_CLIENT_ID`, `EXPO_PUBLIC_IOS_CLIENT_ID`, `EXPO_PUBLIC_ADMOB_ANDROID_APP_ID`, `EXPO_PUBLIC_ADMOB_IOS_APP_ID` e `DEV_API_URL` (via `@env`, `react-native-dotenv`, arquivo `.env.local`). Cada pacote lê o próprio `.env.local`.
 
 ## Prioridade e Escopo
 
