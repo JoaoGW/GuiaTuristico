@@ -100,7 +100,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). A API planeja a viagem inteira (plan: data, dia da semana, cidade e atrações principais de cada dia) e gera os blocos de 7 dias em paralelo, sem repetir atrações entre eles; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. O saldo fica no RevenueCat; a API só calcula. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). A API planeja a viagem inteira (plan: data, dia da semana, cidade e atrações principais de cada dia) e gera os blocos de 7 dias em paralelo, sem repetir atrações entre eles; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. Cobrança (quando o RevenueCat está configurado): antes de chamar a IA, a API confere no RevenueCat se o usuário tem créditos para os blocos pedidos (402 INSUFFICIENT_CREDITS se não tiver) e, depois, debita só os blocos gerados (credits.debited = true; false se o débito falhou, null com a cobrança desligada). Com a cobrança ligada, o formato antigo { prompt } responde 426 APP_UPDATE_REQUIRED. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
@@ -135,11 +135,13 @@ export default function SwaggerAccordion() {
               }]
             },
             plan: { continent: "Europa", countries: ["Portugal", "Espanha"], days: [{ date: "2026-12-01", weekday: "terça-feira", location: "Lisboa, Portugal", highlights: ["Mosteiro dos Jerónimos", "Torre de Belém"] }] },
-            credits: { required: 2, charged: 1 },
+            credits: { required: 2, charged: 1, debited: true },
             missingDays: [8, 9, 10, 11, 12, 13, 14]
           }
         },
         "400": { description: "Preferências, plan ou blocks inválidos", example: { error: "O campo \"days\" deve ser um número inteiro entre 1 e 28.", code: "INVALID_INPUT" } },
+        "402": { description: "Saldo de créditos no RevenueCat insuficiente para os blocos pedidos (nada é gerado nem cobrado)", example: { error: "Créditos insuficientes para gerar este roteiro.", code: "INSUFFICIENT_CREDITS" } },
+        "426": { description: "Formato antigo { prompt } com a cobrança ligada", example: { error: "Atualize o app para gerar novos roteiros.", code: "APP_UPDATE_REQUIRED" } },
         ...aiErrors,
         "502": { description: "Roteiro truncado, inválido ou OpenAI indisponível", example: { error: "O roteiro gerado veio incompleto. Tente gerar novamente.", code: "ITINERARY_INCOMPLETE" } }
       }
