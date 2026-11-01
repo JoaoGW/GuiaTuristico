@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new AppError(400, 'O arquivo de áudio está vazio.', 'AUDIO_REQUIRED');
     }
 
-    const result = await answerVoiceMessage(audio, wallet);
+    const result = await answerVoiceMessage(audio, wallet, user?.uid ?? null);
 
     return res.status(200).json({
       success: true,

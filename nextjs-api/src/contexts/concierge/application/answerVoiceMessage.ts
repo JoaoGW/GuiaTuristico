@@ -11,11 +11,11 @@ import { transcribeAudio } from '../infrastructure/whisperTranscriber';
 const MAX_TRANSCRIPTION_LENGTH = 2000;
 
 /**
- * Transcreve o áudio e responde como Felipe, reaproveitando o cache de respostas similares.
+ * Transcreve o áudio e responde como Felipe, reaproveitando respostas similares do próprio usuário (`ownerId`).
  * Com `wallet`, consome VOICE_MESSAGE_COST mensagens; áudio inválido ou vazio não é devolvido,
  * pois a transcrição já foi paga. Falhas de infraestrutura são devolvidas.
  */
-export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | null) {
+export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | null, ownerId: string | null) {
   const openai = createOpenAIClient();
 
   return withReservation(wallet, VOICE_MESSAGE_COST, `chat de voz ${randomUUID().slice(0, 8)}`, async () => {
@@ -28,7 +28,7 @@ export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | n
       throw new AppError(400, 'O áudio ficou longo demais. Grave uma pergunta de até 15 segundos.', 'AUDIO_TOO_LONG');
     }
 
-    let felipeResponse = responseCache.getCachedResponse(transcription);
+    let felipeResponse = responseCache.getCachedResponse(transcription, ownerId);
     const usedCache = !!felipeResponse;
     let totalTokens = 0;
 
@@ -53,7 +53,7 @@ export async function answerVoiceMessage(audio: Buffer, wallet: CreditWallet | n
       }
 
       // Armazenar no cache para futuras consultas similares
-      responseCache.storeResponse(transcription, felipeResponse);
+      responseCache.storeResponse(transcription, felipeResponse, ownerId);
     }
 
     return { transcription: transcription.trim(), response: felipeResponse, usedCache, totalTokens };

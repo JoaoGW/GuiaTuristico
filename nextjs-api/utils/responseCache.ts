@@ -1,5 +1,8 @@
-// Sistema de cache para respostas similares do Felipe
+// Sistema de cache para respostas similares do Felipe.
+// Respostas dinâmicas pertencem a um usuário (autorizado em 01/11/2026, LGPD): uma resposta gerada
+// para uma pessoa nunca é entregue a outra. As respostas pré-definidas continuam compartilhadas.
 export interface CachedResponse {
+  owner: string;
   query: string;
   response: string;
   timestamp: number;
@@ -76,8 +79,9 @@ export class ResponseCache {
     return commonWords / totalWords;
   }
 
-  // Buscar resposta em cache ou respostas pré-definidas
-  getCachedResponse(query: string): string | null {
+  // Buscar resposta em cache ou respostas pré-definidas. Sem `owner` (usuário não identificado),
+  // só as respostas pré-definidas são consideradas.
+  getCachedResponse(query: string, owner: string | null): string | null {
     const normalizedQuery = this.normalizeText(query);
     
     // 1. Verificar respostas pré-definidas primeiro
@@ -88,7 +92,8 @@ export class ResponseCache {
       }
     }
     
-    // 2. Verificar cache de respostas dinâmicas
+    // 2. Verificar cache de respostas dinâmicas do mesmo usuário
+    if (!owner) return null;
     const now = Date.now();
     
     for (const [cachedKey, cached] of this.cache) {
@@ -98,6 +103,8 @@ export class ResponseCache {
         continue;
       }
       
+      if (cached.owner !== owner) continue;
+
       // Verificar similaridade
       if (this.calculateSimilarity(normalizedQuery, this.normalizeText(cached.query)) >= this.SIMILARITY_THRESHOLD) {
         cached.useCount++;
@@ -111,8 +118,10 @@ export class ResponseCache {
     return null;
   }
 
-  // Armazenar nova resposta no cache
-  storeResponse(query: string, response: string): void {
+  // Armazenar nova resposta no cache do usuário; sem `owner`, nada é armazenado.
+  storeResponse(query: string, response: string, owner: string | null): void {
+    if (!owner) return;
+
     // Não armazenar se for muito similar a respostas pré-definidas
     const normalizedQuery = this.normalizeText(query);
     for (const key of this.predefinedResponses.keys()) {
@@ -127,8 +136,9 @@ export class ResponseCache {
       this.cleanOldEntries();
     }
     
-    const cacheKey = normalizedQuery;
+    const cacheKey = `${owner}:${normalizedQuery}`;
     this.cache.set(cacheKey, {
+      owner,
       query,
       response,
       timestamp: Date.now(),
