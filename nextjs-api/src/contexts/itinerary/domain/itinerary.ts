@@ -30,11 +30,6 @@ export interface Itinerary {
   days: ItineraryDay[];
 }
 
-export interface SurpriseDestination {
-  continent: string;
-  countries: string[];
-}
-
 export function itineraryIncomplete(cause: string): AppError {
   return new AppError(502, 'O roteiro gerado veio incompleto. Tente gerar novamente.', 'ITINERARY_INCOMPLETE', { cause });
 }
@@ -89,15 +84,13 @@ export const ITINERARY_DAYS_SCHEMA = {
   }
 };
 
-export const SURPRISE_DESTINATION_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['continent', 'countries'],
-  properties: {
-    continent: stringField,
-    countries: { type: 'array', items: stringField }
-  }
-};
+/**
+ * Cópia do schema com `days` de tamanho exato. Com raciocínio `low`, a IA chegou a devolver
+ * 5 dias num bloco de 7; no modo `strict` o limite vale durante a geração.
+ */
+export function withExactDayCount<T extends { properties: { days: object } }>(schema: T, days: number): T {
+  return { ...schema, properties: { ...schema.properties, days: { ...schema.properties.days, minItems: days, maxItems: days } } };
+}
 
 const isNonEmptyString = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '';
 const isStringList = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === 'string');
@@ -158,15 +151,4 @@ export function validateItineraryDays(data: unknown, expectedDays: number): Itin
       pixabayTags: day.pixabayTags
     };
   });
-}
-
-export function validateSurpriseDestination(data: unknown): SurpriseDestination {
-  const destination = (data ?? {}) as Record<string, unknown>;
-  const countries = isStringList(destination.countries) ? destination.countries.map((c) => c.trim()).filter(Boolean) : [];
-
-  if (!isNonEmptyString(destination.continent) || countries.length < 1 || countries.length > 3) {
-    throw itineraryIncomplete('destino surpresa inválido');
-  }
-
-  return { continent: destination.continent.trim(), countries };
 }

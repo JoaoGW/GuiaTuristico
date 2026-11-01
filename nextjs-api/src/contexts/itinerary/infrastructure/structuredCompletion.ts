@@ -29,8 +29,11 @@ export async function requestStructuredJson(openai: OpenAI, request: StructuredR
         type: 'json_schema',
         json_schema: { name: request.schemaName, strict: true, schema: request.schema }
       },
-      // O GPT-6 conta tokens de raciocínio neste limite e rejeita `temperature` com raciocínio ativo.
-      max_completion_tokens: 6000
+      // Aprovado pelo Produto em 01/11/2026: com o prompt mais exigente, o esforço padrão (medium)
+      // estourava o tempo da rota e chegava a 89% do teto anterior (6000). O teto só limita: a
+      // cobrança é pelo que a IA escreve. O GPT-6 rejeita `temperature` com raciocínio ativo.
+      reasoning_effort: 'low',
+      max_completion_tokens: 8000
     }, { timeout: request.timeoutMs, maxRetries: 0 });
   } catch (error) {
     throw toAiError(error);

@@ -1,18 +1,21 @@
 import { badRequest } from '@/shared/errors';
 import type { DayBlock } from './credits';
+import { weekdayOf, type CalendarDay } from './tripCalendar';
 
 /**
- * Rota da viagem inteira (data e cidade de cada dia). Roteiros com mais de um bloco
- * são planejados antes, para que os blocos gerados em paralelo sigam a mesma viagem.
+ * Rota da viagem inteira, gerada antes dos blocos: data, dia da semana, cidade e as atrações
+ * principais de cada dia. Os blocos seguem o plano, o que evita repetir atrações entre blocos
+ * gerados em paralelo e dias sem lugares definidos.
  */
 export interface TripPlan {
   continent: string;
   countries: string[];
-  days: { date: string; location: string }[];
+  days: { date: string; weekday: string; location: string; highlights: string[] }[];
 }
 
 const stringField = { type: 'string' } as const;
 
+// O dia da semana não entra no schema: o servidor calcula a partir da data.
 export const TRIP_PLAN_SCHEMA = {
   type: 'object',
   additionalProperties: false,
@@ -25,17 +28,25 @@ export const TRIP_PLAN_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['date', 'location'],
-        properties: { date: stringField, location: stringField }
+        required: ['date', 'location', 'highlights'],
+        properties: {
+          date: stringField,
+          location: stringField,
+          highlights: { type: 'array', minItems: 1, maxItems: 4, items: stringField }
+        }
       }
     }
   }
 };
 
+const MAX_HIGHLIGHTS = 4;
 const isNonEmptyString = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '';
 
-/** Devolve o plano normalizado, ou `null` quando não tem exatamente `expectedDays` dias válidos. */
-export function toTripPlan(data: unknown, expectedDays: number): TripPlan | null {
+/**
+ * Devolve o plano normalizado, ou `null` quando não tem exatamente `expectedDays` dias válidos.
+ * Com `calendar`, as datas do servidor substituem as da IA; o dia da semana é sempre recalculado.
+ */
+export function toTripPlan(data: unknown, expectedDays: number, calendar?: CalendarDay[] | null): TripPlan | null {
   const plan = (data ?? {}) as Record<string, unknown>;
   const countries = Array.isArray(plan.countries) ? plan.countries.filter(isNonEmptyString).map((c) => c.trim()) : [];
   const days = Array.isArray(plan.days) ? plan.days : [];
@@ -44,11 +55,18 @@ export function toTripPlan(data: unknown, expectedDays: number): TripPlan | null
     return null;
   }
 
-  const normalizedDays = days.map((value: unknown) => {
+  const normalizedDays = days.map((value: unknown, i) => {
     const day = (value ?? {}) as Record<string, unknown>;
-    return isNonEmptyString(day.date) && isNonEmptyString(day.location) && day.date.length <= 40 && day.location.length <= 100
-      ? { date: day.date.trim(), location: day.location.trim() }
-      : null;
+    const date = calendar?.[i]?.date ?? (typeof day.date === 'string' ? day.date.trim() : '');
+    const weekday = weekdayOf(date);
+    const highlights = Array.isArray(day.highlights)
+      ? day.highlights.filter(isNonEmptyString).map((h) => h.trim()).filter((h) => h.length <= 100).slice(0, MAX_HIGHLIGHTS)
+      : [];
+
+    if (!weekday || !isNonEmptyString(day.location) || day.location.length > 100 || highlights.length === 0) {
+      return null;
+    }
+    return { date, weekday, location: day.location.trim(), highlights };
   });
 
   if (normalizedDays.some((day) => day === null)) return null;

@@ -3,30 +3,27 @@ import { createOpenAIClient } from '@/contexts/concierge/infrastructure/openaiCl
 import { creditsForDays, splitIntoBlocks, type CreditUsage, type DayBlock } from '../domain/credits';
 import {
   ITINERARY_DAYS_SCHEMA,
-  SURPRISE_DESTINATION_SCHEMA,
   itineraryIncomplete,
   validateItineraryDays,
-  validateSurpriseDestination,
+  withExactDayCount,
   type Itinerary,
   type ItineraryDay
 } from '../domain/itinerary';
 import {
   ITINERARY_SYSTEM_PROMPT,
-  SURPRISE_DESTINATION_SYSTEM_PROMPT,
   TRIP_PLAN_SYSTEM_PROMPT,
   buildItineraryBlockPrompt,
-  buildItineraryPrompt,
-  buildSurpriseDestinationPrompt,
   buildTripPlanPrompt
 } from '../domain/itineraryPrompt';
+import { buildCalendar } from '../domain/tripCalendar';
 import { TRIP_PLAN_SCHEMA, parseBlockRetry, toTripPlan, type TripPlan } from '../domain/tripPlan';
 import { parseTripPreferences, type TripPreferences } from '../domain/tripPreferences';
 import { requestStructuredJson } from '../infrastructure/structuredCompletion';
 
 export interface ItineraryGeneration {
   itinerary: Itinerary;
-  /** Rota dia a dia usada nos blocos; `null` em roteiros de um bloco só. */
-  plan: TripPlan | null;
+  /** Rota dia a dia (data, dia da semana, cidade e destaques) que os blocos seguiram. */
+  plan: TripPlan;
   credits: CreditUsage;
   /** Dias dos blocos que falharam (não cobrados); vazio quando o roteiro veio completo. */
   missingDays: number[];
@@ -34,8 +31,8 @@ export interface ItineraryGeneration {
 
 /**
  * Gera o roteiro e informa os créditos (1 por bloco de até 7 dias gerado com sucesso).
- * Até 7 dias: uma chamada (mais a escolha do destino no Modo Surpresa). Acima disso: um
- * plano da viagem inteira e os blocos em paralelo, para caber no maxDuration da rota.
+ * Primeiro um plano da viagem inteira (no Modo Surpresa ele também escolhe o destino),
+ * depois os blocos em paralelo, para caber no maxDuration da rota. O plano não é cobrado.
  * O saldo do usuário fica no RevenueCat; esta função só calcula o consumo.
  */
 export async function generateItinerary(body: unknown): Promise<ItineraryGeneration> {
@@ -44,11 +41,6 @@ export async function generateItinerary(body: unknown): Promise<ItineraryGenerat
   const retry = parseBlockRetry(body, preferences.days, allBlocks);
   const required = creditsForDays(preferences.days);
   const openai = createOpenAIClient();
-
-  if (!retry && allBlocks.length === 1) {
-    const itinerary = await generateSingleBlock(openai, preferences);
-    return { itinerary, plan: null, credits: { required, charged: 1 }, missingDays: [] };
-  }
 
   const plan = retry?.plan ?? await planTrip(openai, preferences);
   const blocks = retry?.blocks ?? allBlocks;
@@ -75,42 +67,15 @@ export async function generateItinerary(body: unknown): Promise<ItineraryGenerat
   };
 }
 
-async function generateSingleBlock(openai: OpenAI, preferences: TripPreferences): Promise<Itinerary> {
-  let continent = preferences.continent ?? '';
-  let countries = preferences.countries;
-
-  if (countries.length === 0) {
-    const destination = validateSurpriseDestination(await requestStructuredJson(openai, {
-      systemPrompt: SURPRISE_DESTINATION_SYSTEM_PROMPT,
-      userPrompt: buildSurpriseDestinationPrompt(preferences),
-      schemaName: 'surprise_destination',
-      schema: SURPRISE_DESTINATION_SCHEMA,
-      timeoutMs: 30_000
-    }));
-    continent = destination.continent;
-    countries = destination.countries;
-  }
-
-  const days = validateItineraryDays(await requestStructuredJson(openai, {
-    systemPrompt: ITINERARY_SYSTEM_PROMPT,
-    userPrompt: buildItineraryPrompt(preferences, continent, countries),
-    schemaName: 'itinerary',
-    schema: ITINERARY_DAYS_SCHEMA,
-    // No Modo Surpresa, 30 s já foram reservados para a escolha do destino.
-    timeoutMs: preferences.countries.length === 0 ? 80_000 : 110_000
-  }), preferences.days);
-
-  return { continent, countries, days };
-}
-
 async function planTrip(openai: OpenAI, preferences: TripPreferences): Promise<TripPlan> {
+  const calendar = buildCalendar(preferences.dateBegin, preferences.days);
   const plan = toTripPlan(await requestStructuredJson(openai, {
     systemPrompt: TRIP_PLAN_SYSTEM_PROMPT,
-    userPrompt: buildTripPlanPrompt(preferences),
+    userPrompt: buildTripPlanPrompt(preferences, calendar),
     schemaName: 'trip_plan',
-    schema: TRIP_PLAN_SCHEMA,
+    schema: withExactDayCount(TRIP_PLAN_SCHEMA, preferences.days),
     timeoutMs: 30_000
-  }), preferences.days);
+  }), preferences.days, calendar);
 
   if (!plan) {
     throw itineraryIncomplete('plano da viagem inválido');
@@ -129,7 +94,7 @@ async function generateBlock(openai: OpenAI, preferences: TripPreferences, plan:
     systemPrompt: ITINERARY_SYSTEM_PROMPT,
     userPrompt: buildItineraryBlockPrompt(preferences, plan, block),
     schemaName: 'itinerary',
-    schema: ITINERARY_DAYS_SCHEMA,
+    schema: withExactDayCount(ITINERARY_DAYS_SCHEMA, blockDays),
     // 30 s do plano + 80 s dos blocos em paralelo cabem nos 120 s da rota.
     timeoutMs: 80_000
   }), blockDays);
