@@ -13,6 +13,16 @@ export function createOpenAIClient(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
+/** Registra tokens e duração de uma chamada, sem dados do usuário, para acompanhar o custo por uso. */
+export function logAiUsage(label: string, completion: OpenAI.Chat.Completions.ChatCompletion, startedAt: number): void {
+  const usage = completion.usage;
+  console.info(
+    `Uso da IA (${label}): finish=${completion.choices[0]?.finish_reason} ` +
+    `entrada=${usage?.prompt_tokens ?? 0} saída=${usage?.completion_tokens ?? 0} ` +
+    `raciocínio=${usage?.completion_tokens_details?.reasoning_tokens ?? 0} duração=${Date.now() - startedAt}ms`
+  );
+}
+
 /** Traduz falhas do SDK da OpenAI para mensagens em pt-BR, sem repassar o texto do provedor. */
 export function toAiError(error: unknown): unknown {
   if (error instanceof AppError) return error;

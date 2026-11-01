@@ -127,8 +127,8 @@ async function generateBlock(openai: OpenAI, preferences: TripPreferences, plan:
     userPrompt: buildItineraryBlockPrompt(preferences, plan, block),
     schemaName: 'itinerary',
     schema: withExactDayCount(ITINERARY_DAYS_SCHEMA, blockDays),
-    // Orçamento de 120 s: token (5) + reserva (2×5) + plano (30) + blocos em paralelo (60)
-    // + devolução (2×5) = 115 s. O maior bloco medido com reasoning low levou ~40 s.
+    // Orçamento de 120 s: token (5) + reserva (2×3) + plano (30) + blocos em paralelo (60)
+    // + devolução (2×3) = 107 s. O maior bloco medido com reasoning low levou ~40 s.
     timeoutMs: 60_000
   }), blockDays);
 

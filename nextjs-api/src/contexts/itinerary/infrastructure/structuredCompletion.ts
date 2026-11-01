@@ -1,5 +1,5 @@
 import type OpenAI from 'openai';
-import { toAiError } from '@/contexts/concierge/infrastructure/openaiClient';
+import { logAiUsage, toAiError } from '@/contexts/concierge/infrastructure/openaiClient';
 import { itineraryIncomplete, itineraryRejected } from '../domain/itinerary';
 
 interface StructuredRequest {
@@ -39,13 +39,7 @@ export async function requestStructuredJson(openai: OpenAI, request: StructuredR
     throw toAiError(error);
   }
 
-  // Sem dados do usuário: só tokens e tempo, para acompanhar o custo por crédito.
-  const usage = completion.usage;
-  console.info(
-    `Uso da IA (${request.schemaName}): finish=${completion.choices[0]?.finish_reason} ` +
-    `entrada=${usage?.prompt_tokens ?? 0} saída=${usage?.completion_tokens ?? 0} ` +
-    `raciocínio=${usage?.completion_tokens_details?.reasoning_tokens ?? 0} duração=${Date.now() - startedAt}ms`
-  );
+  logAiUsage(request.schemaName, completion, startedAt);
 
   const choice = completion.choices[0];
   if (!choice) {

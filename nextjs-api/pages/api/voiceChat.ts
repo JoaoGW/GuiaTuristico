@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import formidable from 'formidable';
 import { readFile, unlink } from 'node:fs/promises';
+import { creditWalletFor } from '@/contexts/billing/application/creditWallet';
 import { answerVoiceMessage } from '@/contexts/concierge/application/answerVoiceMessage';
 import { guardAiRoute } from '@/shared/aiRouteGuard';
 import { AppError } from '@/shared/errors';
@@ -9,7 +10,8 @@ import { responseCache } from '../../utils/responseCache';
 
 const MAX_AUDIO_BYTES = 2 * 1024 * 1024;
 
-// Configuração para permitir upload de arquivos. Transcrição (15 s) + resposta (25 s) cabem em 60 s.
+// Configuração para permitir upload de arquivos. Token (5 s) + reserva (2×3 s) + transcrição (15 s)
+// + resposta (25 s) + devolução (2×3 s) cabem em 60 s.
 export const config: PageConfig = {
   api: {
     bodyParser: false,
@@ -50,7 +52,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let uploadedFiles: formidable.File[] = [];
 
   try {
-    await guardAiRoute(req, res);
+    const user = await guardAiRoute(req, res);
+    const wallet = creditWalletFor(user?.uid ?? null, 'chat');
 
     const files = await parseUpload(req).catch((error) => { throw toUploadError(error); });
     // Todos os arquivos gravados pelo formidable são apagados no finally, não só o campo "audio".
@@ -66,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new AppError(400, 'O arquivo de áudio está vazio.', 'AUDIO_REQUIRED');
     }
 
-    const result = await answerVoiceMessage(audio);
+    const result = await answerVoiceMessage(audio, wallet);
 
     return res.status(200).json({
       success: true,

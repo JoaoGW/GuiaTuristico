@@ -8,8 +8,10 @@ import { AppError } from '@/shared/errors';
 export interface RevenueCatConfig {
   apiKey: string;
   projectId: string;
-  /** Código da moeda virtual dos créditos de IA, criada no painel do RevenueCat. */
+  /** Código da moeda virtual dos créditos de roteiro, criada no painel do RevenueCat. */
   currency: string;
+  /** Código da moeda das mensagens com o Felipe (chat e voz); sem ela, chat e voz não são cobrados. */
+  chatCurrency: string | null;
   baseUrl: string;
 }
 
@@ -36,13 +38,14 @@ export function readRevenueCatConfig(): RevenueCatConfig | null {
   // REVENUECAT_API_BASE_URL só existe para testes locais com servidor simulado; em produção a
   // chave secreta só pode ir para o host oficial.
   const testBaseUrl = process.env.NODE_ENV === 'production' ? undefined : process.env.REVENUECAT_API_BASE_URL;
-  return { apiKey, projectId, currency, baseUrl: testBaseUrl || PRODUCTION_BASE_URL };
+  return { apiKey, projectId, currency, chatCurrency: process.env.REVENUECAT_CHAT_CURRENCY || null, baseUrl: testBaseUrl || PRODUCTION_BASE_URL };
 }
 
-/** Credita (`delta` positivo) ou debita (`delta` negativo) créditos do cliente. */
+/** Credita (`delta` positivo) ou debita (`delta` negativo) a moeda `currency` do cliente. */
 export async function adjustCredits(
   config: RevenueCatConfig,
   customerId: string,
+  currency: string,
   delta: number,
   idempotencyKey: string,
   reference: string
@@ -59,8 +62,9 @@ export async function adjustCredits(
         'Content-Type': 'application/json',
         'Idempotency-Key': idempotencyKey
       },
-      body: JSON.stringify({ adjustments: { [config.currency]: delta }, reference }),
-      signal: AbortSignal.timeout(5000)
+      body: JSON.stringify({ adjustments: { [currency]: delta }, reference }),
+      // 3 s por tentativa (2 tentativas na reserva e na devolução) para caber no tempo das rotas.
+      signal: AbortSignal.timeout(3000)
     });
   } catch {
     return 'retryable';

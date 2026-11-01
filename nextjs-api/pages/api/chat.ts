@@ -1,19 +1,20 @@
 import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import { answerChat } from '@/contexts/concierge/application/answerChat';
+import { creditWalletFor } from '@/contexts/billing/application/creditWallet';
 import { guardAiRoute } from '@/shared/aiRouteGuard';
 import { ensureMethod, sendError } from '@/shared/http';
 
-// Até 2 tentativas de 25 s na OpenAI.
+// Token (5 s) + reserva de mensagens (2×3 s) + OpenAI (25 s) + devolução (2×3 s).
 export const config: PageConfig = { maxDuration: 60 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!ensureMethod(req, res, ['POST'])) return;
 
   try {
-    await guardAiRoute(req, res);
+    const user = await guardAiRoute(req, res);
 
     // `context` não é mais aceito: o system prompt é sempre o do servidor.
-    const { response, usage } = await answerChat(req.body?.message);
+    const { response, usage } = await answerChat(req.body?.message, creditWalletFor(user?.uid ?? null, 'chat'));
 
     return res.status(200).json({
       success: true,
