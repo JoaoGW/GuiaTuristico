@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type OpenAI from 'openai';
 import type { CreditWallet } from '@/contexts/billing/application/creditWallet';
 import { createOpenAIClient } from '@/contexts/concierge/infrastructure/openaiClient';
@@ -57,7 +58,8 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   const retry = parseBlockRetry(body, preferences, calendar, allBlocks);
   const required = creditsForDays(preferences.days);
   const blocks = retry?.blocks ?? allBlocks;
-  const reference = `roteiro ${preferences.days} dias, blocos ${blocks.map((block) => block.index).join(',')}`;
+  // O id liga o log do servidor ao `reference` da transação no RevenueCat, sem expor o usuário.
+  const reference = `roteiro ${randomUUID().slice(0, 8)}: ${preferences.days} dias, blocos ${blocks.map((block) => block.index).join(',')}`;
   const openai = createOpenAIClient();
 
   await wallet?.reserve(blocks.length, reference);
@@ -77,7 +79,7 @@ export async function generateItinerary(body: unknown, wallet: CreditWallet | nu
   const failures = results.flatMap((result, i) => (result.status === 'rejected' ? [{ block: blocks[i], reason: result.reason }] : []));
 
   for (const failure of failures) {
-    console.error(`Roteiro: bloco ${failure.block.index} falhou:`, failure.reason);
+    console.error(`Roteiro (${reference}): bloco ${failure.block.index} falhou:`, failure.reason);
   }
 
   const forfeited = failures.filter(({ reason }) => isChargeableFailure(reason));

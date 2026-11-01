@@ -106,7 +106,8 @@ export class ResponseCache {
       }
     }
     
-    console.log(`Cache miss: "${query}"`);
+    // A pergunta do usuário (transcrição de voz) não vai para o log (LGPD).
+    console.log('Cache miss');
     return null;
   }
 

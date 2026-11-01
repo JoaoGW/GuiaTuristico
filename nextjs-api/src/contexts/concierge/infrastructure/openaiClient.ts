@@ -28,7 +28,8 @@ export function toAiError(error: unknown): unknown {
 
   if (error instanceof OpenAI.APIError) {
     if (error.status === 401) {
-      return new AppError(500, 'Erro de autenticação no serviço de IA.', 'AI_AUTH_ERROR', { cause: error });
+      // A mensagem da OpenAI para 401 repete parte da chave; o log fica só com o código.
+      return new AppError(500, 'Erro de autenticação no serviço de IA.', 'AI_AUTH_ERROR', { cause: `OpenAI 401 (${error.code ?? 'sem código'})` });
     }
     // Conta sem saldo também chega como 429, mas não passa com o tempo: é indisponibilidade nossa.
     // A OpenAI manda `type: insufficient_quota` com `code` variável (ex.: credit_balance_exhausted).

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { AppError } from '@/shared/errors';
+import { pseudonymousId } from '@/shared/privacy';
 import { adjustCredits, readRevenueCatConfig, type AdjustmentResult, type RevenueCatConfig } from '../infrastructure/revenueCatClient';
 
 /**
@@ -38,6 +39,8 @@ export function creditWalletFor(uid: string | null): CreditWallet | null {
     });
   }
 
+  const logId = pseudonymousId(uid);
+
   return {
     async reserve(credits, reference) {
       const result = await adjustWithRetry(config, uid, -credits, reference);
@@ -46,7 +49,7 @@ export function creditWalletFor(uid: string | null): CreditWallet | null {
         throw new AppError(402, 'Créditos insuficientes para gerar este roteiro.', 'INSUFFICIENT_CREDITS');
       }
       if (result === 'uncertain') {
-        console.error(`Créditos: reserva em estado incerto (409), conciliar (uid=${uid}, créditos=${credits}, ${reference}).`);
+        console.error(`Créditos: reserva em estado incerto (409), conciliar (cliente=${logId}, créditos=${credits}, ${reference}).`);
       }
       throw new AppError(502, BILLING_UNAVAILABLE, 'BILLING_UNAVAILABLE', { cause: `reserva de créditos: ${result}` });
     },
@@ -56,7 +59,7 @@ export function creditWalletFor(uid: string | null): CreditWallet | null {
 
       const result = await adjustWithRetry(config, uid, credits, reference);
       if (result !== 'ok') {
-        console.error(`Créditos: devolução não confirmada (${result}), conciliar (uid=${uid}, créditos=${credits}, ${reference}).`);
+        console.error(`Créditos: devolução não confirmada (${result}), conciliar (cliente=${logId}, créditos=${credits}, ${reference}).`);
       }
       return result === 'ok';
     }
