@@ -85,8 +85,9 @@ Tempo máximo na Vercel (`export const config.maxDuration`): `generateItinerary`
 
 Regra do Produto (01/11/2026): cada bloco de até 7 dias consome 1 crédito (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4); o máximo é 28 dias. A regra fica em `src/contexts/itinerary/domain/credits.ts`.
 
-- Até 7 dias: uma chamada à OpenAI (mais a escolha do destino no Modo Surpresa).
-- Acima de 7 dias: uma chamada planeja a rota da viagem inteira (`plan`: data e cidade de cada dia) e os blocos são gerados em paralelo, cada um preso ao plano. Número, data e cidade de cada dia vêm do plano.
+- Toda geração começa por um plano da viagem (`plan`): data, dia da semana, cidade e 2 a 3 atrações principais (`highlights`) por dia. No Modo Surpresa, o plano também escolhe continente e países. Datas e dias da semana são calculados no servidor a partir de `dateBegin` (`DD/MM/AAAA` ou `AAAA-MM-DD`, em `domain/tripCalendar.ts`); a IA não faz contas de calendário.
+- Depois, os blocos de até 7 dias são gerados em paralelo. Cada bloco recebe a rota com dia da semana e destaques dos seus dias e a lista de destaques dos outros dias, para não repetir atrações. Número, data e cidade de cada dia vêm do plano.
+- As chamadas estruturadas (plano e blocos) usam `reasoning_effort: 'low'` e `max_completion_tokens` 8000, aprovados pelo Produto em 01/11/2026, e o schema fixa a quantidade exata de dias (`minItems`/`maxItems`). Medição real: 7 dias em ~42 s e 28 dias em ~62 s; ~US$ 0,002 por crédito mais ~US$ 0,001 do plano.
 - Só os blocos gerados com sucesso são cobrados (`credits.charged`); os dias dos blocos que falharam vêm em `missingDays`. Se nenhum bloco sair, a resposta é um erro e nada é cobrado. O plano não consome crédito.
 - Nova tentativa: o app reenvia as preferências com o `plan` recebido e `blocks` (números dos blocos que faltaram); cada bloco gerado consome 1 crédito.
 - `GET /api/itineraryQuote?days=N` informa o custo antes da geração. O formato antigo `{ prompt }` não calcula créditos.

@@ -100,7 +100,7 @@ export default function SwaggerAccordion() {
       method: "POST",
       path: "/api/generateItinerary",
       summary: "Gerar itinerário de viagem",
-      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). Acima de 7 dias, a API planeja a rota da viagem inteira (plan) e gera os blocos em paralelo; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. O saldo fica no RevenueCat; a API só calcula. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
+      description: "Monta o prompt no servidor a partir das preferências e pede à OpenAI (gpt-6-luna) um JSON validado por schema. Sem countries, a IA escolhe continente e países (Modo Surpresa). Créditos: 1 a cada bloco de até 7 dias (1–7 dias = 1, 8–14 = 2, 15–21 = 3, 22–28 = 4). A API planeja a viagem inteira (plan: data, dia da semana, cidade e atrações principais de cada dia) e gera os blocos de 7 dias em paralelo, sem repetir atrações entre eles; só os blocos gerados são cobrados (credits.charged) e os dias dos blocos que falharam vêm em missingDays. Para tentar de novo só esses blocos, reenvie as mesmas preferências com o plan recebido e blocks (ex.: [2]); cada bloco gerado consome 1 crédito. Se nenhum bloco sair, a resposta é 502 ITINERARY_INCOMPLETE (ou o erro da IA) e nada é cobrado. O saldo fica no RevenueCat; a API só calcula. Transição: o corpo antigo { prompt } ainda é aceito e devolve { message } em texto (formato DAY->...), até os builds anteriores ao FE-20 saírem de uso. Tempo máximo da rota: 120 s.",
       parameters: [
         { name: "dateBegin", type: "string", required: true, description: "Data de início, como exibida no app" },
         { name: "dateEnd", type: "string", required: true, description: "Data de término" },
@@ -115,7 +115,7 @@ export default function SwaggerAccordion() {
         { name: "locomotionMethods", type: "string[]", required: true, description: "Meios de locomoção (1 a 10)" },
         { name: "specialWish", type: "string", required: false, description: "Desejo especial (até 300 caracteres)" },
         { name: "userPreferences", type: "string[]", required: false, description: "Preferências do usuário (até 30)" },
-        { name: "plan", type: "{ continent, countries[], days: [{ date, location }] }", required: false, description: "Nova tentativa: o plan devolvido pela API para este roteiro (obrigatório junto com blocks)" },
+        { name: "plan", type: "{ continent, countries[], days: [{ date, weekday, location, highlights[] }] }", required: false, description: "Nova tentativa: o plan devolvido pela API para este roteiro (obrigatório junto com blocks)" },
         { name: "blocks", type: "integer[]", required: false, description: "Nova tentativa: números dos blocos a gerar (1 = dias 1–7, 2 = dias 8–14...)" }
       ],
       responses: {
@@ -134,7 +134,7 @@ export default function SwaggerAccordion() {
                 pixabayTags: "lisboa, portugal"
               }]
             },
-            plan: { continent: "Europa", countries: ["Portugal", "Espanha"], days: [{ date: "2026-12-01", location: "Lisboa, Portugal" }] },
+            plan: { continent: "Europa", countries: ["Portugal", "Espanha"], days: [{ date: "2026-12-01", weekday: "terça-feira", location: "Lisboa, Portugal", highlights: ["Mosteiro dos Jerónimos", "Torre de Belém"] }] },
             credits: { required: 2, charged: 1 },
             missingDays: [8, 9, 10, 11, 12, 13, 14]
           }
